@@ -3677,32 +3677,71 @@ class Pickup {
 // ==================== 主管理器 ====================
 
 class LegacyInputSystem {
+    constructor() {
+        this.name = 'InputSystem';
+    }
+
     update(game, deltaTime) {
         game.handleInput(deltaTime);
     }
 }
 
-class LegacySimulationSystem {
+class LegacyNoopSystem {
+    constructor(name) {
+        this.name = name;
+    }
+
+    update(_game, _deltaTime) {}
+}
+
+class LegacyMonolithSimulationSystem {
+    constructor() {
+        this.name = 'SpawnSystem';
+    }
+
     update(game, deltaTime) {
-        if (game.gameState === GAME_STATE.PLAYING) {
-            game.update(deltaTime);
-        }
+        game.update(deltaTime);
     }
 }
 
 class LegacyCanvasRenderSystem {
+    constructor() {
+        this.name = 'LegacyCanvasRenderSystem';
+    }
+
     update(game, deltaTime) {
         game.render(deltaTime);
     }
 }
 
+const LEGACY_SYSTEM_EXECUTION_ORDER = [
+    'InputSystem',
+    'MovementSystem',
+    'CollisionSystem',
+    'WeaponSystem',
+    'DamageSystem',
+    'SpawnSystem',
+    'PickupSystem',
+    'AnimationSystem',
+    'LegacyCanvasRenderSystem'
+];
+
 class LegacySystemPipeline {
     constructor() {
-        this.systems = [
+        const systems = [
             new LegacyInputSystem(),
-            new LegacySimulationSystem(),
+            new LegacyNoopSystem('MovementSystem'),
+            new LegacyNoopSystem('CollisionSystem'),
+            new LegacyNoopSystem('WeaponSystem'),
+            new LegacyNoopSystem('DamageSystem'),
+            new LegacyMonolithSimulationSystem(),
+            new LegacyNoopSystem('PickupSystem'),
+            new LegacyNoopSystem('AnimationSystem'),
             new LegacyCanvasRenderSystem()
         ];
+        this.systems = systems.sort((a, b) => {
+            return LEGACY_SYSTEM_EXECUTION_ORDER.indexOf(a.name) - LEGACY_SYSTEM_EXECUTION_ORDER.indexOf(b.name);
+        });
     }
 
     update(game, deltaTime) {
@@ -6313,7 +6352,7 @@ class GameManager {
             this.keys['enter'] = false;
         }
 
-        if (this.legacySystemPipeline) {
+        if (this.legacySystemPipeline && this.gameState === GAME_STATE.PLAYING) {
             this.legacySystemPipeline.update(this, deltaTime);
         } else {
             this.handleInput(deltaTime);
