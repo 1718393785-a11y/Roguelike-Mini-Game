@@ -5198,15 +5198,7 @@ class GameManager {
         }
     }
 
-    update(deltaTime) {
-        if (this.gameState !== GAME_STATE.PLAYING) return;
-
-        this.updateSpawnSystem(deltaTime);
-        this.updateMovementSystem(deltaTime);
-        this.updateDamageSystem(deltaTime);
-        if (!this.updateProjectileSystem(deltaTime)) return;
-        this.updateAnimationSystem(deltaTime);
-
+    updateCollisionSystem(deltaTime) {
         // 递减受伤弹开冷却
         if (this.pushbackCooldown > 0) {
             this.pushbackCooldown -= deltaTime;
@@ -5320,11 +5312,24 @@ class GameManager {
                     // 检查死亡
                     if (this.player.hp <= 0) {
                         this.gameOver();
-                        return;
+                        return false;
                     }
                 }
             }
         }
+
+        return true;
+    }
+
+    update(deltaTime) {
+        if (this.gameState !== GAME_STATE.PLAYING) return;
+
+        this.updateSpawnSystem(deltaTime);
+        this.updateMovementSystem(deltaTime);
+        this.updateDamageSystem(deltaTime);
+        if (!this.updateProjectileSystem(deltaTime)) return;
+        this.updateAnimationSystem(deltaTime);
+        if (!this.updateCollisionSystem(deltaTime)) return;
 
         // ========== 自动回血 (青囊秘卷) ==========
         if (this.player.hp > 0 && this.player.hp < this.player.maxHp) {
