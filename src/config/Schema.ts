@@ -56,16 +56,26 @@ export const BalanceConfigSchema = z.object({
     size: z.number().min(1).max(1000),
     speed: z.number().min(0).max(9999),
     baseDamage: z.number().min(0).max(9999),
+    baseFireRate: z.number().min(0).max(9999).default(0.5),
+    magnetRadius: z.number().min(0).max(9999).default(75),
+    rerolls: z.number().int().min(0).max(9999).default(3),
     expToNextLevel: z.number().min(1).max(999999),
   }),
   drops: z.object({
     expChance: z.number().min(0).max(1),
     resonanceChance: z.number().min(0).max(1),
     maxExpPickups: z.number().int().min(1).max(10000),
+    rare: z.record(z.string(), z.record(z.string(), z.number().min(0).max(999999))).default({}),
   }),
   spatialHash: z.object({
     cellSize: z.number().min(16).max(1000),
   }),
+  passiveSkills: z.record(z.string(), z.object({
+    stat: z.string().min(1).max(64),
+    baseValue: z.number().min(-9999).max(9999),
+  })).default({}),
+  combat: z.record(z.string(), z.number().min(0).max(999999)).default({}),
+  spawn: z.record(z.string(), z.number().min(0).max(999999)).default({}),
 });
 
 export const WaveStageSchema = z.object({

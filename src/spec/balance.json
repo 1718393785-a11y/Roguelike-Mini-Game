@@ -1,17 +1,79 @@
 {
   "player": {
     "hp": 100,
-    "size": 20,
+    "size": 30,
     "speed": 200,
     "baseDamage": 10,
+    "baseFireRate": 0.5,
+    "magnetRadius": 75,
+    "rerolls": 3,
     "expToNextLevel": 10
   },
   "drops": {
     "expChance": 0.8,
     "resonanceChance": 0.15,
-    "maxExpPickups": 300
+    "maxExpPickups": 300,
+    "rare": {
+      "wooden_ox": {
+        "magnet": 0.05,
+        "chicken": 0.1,
+        "bun": 0.5
+      },
+      "boss": {
+        "trigger": 0.3,
+        "magnetWeight": 0.1,
+        "chickenWeight": 0.3,
+        "bunWeight": 0.6,
+        "resonanceRingRadius": 40
+      },
+      "elite": {
+        "magnet": 0.01,
+        "bun": 0.04
+      },
+      "prop": {
+        "resonance": 0.7,
+        "bun": 0.2,
+        "chicken": 0.07,
+        "magnet": 0.03
+      }
+    }
   },
   "spatialHash": {
     "cellSize": 100
+  },
+  "passiveSkills": {
+    "SPEED": { "stat": "speedMulti", "baseValue": 0.06 },
+    "DAMAGE": { "stat": "damageMulti", "baseValue": 0.1 },
+    "COOLDOWN": { "stat": "cooldownMulti", "baseValue": -0.08 },
+    "MAGNET": { "stat": "magnetRadiusMulti", "baseValue": 0.2 },
+    "MAXHP": { "stat": "baseMaxHp", "baseValue": 20 },
+    "AREA": { "stat": "areaMulti", "baseValue": 0.08 },
+    "REGEN": { "stat": "regen", "baseValue": 0.4 },
+    "EXP": { "stat": "expMulti", "baseValue": 0.1 },
+    "RESONANCE": { "stat": "resonanceMulti", "baseValue": 0.1 },
+    "ARMOR": { "stat": "damageReduction", "baseValue": 0.06 }
+  },
+  "combat": {
+    "normalContactDamage": 10,
+    "bossContactDamage": 20,
+    "pushbackCooldown": 2,
+    "pushRadius": 100,
+    "pushForce": 60,
+    "propPlayerPushForce": 20,
+    "noDamageEnemyPushForce": 40,
+    "tigerGuardPushForce": 30,
+    "shieldBaseDamageReduction": 0.5,
+    "shieldDamageReductionPerLevel": 0.06
+  },
+  "spawn": {
+    "enemySpawnMargin": 20,
+    "propSpawnChancePerFrame": 0.001,
+    "maxProps": 3,
+    "propSpawnMargin": 50,
+    "waveHealthGrowth": 1.1,
+    "waveIntervalMultiplier": 0.8,
+    "maxSpawnCountPerTick": 4,
+    "swarmStartMinute": 1,
+    "swarmEndMinute": 9
   }
 }
