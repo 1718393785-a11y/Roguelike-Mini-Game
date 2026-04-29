@@ -6,6 +6,7 @@
   "scripts": {
     "baseline": "node tools/run-baseline.mjs --browser chrome",
     "validate:config": "tsx src/config/validateSpec.ts",
+    "check:architecture": "node tools/check-architecture.mjs",
     "typecheck": "tsc --noEmit",
     "dev": "vite --host 127.0.0.1"
   },
