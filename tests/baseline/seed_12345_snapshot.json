@@ -2,12 +2,9 @@
   "type": "snapshot-diff",
   "seed": "12345",
   "seconds": 60,
-  "record": "tests/recordings/smoke.json",
+  "record": "records\\smoke.json",
   "chromePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-  "flags": {
-    "ENABLE_JSON_CONFIG": false,
-    "ENABLE_SYSTEM_SPLIT": false
-  },
+  "jsonConfig": true,
   "equal": true,
   "snapshotCountA": 3601,
   "snapshotCountB": 3601,
