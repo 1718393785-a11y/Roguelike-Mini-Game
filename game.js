@@ -5178,14 +5178,7 @@ class GameManager {
         return true;
     }
 
-    update(deltaTime) {
-        if (this.gameState !== GAME_STATE.PLAYING) return;
-
-        this.updateSpawnSystem(deltaTime);
-        this.updateMovementSystem(deltaTime);
-        this.updateDamageSystem(deltaTime);
-        if (!this.updateProjectileSystem(deltaTime)) return;
-
+    updateAnimationSystem(deltaTime) {
         // 更新闪电视觉特效（纯视觉，自动过期消失）
         for (let i = this.lightningEffects.length - 1; i >= 0; i--) {
             const effect = this.lightningEffects[i];
@@ -5203,6 +5196,16 @@ class GameManager {
                 this.floatingTexts.splice(i, 1);
             }
         }
+    }
+
+    update(deltaTime) {
+        if (this.gameState !== GAME_STATE.PLAYING) return;
+
+        this.updateSpawnSystem(deltaTime);
+        this.updateMovementSystem(deltaTime);
+        this.updateDamageSystem(deltaTime);
+        if (!this.updateProjectileSystem(deltaTime)) return;
+        this.updateAnimationSystem(deltaTime);
 
         // 递减受伤弹开冷却
         if (this.pushbackCooldown > 0) {
