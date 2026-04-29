@@ -1,0 +1,22 @@
+{
+  "soldier": {
+    "name": "魏兵",
+    "hp": 10,
+    "speed": 80,
+    "size": 20,
+    "damage": 10,
+    "exp": 5,
+    "resonanceDrop": 1,
+    "flags": []
+  },
+  "elite": {
+    "name": "精英魏兵",
+    "hp": 30,
+    "speed": 88,
+    "size": 28,
+    "damage": 10,
+    "exp": 15,
+    "resonanceDrop": 3,
+    "flags": ["elite"]
+  }
+}

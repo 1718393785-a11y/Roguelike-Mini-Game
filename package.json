@@ -4,9 +4,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "baseline": "node tools/run-baseline.mjs --browser chrome"
+    "baseline": "node tools/run-baseline.mjs --browser chrome",
+    "validate:config": "tsx src/config/validateSpec.ts",
+    "typecheck": "tsc --noEmit",
+    "dev": "vite --host 127.0.0.1"
   },
   "devDependencies": {
-    "playwright-core": "^1.56.1"
+    "@types/node": "^25.6.0",
+    "playwright-core": "^1.56.1",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.10"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
   }
 }

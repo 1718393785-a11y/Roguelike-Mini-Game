@@ -1,0 +1,63 @@
+{
+  "saber": {
+    "id": "saber",
+    "name": "百炼环首刀",
+    "damage": 18,
+    "attackInterval": 1.5,
+    "range": 90,
+    "angle": 90,
+    "effects": [
+      { "type": "melee_arc", "params": { "radius": 90, "halfAngleRadians": 0.7853981633974483 } }
+    ],
+    "levels": [
+      {
+        "level": 1,
+        "name": "百炼环首刀",
+        "desc": "身前扇形挥砍。",
+        "numericPatches": {},
+        "effects": []
+      },
+      {
+        "level": 2,
+        "name": "刃长",
+        "desc": "攻击距离增加 30%。",
+        "numericPatches": { "radiusMultiplier": 1.3 },
+        "effects": []
+      },
+      {
+        "level": 3,
+        "name": "断钢",
+        "desc": "基础伤害提升 40%。",
+        "numericPatches": { "damageMultiplier": 1.4 },
+        "effects": []
+      },
+      {
+        "level": 4,
+        "name": "满月",
+        "desc": "挥砍角度扩大至身前 180 度。",
+        "numericPatches": { "halfAngleRadians": 1.5707963267948966 },
+        "effects": []
+      },
+      {
+        "level": 5,
+        "name": "双斩",
+        "desc": "追加反向挥砍。解锁处决。",
+        "numericPatches": { "comboMax": 2, "comboInterval": 0.3, "executeThreshold": 0.2 },
+        "effects": [{ "type": "mod_combo", "params": { "count": 2 } }]
+      },
+      {
+        "level": 6,
+        "name": "武帝·八荒斩",
+        "desc": "四段大范围交替狂斩。",
+        "numericPatches": {
+          "comboMax": 4,
+          "radiusMultiplier": 1.4,
+          "damageMultiplier": 1.15,
+          "attackIntervalMultiplier": 0.8,
+          "executeThreshold": 0.3
+        },
+        "effects": [{ "type": "mod_combo", "params": { "count": 4 } }]
+      }
+    ]
+  }
+}

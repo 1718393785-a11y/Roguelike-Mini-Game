@@ -1,0 +1,17 @@
+{
+  "player": {
+    "hp": 100,
+    "size": 20,
+    "speed": 200,
+    "baseDamage": 10,
+    "expToNextLevel": 10
+  },
+  "drops": {
+    "expChance": 0.8,
+    "resonanceChance": 0.15,
+    "maxExpPickups": 300
+  },
+  "spatialHash": {
+    "cellSize": 100
+  }
+}

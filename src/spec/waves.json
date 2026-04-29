@@ -1,0 +1,59 @@
+{
+  "stages": [
+    {
+      "name": "东岭关",
+      "boss": "孔秀",
+      "description": "法则异变：随机词缀强化",
+      "minSpawnCount": 5,
+      "maxSpawnCount": 10,
+      "spawnInterval": 1,
+      "bossHp": 800,
+      "bossSpeed": 90,
+      "bossAbility": "randomAffix"
+    },
+    {
+      "name": "洛阳城",
+      "boss": "韩福",
+      "description": "因果律暗箭：必定命中",
+      "minSpawnCount": 8,
+      "maxSpawnCount": 15,
+      "spawnInterval": 0.8,
+      "bossHp": 1800,
+      "bossSpeed": 70,
+      "bossAbility": "trackingArrow"
+    },
+    {
+      "name": "汜水关",
+      "boss": "卞喜",
+      "description": "时空死士：源源不断涌出",
+      "minSpawnCount": 12,
+      "maxSpawnCount": 20,
+      "spawnInterval": 0.6,
+      "bossHp": 3000,
+      "bossSpeed": 60,
+      "bossAbility": "summonMinions"
+    },
+    {
+      "name": "荥阳",
+      "boss": "王植",
+      "description": "业火焚城：火焰随时间蔓延",
+      "minSpawnCount": 15,
+      "maxSpawnCount": 25,
+      "spawnInterval": 0.5,
+      "bossHp": 4500,
+      "bossSpeed": 50,
+      "bossAbility": "fireArea"
+    },
+    {
+      "name": "黄河渡口",
+      "boss": "秦琪",
+      "description": "历史投影：召唤前四关守将幻影",
+      "minSpawnCount": 20,
+      "maxSpawnCount": 30,
+      "spawnInterval": 0.4,
+      "bossHp": 6500,
+      "bossSpeed": 80,
+      "bossAbility": "summonPhantoms"
+    }
+  ]
+}

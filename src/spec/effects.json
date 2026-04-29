@@ -1,0 +1,20 @@
+{
+  "floatingText": {
+    "duration": 1,
+    "fadeOut": 0.35,
+    "color": "#ffffff",
+    "params": { "riseSpeed": 40 }
+  },
+  "lightningAoe": {
+    "duration": 0.25,
+    "fadeOut": 0.25,
+    "color": "#6495ed",
+    "params": { "damageMultiplier": 0.5 }
+  },
+  "fireTornado": {
+    "duration": 3,
+    "fadeOut": 0.3,
+    "color": "#ff6400",
+    "params": { "tickInterval": 0.2 }
+  }
+}
