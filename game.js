@@ -3676,10 +3676,47 @@ class Pickup {
 
 // ==================== 主管理器 ====================
 
+class LegacyInputSystem {
+    update(game, deltaTime) {
+        game.handleInput(deltaTime);
+    }
+}
+
+class LegacySimulationSystem {
+    update(game, deltaTime) {
+        if (game.gameState === GAME_STATE.PLAYING) {
+            game.update(deltaTime);
+        }
+    }
+}
+
+class LegacyCanvasRenderSystem {
+    update(game, deltaTime) {
+        game.render(deltaTime);
+    }
+}
+
+class LegacySystemPipeline {
+    constructor() {
+        this.systems = [
+            new LegacyInputSystem(),
+            new LegacySimulationSystem(),
+            new LegacyCanvasRenderSystem()
+        ];
+    }
+
+    update(game, deltaTime) {
+        for (const system of this.systems) {
+            system.update(game, deltaTime);
+        }
+    }
+}
+
 class GameManager {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
+        this.legacySystemPipeline = FEATURE_FLAGS.ENABLE_SYSTEM_SPLIT ? new LegacySystemPipeline() : null;
 
         // 加载局外升级（从localStorage）
         this.loadPersistentData();
@@ -6276,12 +6313,16 @@ class GameManager {
             this.keys['enter'] = false;
         }
 
-        this.handleInput(deltaTime);
-        // 只在 PLAYING 状态执行更新
-        if (this.gameState === GAME_STATE.PLAYING) {
-            this.update(deltaTime);
+        if (this.legacySystemPipeline) {
+            this.legacySystemPipeline.update(this, deltaTime);
+        } else {
+            this.handleInput(deltaTime);
+            // 只在 PLAYING 状态执行更新
+            if (this.gameState === GAME_STATE.PLAYING) {
+                this.update(deltaTime);
+            }
+            this.render(deltaTime);
         }
-        this.render(deltaTime);
         GameRuntime.endFrame(this);
 
         if (GameRuntime.shouldStop()) return;

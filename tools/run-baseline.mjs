@@ -75,7 +75,7 @@ function normalizeRecordPath(recordPath) {
   return recordPath.replaceAll('\\', '/');
 }
 
-async function runSnapshot(browser, baseUrl, { seed, record, seconds }) {
+async function runSnapshot(browser, baseUrl, { seed, record, seconds, flags = {} }) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   await context.addInitScript(() => localStorage.clear());
   const page = await context.newPage();
@@ -91,7 +91,9 @@ async function runSnapshot(browser, baseUrl, { seed, record, seconds }) {
   url.searchParams.set('autoplay', normalizeRecordPath(record));
   url.searchParams.set('snapshot', '1');
   url.searchParams.set('baselineSeconds', String(seconds));
-  if (globalThis.__ENABLE_JSON_CONFIG__) url.searchParams.set('ENABLE_JSON_CONFIG', '1');
+  for (const [name, enabled] of Object.entries(flags)) {
+    if (enabled) url.searchParams.set(name, '1');
+  }
   await page.goto(url.toString(), { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__BASELINE_DONE__, null, { timeout: Math.max(30000, seconds * 2000) });
   const result = await page.evaluate(() => window.__BASELINE_DONE__);
@@ -102,14 +104,8 @@ async function runSnapshot(browser, baseUrl, { seed, record, seconds }) {
   return result.snapshots;
 }
 
-async function runSnapshotWithFlag(browser, baseUrl, { seed, record, seconds, jsonConfig }) {
-  const previous = globalThis.__ENABLE_JSON_CONFIG__;
-  globalThis.__ENABLE_JSON_CONFIG__ = jsonConfig;
-  try {
-    return await runSnapshot(browser, baseUrl, { seed, record, seconds });
-  } finally {
-    globalThis.__ENABLE_JSON_CONFIG__ = previous;
-  }
+async function runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags }) {
+  return await runSnapshot(browser, baseUrl, { seed, record, seconds, flags });
 }
 
 async function runRngProbe(browser, baseUrl, { seed, count }) {
@@ -163,15 +159,18 @@ async function main() {
   const seconds = Number(args.seconds ?? 60);
   const record = String(args.record ?? 'records/smoke.json');
   const rngProbe = args['rng-probe'] ? Number(args['rng-probe']) : 0;
-  globalThis.__ENABLE_JSON_CONFIG__ = Boolean(args['json-config']);
+  const defaultFlags = {
+    ENABLE_JSON_CONFIG: Boolean(args['json-config']),
+    ENABLE_SYSTEM_SPLIT: Boolean(args['system-split']),
+  };
   await fs.mkdir(path.join(rootDir, 'reports'), { recursive: true });
   const { server, baseUrl } = await createServer();
   const browser = await chromium.launch({ executablePath: chromePath, headless: true });
 
   try {
     if (args['compare-json-config']) {
-      const legacy = await runSnapshotWithFlag(browser, baseUrl, { seed, record, seconds, jsonConfig: false });
-      const jsonConfig = await runSnapshotWithFlag(browser, baseUrl, { seed, record, seconds, jsonConfig: true });
+      const legacy = await runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags: {} });
+      const jsonConfig = await runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags: { ENABLE_JSON_CONFIG: true } });
       const diff = diffSnapshots(legacy, jsonConfig);
       const report = {
         type: 'json-config-flag-compare',
@@ -189,6 +188,26 @@ async function main() {
       return;
     }
 
+    if (args['compare-system-split']) {
+      const legacy = await runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags: {} });
+      const systemSplit = await runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags: { ENABLE_SYSTEM_SPLIT: true } });
+      const diff = diffSnapshots(legacy, systemSplit);
+      const report = {
+        type: 'system-split-flag-compare',
+        seed,
+        seconds,
+        record,
+        chromePath,
+        legacyFlag: false,
+        systemSplitFlag: true,
+        ...diff,
+      };
+      await fs.writeFile(path.join(rootDir, 'reports', 'system-split-compare.json'), JSON.stringify(report, null, 2));
+      if (!diff.equal) throw new Error('System split flag output differs from legacy. See reports/system-split-compare.json.');
+      console.log(`System split compare OK: ${diff.snapshotCountA} frames, zero diff.`);
+      return;
+    }
+
     if (rngProbe > 0) {
       const first = await runRngProbe(browser, baseUrl, { seed, count: rngProbe });
       const second = await runRngProbe(browser, baseUrl, { seed, count: rngProbe });
@@ -197,7 +216,7 @@ async function main() {
         seed,
         count: rngProbe,
         chromePath,
-        jsonConfig: Boolean(globalThis.__ENABLE_JSON_CONFIG__),
+        jsonConfig: defaultFlags.ENABLE_JSON_CONFIG,
         first,
         second,
         equal: first.hash === second.hash,
@@ -208,8 +227,8 @@ async function main() {
       return;
     }
 
-    const first = await runSnapshot(browser, baseUrl, { seed, record, seconds });
-    const second = await runSnapshot(browser, baseUrl, { seed, record, seconds });
+    const first = await runSnapshot(browser, baseUrl, { seed, record, seconds, flags: defaultFlags });
+    const second = await runSnapshot(browser, baseUrl, { seed, record, seconds, flags: defaultFlags });
     const diff = diffSnapshots(first, second);
     const report = {
       type: 'snapshot-diff',
@@ -217,7 +236,7 @@ async function main() {
       seconds,
       record,
       chromePath,
-      jsonConfig: Boolean(globalThis.__ENABLE_JSON_CONFIG__),
+      flags: defaultFlags,
       ...diff,
     };
     await fs.writeFile(path.join(rootDir, 'reports', 'baseline-diff.json'), JSON.stringify(report, null, 2));
