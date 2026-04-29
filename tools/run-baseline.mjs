@@ -102,6 +102,16 @@ async function runSnapshot(browser, baseUrl, { seed, record, seconds }) {
   return result.snapshots;
 }
 
+async function runSnapshotWithFlag(browser, baseUrl, { seed, record, seconds, jsonConfig }) {
+  const previous = globalThis.__ENABLE_JSON_CONFIG__;
+  globalThis.__ENABLE_JSON_CONFIG__ = jsonConfig;
+  try {
+    return await runSnapshot(browser, baseUrl, { seed, record, seconds });
+  } finally {
+    globalThis.__ENABLE_JSON_CONFIG__ = previous;
+  }
+}
+
 async function runRngProbe(browser, baseUrl, { seed, count }) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   const page = await context.newPage();
@@ -159,6 +169,26 @@ async function main() {
   const browser = await chromium.launch({ executablePath: chromePath, headless: true });
 
   try {
+    if (args['compare-json-config']) {
+      const legacy = await runSnapshotWithFlag(browser, baseUrl, { seed, record, seconds, jsonConfig: false });
+      const jsonConfig = await runSnapshotWithFlag(browser, baseUrl, { seed, record, seconds, jsonConfig: true });
+      const diff = diffSnapshots(legacy, jsonConfig);
+      const report = {
+        type: 'json-config-flag-compare',
+        seed,
+        seconds,
+        record,
+        chromePath,
+        legacyFlag: false,
+        jsonConfigFlag: true,
+        ...diff,
+      };
+      await fs.writeFile(path.join(rootDir, 'reports', 'json-config-compare.json'), JSON.stringify(report, null, 2));
+      if (!diff.equal) throw new Error('JSON config flag output differs from legacy. See reports/json-config-compare.json.');
+      console.log(`JSON config compare OK: ${diff.snapshotCountA} frames, zero diff.`);
+      return;
+    }
+
     if (rngProbe > 0) {
       const first = await runRngProbe(browser, baseUrl, { seed, count: rngProbe });
       const second = await runRngProbe(browser, baseUrl, { seed, count: rngProbe });

@@ -470,7 +470,23 @@ const WEAPON_UPGRADES = {
     }
 };
 
+let LEGACY_JSON_WEAPON_CONFIG = null;
+
+function getWeaponJsonParam(weaponId, key, fallback) {
+    if (!FEATURE_FLAGS.ENABLE_JSON_CONFIG || !LEGACY_JSON_WEAPON_CONFIG) return fallback;
+    const params = LEGACY_JSON_WEAPON_CONFIG[weaponId]?.params;
+    const value = params ? params[key] : undefined;
+    return typeof value === 'number' || typeof value === 'boolean' ? value : fallback;
+}
+
+function getWeaponJsonAttackInterval(weaponId, fallback) {
+    if (!FEATURE_FLAGS.ENABLE_JSON_CONFIG || !LEGACY_JSON_WEAPON_CONFIG) return fallback;
+    const value = LEGACY_JSON_WEAPON_CONFIG[weaponId]?.attackInterval;
+    return typeof value === 'number' ? value : fallback;
+}
+
 function applyWeaponJsonConfig(weaponSpec) {
+    LEGACY_JSON_WEAPON_CONFIG = weaponSpec || {};
     for (const [weaponId, config] of Object.entries(weaponSpec || {})) {
         const legacyConfig = WEAPON_UPGRADES[weaponId];
         if (!legacyConfig) continue;
@@ -605,20 +621,20 @@ const DAO_UPGRADES = {
 // 1. 刀 - 百炼环首刀 - 扇形劈砍可升级连击
 class Saber extends Weapon {
     constructor(baseDamage) {
-        super(baseDamage, 1.5); // 每1.5秒触发一次完整连击
+        super(baseDamage, getWeaponJsonAttackInterval('saber', 1.5)); // 每1.5秒触发一次完整连击
         this.type = 'saber';
         this.aimAngle = 0;        // 基础瞄准方向角度（朝向最近敌人）
         this.baseTargetAngle = 0; // 保存基础目标方向
         this.hitRecords = new Set(); // 记录本次连击已经击中过的敌人，防止重复伤害
-        this.radius = 80;        // 扇形半径（初始60 × ~1.33倍）
+        this.radius = getWeaponJsonParam('saber', 'radius', 80);        // 扇形半径（初始60 × ~1.33倍）
         this.currentRadius = this.radius; // 当前半径，必须初始化避免undefined
-        this.halfAngle = Math.PI / 3; // 半角60度，总共120度
+        this.halfAngle = getWeaponJsonParam('saber', 'halfAngleRadians', Math.PI / 3); // 半角60度，总共120度
 
         // 连击系统
-        this.comboMax = 1;         // 单次触发的最大连击段数
+        this.comboMax = getWeaponJsonParam('saber', 'comboMax', 1);         // 单次触发的最大连击段数
         this.comboRemaining = 0;  // 当前剩余待释放段数
         this.comboTimer = 0;      // 连击间隔计时器
-        this.comboInterval = 0.15; // 连击段数之间的间隔（秒），快速前后交替
+        this.comboInterval = getWeaponJsonParam('saber', 'comboInterval', 0.15); // 连击段数之间的间隔（秒），快速前后交替
         this.active = false;      // 是否正在连击进行中（控制渲染显示）
         this.renderTimer = 0;     // 特效渲染停留计时器
     }
@@ -826,17 +842,17 @@ class Saber extends Weapon {
 // 2. 枪 - 动能折叠长枪 - 直线穿透矩形伤害，带击退
 class Spear extends Weapon {
     constructor(baseDamage) {
-        super(baseDamage, 1.5); // 基础攻击间隔1.5秒
+        super(baseDamage, getWeaponJsonAttackInterval('spear', 1.5)); // 基础攻击间隔1.5秒
         this.type = 'spear';
         this.level = 1;
         // 基础属性：Lv1
-        this.length = 130;
-        this.width = 20;
+        this.length = getWeaponJsonParam('spear', 'length', 130);
+        this.width = getWeaponJsonParam('spear', 'width', 20);
         this.baseDamage = baseDamage;
-        this.knockbackDist = 30;
+        this.knockbackDist = getWeaponJsonParam('spear', 'knockbackDist', 30);
         // 进阶属性：由升级解锁
         this.hasDash = false;
-        this.spreadCount = 1;
+        this.spreadCount = getWeaponJsonParam('spear', 'spreadCount', 1);
         this.isUltimate = false;
         // 当前活跃的枪影列表
         this.activeStabs = [];
@@ -1119,19 +1135,19 @@ class Spear extends Weapon {
 // 3. 弓 - 全息连弩 - 高频脱手追踪弹（默认武器）
 class Crossbow extends Weapon {
     constructor(baseDamage) {
-        super(baseDamage, 0.8); // 基础每0.8秒发射一次
+        super(baseDamage, getWeaponJsonAttackInterval('crossbow', 0.8)); // 基础每0.8秒发射一次
         this.type = 'crossbow';
         this.tags = ['ranged'];
         this.level = 1;
         // 连发配置：Lv2+ 连发
-        this.burstCount = 1;        // 总共连发几箭
+        this.burstCount = getWeaponJsonParam('crossbow', 'burstCount', 1);        // 总共连发几箭
         this.burstRemaining = 0;     // 剩余待发几箭
         this.burstTimer = 0;         // 连发间隔计时器
-        this.burstInterval = 0.3;   // 默认连发间隔0.3秒
+        this.burstInterval = getWeaponJsonParam('crossbow', 'burstInterval', 0.3);   // 默认连发间隔0.3秒
         // 穿透配置：Lv3+ 穿透次数
-        this.basePierceCount = 0;   // 基础额外穿透次数
+        this.basePierceCount = getWeaponJsonParam('crossbow', 'basePierceCount', 0);   // 基础额外穿透次数
         // 速度：箭矢飞行速度
-        this.projectileSpeed = 550; // 默认
+        this.projectileSpeed = getWeaponJsonParam('crossbow', 'projectileSpeed', 550); // 默认
         // 闪电特效：Lv5+ 小AOE，Lv6+ 雷柱
         this.hasLightningAOE = false;
         this.hasLightningColumn = false;
@@ -1566,27 +1582,27 @@ class FloatingText {
 // 4. 剑 - 青釭·子程序 - 恒定环绕AOE，绕玩家公转
 class QinggangSword extends Weapon {
     constructor(baseDamage) {
-        super(baseDamage, 0);
+        super(baseDamage, getWeaponJsonAttackInterval('qinggang', 0));
         this.type = 'qinggang';
-        this.count = 1;              // 飞剑数量
-        this.baseOrbitRadius = 80;   // 基础轨道半径
-        this.minRadius = 60;         // 移动时最小半径
-        this.maxRadius = 150;        // 静止时最大半径
-        this.currentRadius = 80;     // 当前平滑后的半径
-        this.rotationSpeed = Math.PI * 0.8;
+        this.count = getWeaponJsonParam('qinggang', 'count', 1);              // 飞剑数量
+        this.baseOrbitRadius = getWeaponJsonParam('qinggang', 'baseOrbitRadius', 80);   // 基础轨道半径
+        this.minRadius = getWeaponJsonParam('qinggang', 'minRadius', 60);         // 移动时最小半径
+        this.maxRadius = getWeaponJsonParam('qinggang', 'maxRadius', 150);        // 静止时最大半径
+        this.currentRadius = this.baseOrbitRadius;     // 当前平滑后的半径
+        this.rotationSpeed = getWeaponJsonParam('qinggang', 'rotationSpeedRadians', Math.PI * 0.8);
         this.baseAngle = 0;          // 基础起始角度
         this.dualOrbit = false;      // Lv6双轨道
-        this.lifesteal = 0;          // Lv5吸血量
+        this.lifesteal = getWeaponJsonParam('qinggang', 'lifesteal', 0);          // Lv5吸血量
         this.healCooldown = 0;       // 新增：吸血内置CD
         // 尺寸
-        this.swordLength = 40;
-        this.swordHalfWidth = 6;
+        this.swordLength = getWeaponJsonParam('qinggang', 'swordLength', 40);
+        this.swordHalfWidth = getWeaponJsonParam('qinggang', 'swordHalfWidth', 6);
         // 每个敌人独立冷却记录
         this.hitRecords = new Map();
         // 记录上一帧玩家位置用于检测移动
         this.lastPlayerX = 0;
         this.lastPlayerY = 0;
-        this.smoothSpeed = 2;        // 半径平滑变化速度
+        this.smoothSpeed = getWeaponJsonParam('qinggang', 'smoothSpeed', 2);        // 半径平滑变化速度
     }
 
     update(deltaTime, player, enemies, projectiles, specialAreas) {
@@ -1961,14 +1977,14 @@ class FireTornado {
 
 class TaipingBook extends Weapon {
     constructor(baseDamage) {
-        super(baseDamage, 5); // 每5秒触发一次
+        super(baseDamage, getWeaponJsonAttackInterval('taiping', 5)); // 每5秒触发一次
         this.type = 'taiping';
         // 默认基础参数
-        this.baseRadius = 60;
-        this.baseLifetime = 3;
-        this.baseTickInterval = 0.2;
+        this.baseRadius = getWeaponJsonParam('taiping', 'baseRadius', 60);
+        this.baseLifetime = getWeaponJsonParam('taiping', 'baseLifetime', 3);
+        this.baseTickInterval = getWeaponJsonParam('taiping', 'baseTickInterval', 0.2);
         this.baseDamagePerSecond = baseDamage;
-        this.maxTornados = 1;
+        this.maxTornados = getWeaponJsonParam('taiping', 'maxTornados', 1);
         this.autoSeek = false;
         this.hasProximityStorm = false;
         this.spawnQueue = []; // 延迟生成队列：由update驱动逐帧生成
@@ -2149,15 +2165,15 @@ class FireRing {
 // 6. 盾 - 八门金锁盾 - 先滞留蓄力再骤然爆发，延缓扩张
 class Shield extends Weapon {
     constructor(baseDamage) {
-        super(baseDamage, 3.5); // 每3.5秒触发一次脉冲爆发
+        super(baseDamage, getWeaponJsonAttackInterval('shield', 3.5)); // 每3.5秒触发一次脉冲爆发
         this.type = 'shield';
         this.active = false;
         this.phase = 'none'; // none / charge / explode
         this.chargeTimer = 0;
         this.explodeTimer = 0;
         this.currentRadius = 0;
-        this.maxRadius = 144; // 基础范围 ×1.2
-        this.baseKnockback = 60; // 基础击退距离
+        this.maxRadius = getWeaponJsonParam('shield', 'maxRadius', 144); // 基础范围 ×1.2
+        this.baseKnockback = getWeaponJsonParam('shield', 'baseKnockback', 60); // 基础击退距离
         this.hitRecords = new Set();
         this.x = 0;
         this.y = 0;
@@ -2165,10 +2181,10 @@ class Shield extends Weapon {
         this.canDestroyProjectiles = false;
         this.spawnFireRing = false;
         // 阶段时间配置
-        this.chargeDuration = 0.5;
-        this.explodeDuration = 0.15;
-        this.chargeStartRadius = 20;
-        this.chargeEndRadius = 40;
+        this.chargeDuration = getWeaponJsonParam('shield', 'chargeDuration', 0.5);
+        this.explodeDuration = getWeaponJsonParam('shield', 'explodeDuration', 0.15);
+        this.chargeStartRadius = getWeaponJsonParam('shield', 'chargeStartRadius', 20);
+        this.chargeEndRadius = getWeaponJsonParam('shield', 'chargeEndRadius', 40);
     }
 
     attack(player, enemies, projectiles, specialAreas) {
