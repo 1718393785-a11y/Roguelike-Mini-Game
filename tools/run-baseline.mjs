@@ -91,6 +91,7 @@ async function runSnapshot(browser, baseUrl, { seed, record, seconds }) {
   url.searchParams.set('autoplay', normalizeRecordPath(record));
   url.searchParams.set('snapshot', '1');
   url.searchParams.set('baselineSeconds', String(seconds));
+  if (globalThis.__ENABLE_JSON_CONFIG__) url.searchParams.set('ENABLE_JSON_CONFIG', '1');
   await page.goto(url.toString(), { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__BASELINE_DONE__, null, { timeout: Math.max(30000, seconds * 2000) });
   const result = await page.evaluate(() => window.__BASELINE_DONE__);
@@ -152,6 +153,7 @@ async function main() {
   const seconds = Number(args.seconds ?? 60);
   const record = String(args.record ?? 'records/smoke.json');
   const rngProbe = args['rng-probe'] ? Number(args['rng-probe']) : 0;
+  globalThis.__ENABLE_JSON_CONFIG__ = Boolean(args['json-config']);
   await fs.mkdir(path.join(rootDir, 'reports'), { recursive: true });
   const { server, baseUrl } = await createServer();
   const browser = await chromium.launch({ executablePath: chromePath, headless: true });
@@ -165,6 +167,7 @@ async function main() {
         seed,
         count: rngProbe,
         chromePath,
+        jsonConfig: Boolean(globalThis.__ENABLE_JSON_CONFIG__),
         first,
         second,
         equal: first.hash === second.hash,
@@ -184,6 +187,7 @@ async function main() {
       seconds,
       record,
       chromePath,
+      jsonConfig: Boolean(globalThis.__ENABLE_JSON_CONFIG__),
       ...diff,
     };
     await fs.writeFile(path.join(rootDir, 'reports', 'baseline-diff.json'), JSON.stringify(report, null, 2));

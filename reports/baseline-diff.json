@@ -4,6 +4,7 @@
   "seconds": 60,
   "record": "records\\smoke.json",
   "chromePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "jsonConfig": true,
   "equal": true,
   "snapshotCountA": 3601,
   "snapshotCountB": 3601,

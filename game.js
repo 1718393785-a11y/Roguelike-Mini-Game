@@ -15,6 +15,14 @@ const FEATURE_FLAGS = {
     ENABLE_HOT_RELOAD: false,
 };
 
+const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
+for (const flagName of Object.keys(FEATURE_FLAGS)) {
+    if (FEATURE_FLAG_PARAMS.has(flagName)) {
+        const value = FEATURE_FLAG_PARAMS.get(flagName);
+        FEATURE_FLAGS[flagName] = value === '1' || value === 'true' || value === 'on';
+    }
+}
+
 const GameRuntime = (() => {
     const params = new URLSearchParams(window.location.search);
     const seedText = params.get('seed') || '0';
@@ -74,6 +82,7 @@ const GameRuntime = (() => {
         playback: [],
         playbackIndex: 0,
         playbackLoaded: !autoplayPath,
+        configLoaded: !FEATURE_FLAGS.ENABLE_JSON_CONFIG,
         snapshots: [],
         killCount: 0,
         previousEnemyHp: 0,
@@ -170,7 +179,14 @@ const GameRuntime = (() => {
         random: () => rng(),
         useFixedDelta: () => Boolean(autoplayPath || snapshotEnabled || frameLimit),
         fixedDelta: () => fixedDelta,
-        ready: () => session.playbackLoaded,
+        ready: () => session.playbackLoaded && session.configLoaded,
+        markConfigLoaded(error) {
+            if (error) {
+                session.error = error.message || String(error);
+                window.__BASELINE_ERROR__ = session.error;
+            }
+            session.configLoaded = true;
+        },
         beginFrame(game) {
             session.frame += 1;
             if (autoplayPath) applyPlayback(game);
@@ -453,6 +469,34 @@ const WEAPON_UPGRADES = {
         6: { name: '黄天·焚世烈火', desc: '同时存在上限 +2（总计 4 个），额外召唤一个向玩家移动的聚变龙卷风，触碰后引爆巨型风暴。', action: (w) => { w.maxTornados = 4; w.hasProximityStorm = true; } }
     }
 };
+
+function applyWeaponJsonConfig(weaponSpec) {
+    for (const [weaponId, config] of Object.entries(weaponSpec || {})) {
+        const legacyConfig = WEAPON_UPGRADES[weaponId];
+        if (!legacyConfig) continue;
+        if (typeof config.damage === 'number') {
+            legacyConfig.baseDamage = config.damage;
+        }
+        // Stage 2 only mirrors data into the legacy table. Behavior and action functions stay legacy-owned.
+    }
+}
+
+if (FEATURE_FLAGS.ENABLE_JSON_CONFIG) {
+    fetch('src/spec/weapons.json')
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to load src/spec/weapons.json');
+            return response.json();
+        })
+        .then(config => {
+            applyWeaponJsonConfig(config);
+            window.__JSON_CONFIG_LOADED__ = { weapons: Object.keys(config).length };
+            GameRuntime.markConfigLoaded();
+        })
+        .catch(error => {
+            console.error(error);
+            GameRuntime.markConfigLoaded(error);
+        });
+}
 
 // ==================== 被动技能升级配置表 ====================
 const PASSIVE_UPGRADES = {
