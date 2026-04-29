@@ -1823,8 +1823,10 @@ class FireTornado {
         if (this.tickTimer >= this.currentTickInterval) {
             this.tickTimer -= this.currentTickInterval;
 
-            for (let i = enemies.length - 1; i >= 0; i--) {
-                const enemy = enemies[i];
+            const gm = window.gameManager;
+            const nearbyEnemies = gm.queryEnemiesInRange(this.x, this.y, this.currentRadius + 80);
+            for (let i = nearbyEnemies.length - 1; i >= 0; i--) {
+                const enemy = nearbyEnemies[i];
                 const dx = enemy.x - this.x;
                 const dy = enemy.y - this.y;
                 const distSq = dx * dx + dy * dy;
@@ -1832,7 +1834,10 @@ class FireTornado {
                     enemy.hp -= this.currentDamage * this.currentTickInterval;
                     // 检查死亡
                     if (enemy.hp <= 0) {
-                        gameManager.handleEnemyDeath(enemy, i);
+                        const originalIdx = gameManager.enemies.indexOf(enemy);
+                        if (originalIdx >= 0) {
+                            gameManager.handleEnemyDeath(enemy, originalIdx);
+                        }
                     }
                 }
             }
@@ -3623,6 +3628,7 @@ class GameManager {
         // 将地图划分为 100x100px 网格，碰撞检测只检测当前格+相邻8格
         this.gridCellSize = 100;
         this.spatialGrid = [];
+        this.spatialGridOverflow = [];
         this.gridCols = 0;
         this.gridRows = 0;
 
@@ -3699,6 +3705,7 @@ class GameManager {
     rebuildSpatialGrid() {
         // 清空网格
         this.spatialGrid = [];
+        this.spatialGridOverflow = [];
         for (let c = 0; c < this.gridCols; c++) {
             this.spatialGrid[c] = [];
             for (let r = 0; r < this.gridRows; r++) {
@@ -3713,6 +3720,8 @@ class GameManager {
             // 边界检查（防止坐标出界）
             if (col >= 0 && col < this.gridCols && row >= 0 && row < this.gridRows) {
                 this.spatialGrid[col][row].push(enemy);
+            } else {
+                this.spatialGridOverflow.push(enemy);
             }
         }
     }
@@ -3732,6 +3741,9 @@ class GameManager {
             for (let r = minRow; r <= maxRow; r++) {
                 result.push(...this.spatialGrid[c][r]);
             }
+        }
+        if (this.spatialGridOverflow.length > 0) {
+            result.push(...this.spatialGridOverflow);
         }
         return result;
     }
@@ -3967,8 +3979,9 @@ class GameManager {
 
     // 范围伤害：对圆心半径内所有敌人造成伤害，跳过已经被当前箭矢命中的敌人
     damageEnemiesInRadius(cx, cy, radius, damage, excludeHitSet) {
-        for (let i = this.enemies.length - 1; i >= 0; i--) {
-            const enemy = this.enemies[i];
+        const nearbyEnemies = this.queryEnemiesInRange(cx, cy, radius);
+        for (let i = nearbyEnemies.length - 1; i >= 0; i--) {
+            const enemy = nearbyEnemies[i];
             if (excludeHitSet.has(enemy)) continue; // 已经被本次箭矢命中，跳过避免重复伤害
 
             const dx = enemy.x - cx;
@@ -3977,7 +3990,10 @@ class GameManager {
             if (distSq <= radius * radius) {
                 enemy.hp -= damage;
                 if (enemy.hp <= 0) {
-                    this.handleEnemyDeath(enemy, i);
+                    const originalIdx = this.enemies.indexOf(enemy);
+                    if (originalIdx >= 0) {
+                        this.handleEnemyDeath(enemy, originalIdx);
+                    }
                 }
             }
         }
@@ -3985,7 +4001,8 @@ class GameManager {
 
     // 范围眩晕：对圆心半径内所有敌人施加眩晕
     stunEnemiesInRadius(cx, cy, radius, stunDuration) {
-        for (const enemy of this.enemies) {
+        const nearbyEnemies = this.queryEnemiesInRange(cx, cy, radius);
+        for (const enemy of nearbyEnemies) {
             const dx = enemy.x - cx;
             const dy = enemy.y - cy;
             const distSq = dx * dx + dy * dy;
@@ -5041,9 +5058,10 @@ class GameManager {
             this.pushbackCooldown -= deltaTime;
         }
 
-        // 碰撞检测：敌人vs玩家
-        for (let i = this.enemies.length - 1; i >= 0; i--) {
-            const enemy = this.enemies[i];
+        // 碰撞检测：敌人vs玩家。空间网格先缩小候选集合，具体碰撞形状保持原判定。
+        const playerCollisionCandidates = this.queryEnemiesInRange(this.player.x, this.player.y, 180);
+        for (let i = playerCollisionCandidates.length - 1; i >= 0; i--) {
+            const enemy = playerCollisionCandidates[i];
             let collided = false;
 
             if (enemy.isBoss) {
@@ -5127,7 +5145,8 @@ class GameManager {
                         // 弹开周围敌人
                         const pushRadius = 100; // 弹开范围
                         const pushForce = 60; // 弹开距离
-                        for (const pushEnemy of this.enemies) {
+                        const pushCandidates = this.queryEnemiesInRange(this.player.x, this.player.y, pushRadius + 80);
+                        for (const pushEnemy of pushCandidates) {
                             const dx = pushEnemy.x - this.player.x;
                             const dy = pushEnemy.y - this.player.y;
                             const dist = Math.sqrt(dx * dx + dy * dy);
