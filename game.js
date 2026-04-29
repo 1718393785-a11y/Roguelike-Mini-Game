@@ -5004,11 +5004,7 @@ class GameManager {
         }
     }
 
-    update(deltaTime) {
-        if (this.gameState !== GAME_STATE.PLAYING) return;
-
-        this.updateSpawnSystem(deltaTime);
-
+    updateMovementSystem(deltaTime) {
         // 更新所有敌人
         for (let i = this.enemies.length - 1; i >= 0; i--) {
             const alive = this.enemies[i].update(deltaTime, this.canvas.width, this.canvas.height);
@@ -5020,6 +5016,13 @@ class GameManager {
 
         // 重建空间网格：将所有敌人按坐标分配到网格，用于优化碰撞检测
         this.rebuildSpatialGrid();
+    }
+
+    update(deltaTime) {
+        if (this.gameState !== GAME_STATE.PLAYING) return;
+
+        this.updateSpawnSystem(deltaTime);
+        this.updateMovementSystem(deltaTime);
 
         // 更新火焰区域（王植）
         for (let i = this.fireAreas.length - 1; i >= 0; i--) {
