@@ -1,7 +1,7 @@
 {
   "type": "enabled-flags-compare",
   "seed": "12345",
-  "seconds": 60,
+  "seconds": 120,
   "record": "records\\smoke.json",
   "chromePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
   "enabledFlags": {
@@ -9,8 +9,8 @@
     "ENABLE_SYSTEM_SPLIT": true
   },
   "equal": true,
-  "snapshotCountA": 3601,
-  "snapshotCountB": 3601,
+  "snapshotCountA": 7201,
+  "snapshotCountB": 7201,
   "bossFrameA": 2280,
   "bossFrameB": 2280,
   "bossFrameDelta": 0,
