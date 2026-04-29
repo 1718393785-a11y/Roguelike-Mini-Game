@@ -6,6 +6,7 @@
   "scripts": {
     "baseline": "node tools/run-baseline.mjs --browser chrome",
     "baseline:e2e": "node tests/e2e/run-baseline.mjs --browser chrome --record tests/recordings/smoke.json",
+    "baseline:flags": "node tools/run-baseline.mjs --browser chrome --compare-enabled-flags --json-config --system-split",
     "validate:config": "tsx src/config/validateSpec.ts",
     "check:architecture": "node tools/check-architecture.mjs",
     "typecheck": "tsc --noEmit",

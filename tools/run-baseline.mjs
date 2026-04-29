@@ -208,6 +208,26 @@ async function main() {
       return;
     }
 
+    if (args['compare-enabled-flags']) {
+      const enabledFlags = Object.fromEntries(Object.entries(defaultFlags).filter(([, enabled]) => enabled));
+      const legacy = await runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags: {} });
+      const enabled = await runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags: enabledFlags });
+      const diff = diffSnapshots(legacy, enabled);
+      const report = {
+        type: 'enabled-flags-compare',
+        seed,
+        seconds,
+        record,
+        chromePath,
+        enabledFlags,
+        ...diff,
+      };
+      await fs.writeFile(path.join(rootDir, 'reports', 'enabled-flags-compare.json'), JSON.stringify(report, null, 2));
+      if (!diff.equal) throw new Error('Enabled feature flags output differs from legacy. See reports/enabled-flags-compare.json.');
+      console.log(`Enabled flags compare OK: ${diff.snapshotCountA} frames, zero diff.`);
+      return;
+    }
+
     if (rngProbe > 0) {
       const first = await runRngProbe(browser, baseUrl, { seed, count: rngProbe });
       const second = await runRngProbe(browser, baseUrl, { seed, count: rngProbe });
