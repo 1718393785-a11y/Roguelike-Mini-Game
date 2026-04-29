@@ -1,7 +1,10 @@
 import type { GameSystem } from './System';
+import type { MovementSystemWorld } from './WorldPorts';
 
-export class MovementSystem<TWorld = unknown> implements GameSystem<TWorld> {
-  readonly name = 'MovementSystem';
+export class MovementSystem<TWorld extends MovementSystemWorld> implements GameSystem<TWorld> {
+  readonly name = 'MovementSystem' as const;
 
-  update(_world: TWorld, _deltaTime: number): void {}
+  update(world: TWorld, deltaTime: number): void {
+    world.updateMovement(deltaTime);
+  }
 }

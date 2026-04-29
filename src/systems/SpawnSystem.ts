@@ -1,7 +1,10 @@
 import type { GameSystem } from './System';
+import type { SpawnSystemWorld } from './WorldPorts';
 
-export class SpawnSystem<TWorld = unknown> implements GameSystem<TWorld> {
-  readonly name = 'SpawnSystem';
+export class SpawnSystem<TWorld extends SpawnSystemWorld> implements GameSystem<TWorld> {
+  readonly name = 'SpawnSystem' as const;
 
-  update(_world: TWorld, _deltaTime: number): void {}
+  update(world: TWorld, deltaTime: number): void {
+    world.updateSpawn(deltaTime);
+  }
 }

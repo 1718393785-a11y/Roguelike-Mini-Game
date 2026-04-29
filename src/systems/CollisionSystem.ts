@@ -1,7 +1,10 @@
 import type { GameSystem } from './System';
+import type { CollisionSystemWorld } from './WorldPorts';
 
-export class CollisionSystem<TWorld = unknown> implements GameSystem<TWorld> {
-  readonly name = 'CollisionSystem';
+export class CollisionSystem<TWorld extends CollisionSystemWorld> implements GameSystem<TWorld> {
+  readonly name = 'CollisionSystem' as const;
 
-  update(_world: TWorld, _deltaTime: number): void {}
+  update(world: TWorld, deltaTime: number): void {
+    world.updateCollision(deltaTime);
+  }
 }

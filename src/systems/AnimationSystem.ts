@@ -1,7 +1,10 @@
 import type { GameSystem } from './System';
+import type { AnimationSystemWorld } from './WorldPorts';
 
-export class AnimationSystem<TWorld = unknown> implements GameSystem<TWorld> {
-  readonly name = 'AnimationSystem';
+export class AnimationSystem<TWorld extends AnimationSystemWorld> implements GameSystem<TWorld> {
+  readonly name = 'AnimationSystem' as const;
 
-  update(_world: TWorld, _deltaTime: number): void {}
+  update(world: TWorld, deltaTime: number): void {
+    world.updateAnimations(deltaTime);
+  }
 }
