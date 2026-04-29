@@ -5321,16 +5321,7 @@ class GameManager {
         return true;
     }
 
-    update(deltaTime) {
-        if (this.gameState !== GAME_STATE.PLAYING) return;
-
-        this.updateSpawnSystem(deltaTime);
-        this.updateMovementSystem(deltaTime);
-        this.updateDamageSystem(deltaTime);
-        if (!this.updateProjectileSystem(deltaTime)) return;
-        this.updateAnimationSystem(deltaTime);
-        if (!this.updateCollisionSystem(deltaTime)) return;
-
+    updatePlayerRecoverySystem(deltaTime) {
         // ========== 自动回血 (青囊秘卷) ==========
         if (this.player.hp > 0 && this.player.hp < this.player.maxHp) {
             const currentRegen = this.player.modifiers.regen || 0;
@@ -5338,7 +5329,9 @@ class GameManager {
                 this.player.hp = Math.min(this.player.maxHp, this.player.hp + currentRegen * deltaTime);
             }
         }
+    }
 
+    updatePickupSystem(deltaTime) {
         // 自动吸附 + 自动拾取
         for (let i = this.pickups.length - 1; i >= 0; i--) {
             const pickup = this.pickups[i];
@@ -5350,10 +5343,14 @@ class GameManager {
                 this.pickups.splice(i, 1);
             }
         }
+    }
 
+    updateWeaponSystem(deltaTime) {
         // 自动射击
         this.autoShoot(deltaTime);
+    }
 
+    updateLevelProgressionSystem() {
         // 检查玩家升级
         if (this.player.exp >= this.player.expToNextLevel) {
             const leveledUp = this.player.addExp(0);
@@ -5361,6 +5358,21 @@ class GameManager {
                 this.onPlayerLevelUp();
             }
         }
+    }
+
+    update(deltaTime) {
+        if (this.gameState !== GAME_STATE.PLAYING) return;
+
+        this.updateSpawnSystem(deltaTime);
+        this.updateMovementSystem(deltaTime);
+        this.updateDamageSystem(deltaTime);
+        if (!this.updateProjectileSystem(deltaTime)) return;
+        this.updateAnimationSystem(deltaTime);
+        if (!this.updateCollisionSystem(deltaTime)) return;
+        this.updatePlayerRecoverySystem(deltaTime);
+        this.updatePickupSystem(deltaTime);
+        this.updateWeaponSystem(deltaTime);
+        this.updateLevelProgressionSystem();
     }
 
     autoShoot(deltaTime) {
