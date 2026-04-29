@@ -45,6 +45,7 @@ export const EnemyConfigSchema = z.object({
   exp: z.number().min(0).max(999999),
   resonanceDrop: z.number().min(0).max(9999).default(0),
   flags: z.array(z.string().min(1).max(32)).default([]),
+  params: z.record(z.string(), z.unknown()).default({}),
 });
 
 export const EnemiesConfigSchema = z.record(z.string(), EnemyConfigSchema);

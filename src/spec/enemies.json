@@ -7,7 +7,12 @@
     "damage": 10,
     "exp": 5,
     "resonanceDrop": 1,
-    "flags": []
+    "flags": [],
+    "params": {
+      "baseHealthMultiplier": 1,
+      "speedMultiplier": 1,
+      "knockbackResist": 0
+    }
   },
   "elite": {
     "name": "精英魏兵",
@@ -17,6 +22,99 @@
     "damage": 10,
     "exp": 15,
     "resonanceDrop": 3,
-    "flags": ["elite"]
+    "flags": ["elite"],
+    "params": {
+      "baseHealthMultiplier": 3,
+      "speedMultiplier": 1.1,
+      "knockbackResist": 0.5
+    }
+  },
+  "archer": {
+    "name": "魏军弓弩手",
+    "hp": 6,
+    "speed": 40,
+    "size": 18,
+    "damage": 2,
+    "exp": 3,
+    "resonanceDrop": 1,
+    "flags": ["ranged"],
+    "params": {
+      "baseHealthMultiplier": 0.6,
+      "speedMultiplier": 0.5,
+      "preferredRange": 400,
+      "shootInterval": 3,
+      "projectileSize": 10,
+      "knockbackResist": 0.3
+    }
+  },
+  "wooden_ox": {
+    "name": "机关木牛",
+    "hp": 50,
+    "speed": 176,
+    "size": 25,
+    "damage": 0,
+    "exp": 25,
+    "resonanceDrop": 5,
+    "flags": ["miniBoss", "treasure"],
+    "params": {
+      "baseHealthMultiplier": 5,
+      "speedMultiplier": 2.2,
+      "escapeTimer": 15,
+      "directionChangeMin": 1.5,
+      "directionChangeRandom": 1,
+      "directionJitterRadians": 1.0471975511965976,
+      "knockbackResist": 1
+    }
+  },
+  "tiger_guard": {
+    "name": "虎卫",
+    "hp": 52,
+    "speed": 80,
+    "size": 35,
+    "damage": 10,
+    "exp": 35,
+    "resonanceDrop": 2,
+    "flags": ["guard", "knockbackImmune"],
+    "params": {
+      "baseHealthMultiplier": 5.2,
+      "orbitSpeed": 0.35,
+      "closingSpeed": 60,
+      "brokenFormationSpeed": 40,
+      "shieldSize": 40,
+      "knockbackResist": 1
+    }
+  },
+  "destructible_prop": {
+    "name": "木箱",
+    "hp": 30,
+    "speed": 0,
+    "size": 32,
+    "damage": 0,
+    "exp": 0,
+    "resonanceDrop": 0,
+    "flags": ["prop"],
+    "params": {
+      "knockbackResist": 1,
+      "dropResonanceChance": 0.7,
+      "dropBunChance": 0.2,
+      "dropChickenChance": 0.07,
+      "dropMagnetChance": 0.03
+    }
+  },
+  "stage_boss": {
+    "name": "关卡守将",
+    "hp": 800,
+    "speed": 90,
+    "size": 60,
+    "damage": 20,
+    "exp": 400,
+    "resonanceDrop": 15,
+    "flags": ["boss", "knockbackImmune"],
+    "params": {
+      "normalSize": 60,
+      "finalStageSize": 80,
+      "abilityCooldown": 3,
+      "knockbackResist": 1
+    }
   }
 }
