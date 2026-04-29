@@ -3,18 +3,89 @@
     "duration": 1,
     "fadeOut": 0.35,
     "color": "#ffffff",
-    "params": { "riseSpeed": 40 }
+    "params": {
+      "riseSpeed": 40,
+      "randomOffset": 40,
+      "defaultSize": 20
+    }
   },
   "lightningAoe": {
     "duration": 0.25,
     "fadeOut": 0.25,
     "color": "#6495ed",
-    "params": { "damageMultiplier": 0.5 }
+    "params": {
+      "damageMultiplier": 0.5,
+      "radius": 60,
+      "stunDuration": 0
+    }
+  },
+  "lightningColumn": {
+    "duration": 0.3,
+    "fadeOut": 0.3,
+    "color": "#87cefa",
+    "params": {
+      "damageMultiplier": 1,
+      "radiusMultiplier": 4,
+      "stunDuration": 1
+    }
+  },
+  "levelUpNova": {
+    "duration": 0.5,
+    "fadeOut": 0.5,
+    "color": "#ffd700",
+    "params": {
+      "maxRadius": 250,
+      "strokeWidth": 8
+    }
   },
   "fireTornado": {
     "duration": 3,
     "fadeOut": 0.3,
     "color": "#ff6400",
-    "params": { "tickInterval": 0.2 }
+    "params": {
+      "radius": 60,
+      "tickInterval": 0.2,
+      "moveSpeed": 20,
+      "massiveStormDurationMin": 3,
+      "massiveStormDurationRandom": 2,
+      "massiveStormRadiusMultiplier": 5,
+      "massiveStormTickMultiplier": 0.3,
+      "massiveStormDamageMultiplier": 2
+    }
+  },
+  "fireRing": {
+    "duration": 3,
+    "fadeOut": 0.3,
+    "color": "#ff4500",
+    "params": {
+      "burnTick": 0.2,
+      "pullForce": 10
+    }
+  },
+  "bossFireArea": {
+    "duration": 5,
+    "fadeOut": 0,
+    "color": "#ff4500",
+    "params": {
+      "radius": 80,
+      "damagePerSecond": 15
+    }
+  },
+  "damageFlash": {
+    "duration": 0.2,
+    "fadeOut": 0.2,
+    "color": "#ff0000",
+    "params": {
+      "maxAlpha": 0.15,
+      "borderWidth": 50
+    }
+  },
+  "screenShake": {
+    "duration": 0.3,
+    "fadeOut": 0.3,
+    "color": "#ffffff",
+    "params": {
+      "amplitude": 4
+    }
   }
 }
