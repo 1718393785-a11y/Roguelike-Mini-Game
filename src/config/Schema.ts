@@ -29,6 +29,7 @@ export const WeaponConfigSchema = z.object({
   attackInterval: z.number().min(0.016).max(60).default(1),
   range: z.number().min(0).max(9999).default(80),
   angle: z.number().min(0).max(360).optional(),
+  params: z.record(z.string(), z.unknown()).default({}),
   levels: z.array(WeaponLevelSchema).min(1).max(6),
   effects: z.array(WeaponEffectSchema).default([]),
 });

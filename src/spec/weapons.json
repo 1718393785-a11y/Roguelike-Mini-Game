@@ -4,60 +4,148 @@
     "name": "百炼环首刀",
     "damage": 18,
     "attackInterval": 1.5,
-    "range": 90,
-    "angle": 90,
-    "effects": [
-      { "type": "melee_arc", "params": { "radius": 90, "halfAngleRadians": 0.7853981633974483 } }
-    ],
+    "range": 80,
+    "angle": 120,
+    "params": {
+      "radius": 80,
+      "halfAngleRadians": 1.0471975511965976,
+      "comboMax": 1,
+      "comboInterval": 0.15,
+      "renderTime": 0.15
+    },
+    "effects": [{ "type": "melee_arc", "params": { "knockback": 0 } }],
     "levels": [
-      {
-        "level": 1,
-        "name": "百炼环首刀",
-        "desc": "身前扇形挥砍。",
-        "numericPatches": {},
-        "effects": []
-      },
-      {
-        "level": 2,
-        "name": "刃长",
-        "desc": "攻击距离增加 30%。",
-        "numericPatches": { "radiusMultiplier": 1.3 },
-        "effects": []
-      },
-      {
-        "level": 3,
-        "name": "断钢",
-        "desc": "基础伤害提升 40%。",
-        "numericPatches": { "damageMultiplier": 1.4 },
-        "effects": []
-      },
-      {
-        "level": 4,
-        "name": "满月",
-        "desc": "挥砍角度扩大至身前 180 度。",
-        "numericPatches": { "halfAngleRadians": 1.5707963267948966 },
-        "effects": []
-      },
-      {
-        "level": 5,
-        "name": "双斩",
-        "desc": "追加反向挥砍。解锁处决。",
-        "numericPatches": { "comboMax": 2, "comboInterval": 0.3, "executeThreshold": 0.2 },
-        "effects": [{ "type": "mod_combo", "params": { "count": 2 } }]
-      },
-      {
-        "level": 6,
-        "name": "武帝·八荒斩",
-        "desc": "四段大范围交替狂斩。",
-        "numericPatches": {
-          "comboMax": 4,
-          "radiusMultiplier": 1.4,
-          "damageMultiplier": 1.15,
-          "attackIntervalMultiplier": 0.8,
-          "executeThreshold": 0.3
-        },
-        "effects": [{ "type": "mod_combo", "params": { "count": 4 } }]
-      }
+      { "level": 1, "name": "百炼环首刀", "desc": "身前扇形挥砍。", "numericPatches": {}, "effects": [] },
+      { "level": 2, "name": "刃长", "desc": "攻击距离增加 30%。", "numericPatches": { "radiusMultiplier": 1.3 }, "effects": [] },
+      { "level": 3, "name": "断钢", "desc": "基础伤害提升 40%。", "numericPatches": { "damageMultiplier": 1.4 }, "effects": [] },
+      { "level": 4, "name": "满月", "desc": "挥砍角度扩大至身前 180 度。", "numericPatches": { "halfAngleRadians": 1.5707963267948966 }, "effects": [] },
+      { "level": 5, "name": "双斩", "desc": "追加反向挥砍。解锁处决。", "numericPatches": { "comboMax": 2, "comboInterval": 0.3, "executeThreshold": 0.2 }, "effects": [{ "type": "mod_combo", "params": { "count": 2 } }] },
+      { "level": 6, "name": "武帝·八荒斩", "desc": "四段大范围交替狂斩。", "numericPatches": { "comboMax": 4, "radiusMultiplier": 1.4, "damageMultiplier": 1.15, "attackIntervalMultiplier": 0.8, "executeThreshold": 0.3 }, "effects": [{ "type": "mod_combo", "params": { "count": 4 } }] }
+    ]
+  },
+  "spear": {
+    "id": "spear",
+    "name": "透阵龙胆枪",
+    "damage": 25,
+    "attackInterval": 1.5,
+    "range": 130,
+    "angle": 90,
+    "params": {
+      "length": 130,
+      "width": 20,
+      "knockbackDist": 30,
+      "spreadCount": 1,
+      "dashDuration": 0.2
+    },
+    "effects": [{ "type": "melee_arc", "params": { "shape": "line_rect" } }],
+    "levels": [
+      { "level": 1, "name": "透阵龙胆枪", "desc": "向最近敌人刺出贯穿直线气劲。", "numericPatches": {}, "effects": [] },
+      { "level": 2, "name": "枪芒", "desc": "攻击范围长宽增加 30%。", "numericPatches": { "lengthMultiplier": 1.3, "widthMultiplier": 1.3 }, "effects": [] },
+      { "level": 3, "name": "破军", "desc": "基础伤害 +40%，击退距离 +50%。", "numericPatches": { "damageMultiplier": 1.4, "knockbackMultiplier": 1.5 }, "effects": [{ "type": "mod_knockback", "params": { "multiplier": 1.5 } }] },
+      { "level": 4, "name": "无影", "desc": "攻击间隔减少 30%。", "numericPatches": { "attackIntervalMultiplier": 0.7 }, "effects": [] },
+      { "level": 5, "name": "龙胆", "desc": "出枪跟随冲刺，无敌0.2秒。解锁破甲。", "numericPatches": { "armorPiercePercent": 0.03 }, "effects": [{ "type": "mod_pierce", "params": { "trueDamageMaxHpRatio": 0.03, "dash": true } }] },
+      { "level": 6, "name": "神威·绝尘裂地", "desc": "前方扇形刺出五道枪影随同冲刺。", "numericPatches": { "spreadCount": 5, "armorPiercePercent": 0.05 }, "effects": [{ "type": "mod_pierce", "params": { "trueDamageMaxHpRatio": 0.05, "spreadCount": 5 } }] }
+    ]
+  },
+  "crossbow": {
+    "id": "crossbow",
+    "name": "霹雳惊弦弩",
+    "damage": 8,
+    "attackInterval": 0.8,
+    "range": 9999,
+    "params": {
+      "burstCount": 1,
+      "burstInterval": 0.3,
+      "basePierceCount": 0,
+      "projectileSpeed": 550,
+      "arrowLength": 18,
+      "arrowWidth": 3
+    },
+    "effects": [{ "type": "projectile", "params": { "homing": false } }],
+    "levels": [
+      { "level": 1, "name": "霹雳惊弦弩", "desc": "自动锁定最近敌人，发射高速实体箭矢。", "numericPatches": {}, "effects": [] },
+      { "level": 2, "name": "连弩", "desc": "每次攻击连续射出两箭，间隔0.3秒。", "numericPatches": { "burstCount": 2 }, "effects": [] },
+      { "level": 3, "name": "透甲", "desc": "箭矢获得 +1 次穿透能力。", "numericPatches": { "basePierceCount": 1 }, "effects": [{ "type": "mod_pierce", "params": { "count": 1 } }] },
+      { "level": 4, "name": "满弦", "desc": "攻击间隔减少 30%，箭矢飞行速度提升 50%。", "numericPatches": { "attackIntervalMultiplier": 0.7, "projectileSpeedMultiplier": 1.5 }, "effects": [] },
+      { "level": 5, "name": "奔雷", "desc": "箭矢命中在目标位置触发雷电AOE爆炸。", "numericPatches": {}, "effects": [{ "type": "area_pulse", "params": { "lightningAoe": true } }] },
+      { "level": 6, "name": "九霄天劫", "desc": "穿透耗尽或命中Boss时触发毁灭雷柱。", "numericPatches": { "lightningColumnRadiusMultiplier": 4, "stunDuration": 1 }, "effects": [{ "type": "area_pulse", "params": { "lightningColumn": true } }] }
+    ]
+  },
+  "qinggang": {
+    "id": "qinggang",
+    "name": "青釭游龙剑",
+    "damage": 20,
+    "attackInterval": 0.016,
+    "range": 150,
+    "params": {
+      "count": 1,
+      "baseOrbitRadius": 80,
+      "minRadius": 60,
+      "maxRadius": 150,
+      "rotationSpeedRadians": 2.5132741228718345,
+      "swordLength": 40,
+      "swordHalfWidth": 6,
+      "smoothSpeed": 2,
+      "lifesteal": 0
+    },
+    "effects": [{ "type": "orbit_entity", "params": { "dualOrbit": false } }],
+    "levels": [
+      { "level": 1, "name": "青釭游龙剑", "desc": "飞剑环绕周身，自动绞杀。", "numericPatches": {}, "effects": [] },
+      { "level": 2, "name": "分影", "desc": "飞剑数量 +1。", "numericPatches": { "countAdd": 1 }, "effects": [] },
+      { "level": 3, "name": "极速", "desc": "公转速度增加 50%。", "numericPatches": { "rotationSpeedMultiplier": 1.5 }, "effects": [] },
+      { "level": 4, "name": "剑阵", "desc": "飞剑数量 +2，范围扩大。", "numericPatches": { "countAdd": 2, "orbitRadiusMultiplier": 1.2 }, "effects": [] },
+      { "level": 5, "name": "饮血", "desc": "飞剑击杀敌人恢复 1 点生命。", "numericPatches": { "lifesteal": 1 }, "effects": [] },
+      { "level": 6, "name": "魏武·十面埋伏", "desc": "8把飞剑双轨环绕，动态收缩防御。", "numericPatches": { "count": 8 }, "effects": [{ "type": "orbit_entity", "params": { "dualOrbit": true } }] }
+    ]
+  },
+  "shield": {
+    "id": "shield",
+    "name": "八门金锁盾",
+    "damage": 45,
+    "attackInterval": 3.5,
+    "range": 144,
+    "params": {
+      "maxRadius": 144,
+      "baseKnockback": 60,
+      "chargeDuration": 0.5,
+      "explodeDuration": 0.15,
+      "chargeStartRadius": 20,
+      "chargeEndRadius": 40
+    },
+    "effects": [{ "type": "area_pulse", "params": { "phase": "charge_explode" } }],
+    "levels": [
+      { "level": 1, "name": "八门金锁盾", "desc": "以玩家为中心周期性爆发力场脉冲。", "numericPatches": {}, "effects": [] },
+      { "level": 2, "name": "阵扩", "desc": "脉冲最大扩张半径增加 30%。", "numericPatches": { "maxRadiusMultiplier": 1.3 }, "effects": [] },
+      { "level": 3, "name": "连垒", "desc": "爆发触发间隔减少 30%。", "numericPatches": { "attackIntervalMultiplier": 0.7 }, "effects": [] },
+      { "level": 4, "name": "反震", "desc": "脉冲基础伤害提升 100%，击退距离提升 50%。", "numericPatches": { "damageMultiplier": 2, "knockbackMultiplier": 1.5 }, "effects": [{ "type": "mod_knockback", "params": { "multiplier": 1.5 } }] },
+      { "level": 5, "name": "绝对壁垒", "desc": "脉冲扩张期间摧毁触碰到的敌方投射物。", "numericPatches": {}, "effects": [{ "type": "area_pulse", "params": { "destroyProjectiles": true } }] },
+      { "level": 6, "name": "玄武·铜雀天牢", "desc": "脉冲达到最大半径后留下持续 3 秒环形火墙。", "numericPatches": { "fireRingDuration": 3, "burnDpsMultiplier": 2 }, "effects": [{ "type": "persistent_area", "params": { "fireRing": true } }] }
+    ]
+  },
+  "taiping": {
+    "id": "taiping",
+    "name": "太平要术·风火",
+    "damage": 20,
+    "attackInterval": 5,
+    "range": 60,
+    "params": {
+      "baseRadius": 60,
+      "baseLifetime": 3,
+      "baseTickInterval": 0.2,
+      "maxTornados": 1,
+      "moveSpeed": 20,
+      "massiveStormRadiusMultiplier": 5,
+      "massiveStormTickMultiplier": 0.3,
+      "massiveStormDamageMultiplier": 2
+    },
+    "effects": [{ "type": "persistent_area", "params": { "kind": "fire_tornado" } }],
+    "levels": [
+      { "level": 1, "name": "太平要术·风火", "desc": "在玩家脚下召唤一团停留火焰龙卷风。", "numericPatches": {}, "effects": [] },
+      { "level": 2, "name": "风火增幅", "desc": "龙卷风半径增加 30%，持续时间延长 30%。", "numericPatches": { "radiusMultiplier": 1.3, "lifetimeMultiplier": 1.3 }, "effects": [] },
+      { "level": 3, "name": "火势凶猛", "desc": "伤害 Tick 频率加快 50%。", "numericPatches": { "tickIntervalMultiplier": 0.5 }, "effects": [] },
+      { "level": 4, "name": "燎原", "desc": "同时存在龙卷风数量上限 +1。", "numericPatches": { "maxTornados": 2 }, "effects": [] },
+      { "level": 5, "name": "灵动", "desc": "龙卷风自动缓慢向最近敌人移动索敌。", "numericPatches": {}, "effects": [{ "type": "persistent_area", "params": { "autoSeek": true } }] },
+      { "level": 6, "name": "黄天·焚世烈火", "desc": "同时存在上限 +2，并额外召唤聚变龙卷风。", "numericPatches": { "maxTornados": 4 }, "effects": [{ "type": "persistent_area", "params": { "proximityStorm": true } }] }
     ]
   }
 }
