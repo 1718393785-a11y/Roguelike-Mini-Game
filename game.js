@@ -5054,13 +5054,7 @@ class GameManager {
         }
     }
 
-    update(deltaTime) {
-        if (this.gameState !== GAME_STATE.PLAYING) return;
-
-        this.updateSpawnSystem(deltaTime);
-        this.updateMovementSystem(deltaTime);
-        this.updateDamageSystem(deltaTime);
-
+    updateProjectileSystem(deltaTime) {
         // 更新所有子弹
         for (let i = this.projectiles.length - 1; i >= 0; i--) {
             const projectile = this.projectiles[i];
@@ -5139,21 +5133,21 @@ class GameManager {
                                 this.trySpawnPickup(enemy);
                                 this.enemies.splice(originalIdx, 1);
                                 this.victory();
-                                return; // 终止后续更新
+                                return false; // 终止后续更新
                             }
                             // 5分钟最终Boss死亡，直接通关
                             if (enemy.isLevelBoss && originalIdx >= 0) {
                                 this.trySpawnPickup(enemy);
                                 this.enemies.splice(originalIdx, 1);
                                 this.victory();
-                                return;
+                                return false;
                             }
                             // 关卡Boss死亡
                             if (enemy.isBoss && originalIdx >= 0) {
                                 if (this.currentStage >= STAGES.length - 1) {
                                     // 最终Boss死亡，通关！
                                     this.victory();
-                                    return;
+                                    return false;
                                 } else {
                                     // 下一关
                                     this.currentStage++;
@@ -5180,6 +5174,17 @@ class GameManager {
                 }
             }
         }
+
+        return true;
+    }
+
+    update(deltaTime) {
+        if (this.gameState !== GAME_STATE.PLAYING) return;
+
+        this.updateSpawnSystem(deltaTime);
+        this.updateMovementSystem(deltaTime);
+        this.updateDamageSystem(deltaTime);
+        if (!this.updateProjectileSystem(deltaTime)) return;
 
         // 更新闪电视觉特效（纯视觉，自动过期消失）
         for (let i = this.lightningEffects.length - 1; i >= 0; i--) {
