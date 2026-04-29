@@ -3694,13 +3694,85 @@ class LegacyNoopSystem {
     update(_game, _deltaTime) {}
 }
 
-class LegacyMonolithSimulationSystem {
+class LegacySpawnSystem {
     constructor() {
         this.name = 'SpawnSystem';
     }
 
     update(game, deltaTime) {
-        game.update(deltaTime);
+        game.updateSpawnSystem(deltaTime);
+    }
+}
+
+class LegacyMovementSystem {
+    constructor() {
+        this.name = 'MovementSystem';
+    }
+
+    update(game, deltaTime) {
+        game.updateMovementSystem(deltaTime);
+    }
+}
+
+class LegacyDamageSystem {
+    constructor() {
+        this.name = 'DamageSystem';
+    }
+
+    update(game, deltaTime) {
+        game.updateDamageSystem(deltaTime);
+        return game.updateProjectileSystem(deltaTime);
+    }
+}
+
+class LegacyAnimationSystem {
+    constructor() {
+        this.name = 'AnimationSystem';
+    }
+
+    update(game, deltaTime) {
+        game.updateAnimationSystem(deltaTime);
+    }
+}
+
+class LegacyCollisionSystem {
+    constructor() {
+        this.name = 'CollisionSystem';
+    }
+
+    update(game, deltaTime) {
+        return game.updateCollisionSystem(deltaTime);
+    }
+}
+
+class LegacyPlayerRecoverySystem {
+    constructor() {
+        this.name = 'PlayerRecoverySystem';
+    }
+
+    update(game, deltaTime) {
+        game.updatePlayerRecoverySystem(deltaTime);
+    }
+}
+
+class LegacyPickupSystem {
+    constructor() {
+        this.name = 'PickupSystem';
+    }
+
+    update(game, deltaTime) {
+        game.updatePickupSystem(deltaTime);
+    }
+}
+
+class LegacyWeaponSystem {
+    constructor() {
+        this.name = 'WeaponSystem';
+    }
+
+    update(game, deltaTime) {
+        game.updateWeaponSystem(deltaTime);
+        game.updateLevelProgressionSystem();
     }
 }
 
@@ -3716,13 +3788,14 @@ class LegacyCanvasRenderSystem {
 
 const LEGACY_SYSTEM_EXECUTION_ORDER = [
     'InputSystem',
-    'MovementSystem',
-    'CollisionSystem',
-    'WeaponSystem',
-    'DamageSystem',
     'SpawnSystem',
-    'PickupSystem',
+    'MovementSystem',
+    'DamageSystem',
     'AnimationSystem',
+    'CollisionSystem',
+    'PlayerRecoverySystem',
+    'PickupSystem',
+    'WeaponSystem',
     'LegacyCanvasRenderSystem'
 ];
 
@@ -3730,13 +3803,14 @@ class LegacySystemPipeline {
     constructor() {
         const systems = [
             new LegacyInputSystem(),
-            new LegacyNoopSystem('MovementSystem'),
-            new LegacyNoopSystem('CollisionSystem'),
-            new LegacyNoopSystem('WeaponSystem'),
-            new LegacyNoopSystem('DamageSystem'),
-            new LegacyMonolithSimulationSystem(),
-            new LegacyNoopSystem('PickupSystem'),
-            new LegacyNoopSystem('AnimationSystem'),
+            new LegacySpawnSystem(),
+            new LegacyMovementSystem(),
+            new LegacyDamageSystem(),
+            new LegacyAnimationSystem(),
+            new LegacyCollisionSystem(),
+            new LegacyPlayerRecoverySystem(),
+            new LegacyPickupSystem(),
+            new LegacyWeaponSystem(),
             new LegacyCanvasRenderSystem()
         ];
         this.systems = systems.sort((a, b) => {
@@ -3745,8 +3819,13 @@ class LegacySystemPipeline {
     }
 
     update(game, deltaTime) {
+        let haltLogic = false;
         for (const system of this.systems) {
-            system.update(game, deltaTime);
+            if (haltLogic && system.name !== 'LegacyCanvasRenderSystem') continue;
+            const shouldContinue = system.update(game, deltaTime);
+            if (shouldContinue === false) {
+                haltLogic = true;
+            }
         }
     }
 }
