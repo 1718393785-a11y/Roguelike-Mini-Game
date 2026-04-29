@@ -5018,12 +5018,7 @@ class GameManager {
         this.rebuildSpatialGrid();
     }
 
-    update(deltaTime) {
-        if (this.gameState !== GAME_STATE.PLAYING) return;
-
-        this.updateSpawnSystem(deltaTime);
-        this.updateMovementSystem(deltaTime);
-
+    updateDamageSystem(deltaTime) {
         // 更新火焰区域（王植）
         for (let i = this.fireAreas.length - 1; i >= 0; i--) {
             const fire = this.fireAreas[i];
@@ -5057,6 +5052,14 @@ class GameManager {
                 this.specialAreas.splice(i, 1);
             }
         }
+    }
+
+    update(deltaTime) {
+        if (this.gameState !== GAME_STATE.PLAYING) return;
+
+        this.updateSpawnSystem(deltaTime);
+        this.updateMovementSystem(deltaTime);
+        this.updateDamageSystem(deltaTime);
 
         // 更新所有子弹
         for (let i = this.projectiles.length - 1; i >= 0; i--) {
