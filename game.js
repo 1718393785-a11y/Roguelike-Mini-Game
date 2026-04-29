@@ -4929,9 +4929,7 @@ class GameManager {
         }
     }
 
-    update(deltaTime) {
-        if (this.gameState !== GAME_STATE.PLAYING) return;
-
+    updateSpawnSystem(deltaTime) {
         this.gameTime += deltaTime;
         const currentMinute = Math.floor(this.gameTime / 60);
 
@@ -5004,6 +5002,12 @@ class GameManager {
             const y = margin + GameRuntime.random() * (this.canvas.height - margin * 2);
             this.enemies.push(new DestructibleProp(x, y));
         }
+    }
+
+    update(deltaTime) {
+        if (this.gameState !== GAME_STATE.PLAYING) return;
+
+        this.updateSpawnSystem(deltaTime);
 
         // 更新所有敌人
         for (let i = this.enemies.length - 1; i >= 0; i--) {
