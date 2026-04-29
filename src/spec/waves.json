@@ -1,4 +1,70 @@
 {
+  "timeline": {
+    "durationMinutes": 10,
+    "specialMinuteStart": 1,
+    "specialMinuteEnd": 10,
+    "miniBossOddMinutes": true,
+    "stageBossEvenMinutes": true,
+    "finalCutsceneBossIndex": 4,
+    "destructiblePropsPerMinute": 1,
+    "initialDestructibleProps": 2,
+    "cutsceneDuration": 5
+  },
+  "miniBoss": {
+    "baseHp": 400,
+    "hpPerMinute": 200,
+    "hpPerMinuteSquared": 40,
+    "playerLevelHpMultiplier": 0.15,
+    "spawnOffset": 200,
+    "speedMultiplier": 1.2,
+    "size": 50,
+    "resonanceDrop": 10
+  },
+  "tigerGuards": {
+    "triggerMinutes": [3, 6, 9],
+    "orbitRadiusBase": 180,
+    "orbitRadiusPerMinuteAfter3": 15,
+    "bodySpacing": 38,
+    "spawnRadiusPadding": 200,
+    "baseHp": 5,
+    "hpPerMinute": 2,
+    "hpPerStage": 2,
+    "playerLevelHpMultiplier": 0.15
+  },
+  "swarm": {
+    "startMinute": 1,
+    "endMinute": 9,
+    "baseLayers": 3,
+    "layerPerMinutes": 2,
+    "maxLayers": 6,
+    "countPerLayerBase": 20,
+    "countPerLayerRandom": 10,
+    "spacingX": 30,
+    "spacingY": 40,
+    "depthOffsetBase": 50,
+    "jitter": 5,
+    "cavalryMainChance": 0.5,
+    "cavalryChanceWhenMain": 0.8,
+    "cavalryChanceWhenSupport": 0.2,
+    "cavalryBaseHp": 3,
+    "cavalryHpPerWave": 1,
+    "cavalrySpeedBase": 2.5,
+    "cavalrySpeedRandom": 0.5,
+    "spearmanBaseHp": 5,
+    "spearmanHpPerWave": 2,
+    "spearmanSpeedBase": 2,
+    "spearmanSpeedRandom": 0.2,
+    "playerLevelHpMultiplier": 0.15,
+    "mobSize": 16,
+    "cavalryExp": 1,
+    "spearmanExp": 2
+  },
+  "finalBoss": {
+    "phantomCount": 4,
+    "phantomDistance": 150,
+    "phantomHpMultiplier": 0.4,
+    "phantomSize": 30
+  },
   "stages": [
     {
       "name": "东岭关",
