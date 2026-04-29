@@ -1,0 +1,12 @@
+{
+  "name": "zero-downtime-refactor",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "baseline": "node tools/run-baseline.mjs --browser chrome"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.56.1"
+  }
+}
