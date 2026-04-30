@@ -71,7 +71,7 @@ function assertWeaponEffectWhitelist() {
 }
 
 function extractStringArray(text, constName) {
-  const match = text.match(new RegExp(`const\\s+${constName}\\s*=\\s*\\[([\\s\\S]*?)\\]`));
+  const match = text.match(new RegExp(`const\\s+${constName}\\s*=\\s*(?:new\\s+Set\\()?\\[([\\s\\S]*?)\\]`));
   if (!match) return null;
   return [...match[1].matchAll(/'([^']+)'/g)].map(item => item[1]);
 }
@@ -90,9 +90,21 @@ function assertSystemOrderMatchesRuntime() {
 
 function assertGenericWeaponMigrationStatus() {
   const text = readText(path.join('src', 'effects', 'migrationStatus.ts'));
+  const runtimeText = readText('game.js');
+  const runtimeMigrated = extractStringArray(runtimeText, 'GENERIC_WEAPON_MIGRATION_IDS');
   for (const weaponId of ['saber', 'spear', 'crossbow', 'qinggang', 'shield', 'taiping']) {
     if (!text.includes(`${weaponId}:`)) {
       fail(`Generic weapon migration status is missing ${weaponId}`);
+    }
+  }
+  if (!runtimeMigrated) {
+    fail('Could not read GENERIC_WEAPON_MIGRATION_IDS from game.js');
+    return;
+  }
+  for (const weaponId of runtimeMigrated) {
+    const statusPattern = new RegExp(`${weaponId}:\\s*\\{[\\s\\S]*?scalarConfig:\\s*true`);
+    if (!statusPattern.test(text)) {
+      fail(`Runtime migrated weapon ${weaponId} is not marked scalarConfig=true`);
     }
   }
 }
