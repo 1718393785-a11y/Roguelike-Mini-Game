@@ -530,7 +530,7 @@ function resolveWeaponSpecNumberWithAliases(config, level, key, fallback, aliase
     return value;
 }
 
-const GENERIC_WEAPON_MIGRATION_IDS = new Set(['saber', 'spear', 'crossbow', 'shield', 'taiping']);
+const GENERIC_WEAPON_MIGRATION_IDS = new Set(['saber', 'spear', 'crossbow', 'qinggang', 'shield', 'taiping']);
 
 function isGenericWeaponMigrated(weaponType) {
     return FEATURE_FLAGS.ENABLE_GENERIC_WEAPON && GENERIC_WEAPON_MIGRATION_IDS.has(weaponType);
@@ -597,6 +597,21 @@ function applyGenericWeaponScalarMigration(weapon) {
         weapon.maxTornados = resolveWeaponSpecNumber(spec, level, 'maxTornados', weapon.maxTornados);
         weapon.autoSeek = level >= 5;
         weapon.hasProximityStorm = level >= 6;
+    } else if (weapon.type === 'qinggang') {
+        weapon.baseDamage = resolveWeaponSpecNumber(spec, level, 'damage', spec.damage);
+        weapon.baseAttackInterval = resolveWeaponSpecNumber(spec, level, 'attackInterval', spec.attackInterval);
+        weapon.count = resolveWeaponSpecNumber(spec, level, 'count', weapon.count);
+        weapon.baseOrbitRadius = resolveWeaponSpecNumber(spec, level, 'baseOrbitRadius', weapon.baseOrbitRadius);
+        weapon.minRadius = resolveWeaponSpecNumber(spec, level, 'minRadius', weapon.minRadius);
+        weapon.maxRadius = resolveWeaponSpecNumber(spec, level, 'maxRadius', weapon.maxRadius);
+        weapon.rotationSpeed = resolveWeaponSpecNumberWithAliases(spec, level, 'rotationSpeedRadians', weapon.rotationSpeed, {
+            multiplier: 'rotationSpeedMultiplier'
+        });
+        weapon.lifesteal = resolveWeaponSpecNumber(spec, level, 'lifesteal', weapon.lifesteal);
+        weapon.swordLength = resolveWeaponSpecNumber(spec, level, 'swordLength', weapon.swordLength);
+        weapon.swordHalfWidth = resolveWeaponSpecNumber(spec, level, 'swordHalfWidth', weapon.swordHalfWidth);
+        weapon.smoothSpeed = resolveWeaponSpecNumber(spec, level, 'smoothSpeed', weapon.smoothSpeed);
+        weapon.dualOrbit = level >= 6;
     }
 }
 

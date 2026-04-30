@@ -630,7 +630,7 @@
           {
             "type": "qinggang",
             "level": 1,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 0.016,
@@ -664,7 +664,7 @@
           {
             "type": "qinggang",
             "level": 2,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 0.016,
@@ -698,7 +698,7 @@
           {
             "type": "qinggang",
             "level": 3,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 0.016,
@@ -732,7 +732,7 @@
           {
             "type": "qinggang",
             "level": 4,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 0.016,
@@ -766,7 +766,7 @@
           {
             "type": "qinggang",
             "level": 5,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 0.016,
@@ -800,7 +800,7 @@
           {
             "type": "qinggang",
             "level": 6,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 0.016,
