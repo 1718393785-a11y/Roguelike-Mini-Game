@@ -1344,6 +1344,7 @@ class Spear extends Weapon {
             enemies,
             stab.hitRecords
         ) : [];
+        const genericHitIdSet = genericShadowEnabled ? new Set(genericShadowHits) : null;
         const legacyHits = [];
 
         // AABB碰撞检查：检查每个敌人是否在矩形内（无限穿透）
@@ -1356,11 +1357,15 @@ class Spear extends Weapon {
             const dyEn = enemy.y - playerY;
             const projLength = dxEn * dirX + dyEn * dirY;
             const projWidth = dxEn * (-dirY) + dyEn * dirX;
+            const legacyShouldHit = projLength >= 0 && projLength <= effectiveLength && Math.abs(projWidth) <= this.width / 2 + enemy.size / 2;
 
-            if (projLength >= 0 && projLength <= effectiveLength && Math.abs(projWidth) <= this.width / 2 + enemy.size / 2) {
+            if (legacyShouldHit) {
                 if (genericShadowEnabled) {
                     legacyHits.push(getDebugEntityId(enemy));
                 }
+            }
+            const shouldHit = genericShadowEnabled ? genericHitIdSet.has(getDebugEntityId(enemy)) : legacyShouldHit;
+            if (shouldHit) {
                 enemy.hp -= effectiveDamage;
                 stab.hitRecords.add(enemy);
 
