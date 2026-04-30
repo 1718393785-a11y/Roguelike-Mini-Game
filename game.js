@@ -1559,16 +1559,20 @@ class Crossbow extends Weapon {
             }
         }
 
-        let angle;
+        let legacyAngle;
         if (closestInAngle) {
             // 前方扇形范围内有敌人，瞄准最近的那个
             const dx = closestInAngle.x - player.x;
             const dy = closestInAngle.y - player.y;
-            angle = Math.atan2(dy, dx);
+            legacyAngle = Math.atan2(dy, dx);
         } else {
             // 前方没有敌人，严格使用玩家面向方向
-            angle = playerAngle;
+            legacyAngle = playerAngle;
         }
+        const fireTarget = genericShadowEnabled ? genericTarget : closestInAngle;
+        const angle = fireTarget
+            ? Math.atan2(fireTarget.y - player.y, fireTarget.x - player.x)
+            : playerAngle;
         if (genericShadowEnabled) {
             const genericAngle = genericTarget
                 ? Math.atan2(genericTarget.y - player.y, genericTarget.x - player.x)
@@ -1580,7 +1584,7 @@ class Crossbow extends Weapon {
                 genericHits: [genericTarget ? getDebugEntityId(genericTarget) : 0],
                 legacyHits: [closestInAngle ? getDebugEntityId(closestInAngle) : 0],
                 genericValue: genericAngle,
-                legacyValue: angle,
+                legacyValue: legacyAngle,
                 epsilon: 1e-12
             });
         }
