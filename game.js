@@ -530,7 +530,7 @@ function resolveWeaponSpecNumberWithAliases(config, level, key, fallback, aliase
     return value;
 }
 
-const GENERIC_WEAPON_MIGRATION_IDS = new Set(['saber', 'spear']);
+const GENERIC_WEAPON_MIGRATION_IDS = new Set(['saber', 'spear', 'crossbow']);
 
 function isGenericWeaponMigrated(weaponType) {
     return FEATURE_FLAGS.ENABLE_GENERIC_WEAPON && GENERIC_WEAPON_MIGRATION_IDS.has(weaponType);
@@ -560,6 +560,15 @@ function applyGenericWeaponScalarMigration(weapon) {
         weapon.spreadCount = resolveWeaponSpecNumber(spec, level, 'spreadCount', weapon.spreadCount);
         weapon.hasDash = level >= 5;
         weapon.isUltimate = level >= 6;
+    } else if (weapon.type === 'crossbow') {
+        weapon.baseDamage = resolveWeaponSpecNumber(spec, level, 'damage', spec.damage);
+        weapon.baseAttackInterval = resolveWeaponSpecNumber(spec, level, 'attackInterval', spec.attackInterval);
+        weapon.burstCount = resolveWeaponSpecNumber(spec, level, 'burstCount', weapon.burstCount);
+        weapon.burstInterval = resolveWeaponSpecNumber(spec, level, 'burstInterval', weapon.burstInterval);
+        weapon.basePierceCount = resolveWeaponSpecNumber(spec, level, 'basePierceCount', weapon.basePierceCount);
+        weapon.projectileSpeed = resolveWeaponSpecNumber(spec, level, 'projectileSpeed', weapon.projectileSpeed);
+        weapon.hasLightningAOE = level >= 5;
+        weapon.hasLightningColumn = level >= 6;
     }
 }
 
