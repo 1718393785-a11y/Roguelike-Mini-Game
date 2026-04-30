@@ -2,7 +2,7 @@ export type SystemName = (typeof SYSTEM_EXECUTION_ORDER)[number];
 
 export interface GameSystem<TWorld = unknown> {
   readonly name: SystemName;
-  update(world: TWorld, deltaTime: number): void;
+  update(world: TWorld, deltaTime: number): void | boolean;
 }
 
 export const SYSTEM_EXECUTION_ORDER = [

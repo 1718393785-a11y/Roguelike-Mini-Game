@@ -7,7 +7,7 @@ export interface MovementSystemWorld {
 }
 
 export interface CollisionSystemWorld {
-  updateCollision(deltaTime: number): void;
+  updateCollision(deltaTime: number): void | boolean;
 }
 
 export interface WeaponSystemWorld {
@@ -15,7 +15,7 @@ export interface WeaponSystemWorld {
 }
 
 export interface DamageSystemWorld {
-  updateDamage(deltaTime: number): void;
+  updateDamage(deltaTime: number): void | boolean;
 }
 
 export interface SpawnSystemWorld {

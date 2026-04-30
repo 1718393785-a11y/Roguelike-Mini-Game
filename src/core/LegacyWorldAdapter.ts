@@ -14,6 +14,15 @@ export interface LegacyGameManagerPort {
   readonly gameState?: string | number;
   handleInput(deltaTime: number): void;
   update(deltaTime: number): void;
+  updateSpawnSystem?(deltaTime: number): void;
+  updateMovementSystem?(deltaTime: number): void;
+  updateDamageSystem?(deltaTime: number): void;
+  updateProjectileSystem?(deltaTime: number): void | boolean;
+  updateAnimationSystem?(deltaTime: number): void;
+  updateCollisionSystem?(deltaTime: number): void | boolean;
+  updatePickupSystem?(deltaTime: number): void;
+  updateWeaponSystem?(deltaTime: number): void;
+  updateLevelProgressionSystem?(): void;
   render(deltaTime: number): void;
 }
 
@@ -35,23 +44,41 @@ export class LegacyWorldAdapter
     this.legacy.handleInput(deltaTime);
   }
 
-  updateMovement(_deltaTime: number): void {}
+  updateMovement(deltaTime: number): void {
+    this.legacy.updateMovementSystem?.(deltaTime);
+  }
 
-  updateCollision(_deltaTime: number): void {}
+  updateCollision(deltaTime: number): void | boolean {
+    return this.legacy.updateCollisionSystem?.(deltaTime);
+  }
 
-  updateWeapons(_deltaTime: number): void {}
+  updateWeapons(deltaTime: number): void {
+    this.legacy.updateWeaponSystem?.(deltaTime);
+    this.legacy.updateLevelProgressionSystem?.();
+  }
 
-  updateDamage(_deltaTime: number): void {}
+  updateDamage(deltaTime: number): void | boolean {
+    this.legacy.updateDamageSystem?.(deltaTime);
+    return this.legacy.updateProjectileSystem?.(deltaTime);
+  }
 
   updateSpawn(deltaTime: number): void {
     if (this.legacy.gameState === 1 || this.legacy.gameState === 'playing' || this.legacy.gameState === 'PLAYING') {
-      this.legacy.update(deltaTime);
+      if (this.legacy.updateSpawnSystem) {
+        this.legacy.updateSpawnSystem(deltaTime);
+      } else {
+        this.legacy.update(deltaTime);
+      }
     }
   }
 
-  updatePickups(_deltaTime: number): void {}
+  updatePickups(deltaTime: number): void {
+    this.legacy.updatePickupSystem?.(deltaTime);
+  }
 
-  updateAnimations(_deltaTime: number): void {}
+  updateAnimations(deltaTime: number): void {
+    this.legacy.updateAnimationSystem?.(deltaTime);
+  }
 
   renderLegacyCanvas(deltaTime: number): void {
     this.legacy.render(deltaTime);

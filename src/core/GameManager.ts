@@ -11,8 +11,13 @@ export class GameManager<TWorld> {
   }
 
   update(world: TWorld, deltaTime: number): void {
+    let haltLogic = false;
     for (const system of this.systems) {
-      system.update(world, deltaTime);
+      if (haltLogic && system.name !== 'LegacyCanvasRenderSystem') continue;
+      const shouldContinue = system.update(world, deltaTime);
+      if (shouldContinue === false) {
+        haltLogic = true;
+      }
     }
   }
 }
