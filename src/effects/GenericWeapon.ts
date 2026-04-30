@@ -6,6 +6,7 @@ export interface GenericWeaponRuntimeStats {
   readonly level: number;
   readonly damage: number;
   readonly attackInterval: number;
+  readonly dpsEstimate: number;
   readonly elapsed: number;
 }
 
@@ -37,17 +38,28 @@ export class GenericWeapon {
   }
 
   consumeAttackReady(): boolean {
-    const interval = this.getNumber('attackInterval', this.config.attackInterval);
+    const interval = this.resolveNumber('attackInterval', this.config.attackInterval);
     if (this.elapsed < interval) return false;
     this.elapsed -= interval;
     return true;
   }
 
-  getNumber(key: string, fallback: number): number {
-    const patched = this.levelConfig.numericPatches[key];
-    if (typeof patched === 'number') return patched;
+  resolveNumber(key: string, fallback: number): number {
     const param = this.config.params[key];
-    return typeof param === 'number' ? param : fallback;
+    let value = typeof param === 'number' ? param : fallback;
+    const direct = this.levelConfig.numericPatches[key];
+    if (typeof direct === 'number') {
+      value = direct;
+    }
+    const additive = this.levelConfig.numericPatches[`${key}Add`];
+    if (typeof additive === 'number') {
+      value += additive;
+    }
+    const multiplier = this.levelConfig.numericPatches[`${key}Multiplier`];
+    if (typeof multiplier === 'number') {
+      value *= multiplier;
+    }
+    return value;
   }
 
   getEffects(): readonly WeaponEffectType[] {
@@ -55,11 +67,14 @@ export class GenericWeapon {
   }
 
   snapshot(): GenericWeaponRuntimeStats {
+    const damage = this.resolveNumber('damage', this.config.damage);
+    const attackInterval = this.resolveNumber('attackInterval', this.config.attackInterval);
     return {
       id: this.id,
       level: this.level,
-      damage: this.getNumber('damage', this.config.damage),
-      attackInterval: this.getNumber('attackInterval', this.config.attackInterval),
+      damage,
+      attackInterval,
+      dpsEstimate: attackInterval > 0 ? damage / attackInterval : 0,
       elapsed: this.elapsed,
     };
   }

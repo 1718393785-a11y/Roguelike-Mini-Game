@@ -1,0 +1,483 @@
+{
+  "type": "generic-weapon-validation",
+  "fixedDelta": 0.016666666666666666,
+  "seconds": 60,
+  "weapons": [
+    {
+      "id": "saber",
+      "levels": [
+        {
+          "id": "saber",
+          "level": 1,
+          "damage": 18,
+          "attackInterval": 1.5,
+          "dpsEstimate": 12,
+          "elapsed": 1.4999999999999822,
+          "attacksPerMinute": 39,
+          "effects": [
+            "melee_arc"
+          ]
+        },
+        {
+          "id": "saber",
+          "level": 2,
+          "damage": 18,
+          "attackInterval": 1.5,
+          "dpsEstimate": 12,
+          "elapsed": 1.4999999999999822,
+          "attacksPerMinute": 39,
+          "effects": [
+            "melee_arc"
+          ]
+        },
+        {
+          "id": "saber",
+          "level": 3,
+          "damage": 25.2,
+          "attackInterval": 1.5,
+          "dpsEstimate": 16.8,
+          "elapsed": 1.4999999999999822,
+          "attacksPerMinute": 39,
+          "effects": [
+            "melee_arc"
+          ]
+        },
+        {
+          "id": "saber",
+          "level": 4,
+          "damage": 18,
+          "attackInterval": 1.5,
+          "dpsEstimate": 12,
+          "elapsed": 1.4999999999999822,
+          "attacksPerMinute": 39,
+          "effects": [
+            "melee_arc"
+          ]
+        },
+        {
+          "id": "saber",
+          "level": 5,
+          "damage": 18,
+          "attackInterval": 1.5,
+          "dpsEstimate": 12,
+          "elapsed": 1.4999999999999822,
+          "attacksPerMinute": 39,
+          "effects": [
+            "melee_arc",
+            "mod_combo"
+          ]
+        },
+        {
+          "id": "saber",
+          "level": 6,
+          "damage": 20.7,
+          "attackInterval": 1.2000000000000002,
+          "dpsEstimate": 17.249999999999996,
+          "elapsed": 3.3084646133829665e-14,
+          "attacksPerMinute": 50,
+          "effects": [
+            "melee_arc",
+            "mod_combo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spear",
+      "levels": [
+        {
+          "id": "spear",
+          "level": 1,
+          "damage": 25,
+          "attackInterval": 1.5,
+          "dpsEstimate": 16.666666666666668,
+          "elapsed": 1.4999999999999822,
+          "attacksPerMinute": 39,
+          "effects": [
+            "melee_arc"
+          ]
+        },
+        {
+          "id": "spear",
+          "level": 2,
+          "damage": 25,
+          "attackInterval": 1.5,
+          "dpsEstimate": 16.666666666666668,
+          "elapsed": 1.4999999999999822,
+          "attacksPerMinute": 39,
+          "effects": [
+            "melee_arc"
+          ]
+        },
+        {
+          "id": "spear",
+          "level": 3,
+          "damage": 35,
+          "attackInterval": 1.5,
+          "dpsEstimate": 23.333333333333332,
+          "elapsed": 1.4999999999999822,
+          "attacksPerMinute": 39,
+          "effects": [
+            "melee_arc",
+            "mod_knockback"
+          ]
+        },
+        {
+          "id": "spear",
+          "level": 4,
+          "damage": 25,
+          "attackInterval": 1.0499999999999998,
+          "dpsEstimate": 23.809523809523814,
+          "elapsed": 0.15000000000008837,
+          "attacksPerMinute": 57,
+          "effects": [
+            "melee_arc"
+          ]
+        },
+        {
+          "id": "spear",
+          "level": 5,
+          "damage": 25,
+          "attackInterval": 1.5,
+          "dpsEstimate": 16.666666666666668,
+          "elapsed": 1.4999999999999822,
+          "attacksPerMinute": 39,
+          "effects": [
+            "melee_arc",
+            "mod_pierce"
+          ]
+        },
+        {
+          "id": "spear",
+          "level": 6,
+          "damage": 25,
+          "attackInterval": 1.5,
+          "dpsEstimate": 16.666666666666668,
+          "elapsed": 1.4999999999999822,
+          "attacksPerMinute": 39,
+          "effects": [
+            "melee_arc",
+            "mod_pierce"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crossbow",
+      "levels": [
+        {
+          "id": "crossbow",
+          "level": 1,
+          "damage": 8,
+          "attackInterval": 0.8,
+          "dpsEstimate": 10,
+          "elapsed": 6.650235917504688e-14,
+          "attacksPerMinute": 75,
+          "effects": [
+            "projectile"
+          ]
+        },
+        {
+          "id": "crossbow",
+          "level": 2,
+          "damage": 8,
+          "attackInterval": 0.8,
+          "dpsEstimate": 10,
+          "elapsed": 6.650235917504688e-14,
+          "attacksPerMinute": 75,
+          "effects": [
+            "projectile"
+          ]
+        },
+        {
+          "id": "crossbow",
+          "level": 3,
+          "damage": 8,
+          "attackInterval": 0.8,
+          "dpsEstimate": 10,
+          "elapsed": 6.650235917504688e-14,
+          "attacksPerMinute": 75,
+          "effects": [
+            "projectile",
+            "mod_pierce"
+          ]
+        },
+        {
+          "id": "crossbow",
+          "level": 4,
+          "damage": 8,
+          "attackInterval": 0.5599999999999999,
+          "dpsEstimate": 14.285714285714286,
+          "elapsed": 0.08000000000002606,
+          "attacksPerMinute": 107,
+          "effects": [
+            "projectile"
+          ]
+        },
+        {
+          "id": "crossbow",
+          "level": 5,
+          "damage": 8,
+          "attackInterval": 0.8,
+          "dpsEstimate": 10,
+          "elapsed": 6.650235917504688e-14,
+          "attacksPerMinute": 75,
+          "effects": [
+            "projectile",
+            "area_pulse"
+          ]
+        },
+        {
+          "id": "crossbow",
+          "level": 6,
+          "damage": 8,
+          "attackInterval": 0.8,
+          "dpsEstimate": 10,
+          "elapsed": 6.650235917504688e-14,
+          "attacksPerMinute": 75,
+          "effects": [
+            "projectile",
+            "area_pulse"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qinggang",
+      "levels": [
+        {
+          "id": "qinggang",
+          "level": 1,
+          "damage": 20,
+          "attackInterval": 0.016,
+          "dpsEstimate": 1250,
+          "elapsed": 2.3999999999998622,
+          "attacksPerMinute": 3600,
+          "effects": [
+            "orbit_entity"
+          ]
+        },
+        {
+          "id": "qinggang",
+          "level": 2,
+          "damage": 20,
+          "attackInterval": 0.016,
+          "dpsEstimate": 1250,
+          "elapsed": 2.3999999999998622,
+          "attacksPerMinute": 3600,
+          "effects": [
+            "orbit_entity"
+          ]
+        },
+        {
+          "id": "qinggang",
+          "level": 3,
+          "damage": 20,
+          "attackInterval": 0.016,
+          "dpsEstimate": 1250,
+          "elapsed": 2.3999999999998622,
+          "attacksPerMinute": 3600,
+          "effects": [
+            "orbit_entity"
+          ]
+        },
+        {
+          "id": "qinggang",
+          "level": 4,
+          "damage": 20,
+          "attackInterval": 0.016,
+          "dpsEstimate": 1250,
+          "elapsed": 2.3999999999998622,
+          "attacksPerMinute": 3600,
+          "effects": [
+            "orbit_entity"
+          ]
+        },
+        {
+          "id": "qinggang",
+          "level": 5,
+          "damage": 20,
+          "attackInterval": 0.016,
+          "dpsEstimate": 1250,
+          "elapsed": 2.3999999999998622,
+          "attacksPerMinute": 3600,
+          "effects": [
+            "orbit_entity"
+          ]
+        },
+        {
+          "id": "qinggang",
+          "level": 6,
+          "damage": 20,
+          "attackInterval": 0.016,
+          "dpsEstimate": 1250,
+          "elapsed": 2.3999999999998622,
+          "attacksPerMinute": 3600,
+          "effects": [
+            "orbit_entity",
+            "orbit_entity"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shield",
+      "levels": [
+        {
+          "id": "shield",
+          "level": 1,
+          "damage": 45,
+          "attackInterval": 3.5,
+          "dpsEstimate": 12.857142857142858,
+          "elapsed": 0.4999999999998715,
+          "attacksPerMinute": 17,
+          "effects": [
+            "area_pulse"
+          ]
+        },
+        {
+          "id": "shield",
+          "level": 2,
+          "damage": 45,
+          "attackInterval": 3.5,
+          "dpsEstimate": 12.857142857142858,
+          "elapsed": 0.4999999999998715,
+          "attacksPerMinute": 17,
+          "effects": [
+            "area_pulse"
+          ]
+        },
+        {
+          "id": "shield",
+          "level": 3,
+          "damage": 45,
+          "attackInterval": 2.4499999999999997,
+          "dpsEstimate": 18.367346938775512,
+          "elapsed": 1.1999999999999154,
+          "attacksPerMinute": 24,
+          "effects": [
+            "area_pulse"
+          ]
+        },
+        {
+          "id": "shield",
+          "level": 4,
+          "damage": 90,
+          "attackInterval": 3.5,
+          "dpsEstimate": 25.714285714285715,
+          "elapsed": 0.4999999999998715,
+          "attacksPerMinute": 17,
+          "effects": [
+            "area_pulse",
+            "mod_knockback"
+          ]
+        },
+        {
+          "id": "shield",
+          "level": 5,
+          "damage": 45,
+          "attackInterval": 3.5,
+          "dpsEstimate": 12.857142857142858,
+          "elapsed": 0.4999999999998715,
+          "attacksPerMinute": 17,
+          "effects": [
+            "area_pulse",
+            "area_pulse"
+          ]
+        },
+        {
+          "id": "shield",
+          "level": 6,
+          "damage": 45,
+          "attackInterval": 3.5,
+          "dpsEstimate": 12.857142857142858,
+          "elapsed": 0.4999999999998715,
+          "attacksPerMinute": 17,
+          "effects": [
+            "area_pulse",
+            "persistent_area"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taiping",
+      "levels": [
+        {
+          "id": "taiping",
+          "level": 1,
+          "damage": 20,
+          "attackInterval": 5,
+          "dpsEstimate": 4,
+          "elapsed": 4.999999999999851,
+          "attacksPerMinute": 11,
+          "effects": [
+            "persistent_area"
+          ]
+        },
+        {
+          "id": "taiping",
+          "level": 2,
+          "damage": 20,
+          "attackInterval": 5,
+          "dpsEstimate": 4,
+          "elapsed": 4.999999999999851,
+          "attacksPerMinute": 11,
+          "effects": [
+            "persistent_area"
+          ]
+        },
+        {
+          "id": "taiping",
+          "level": 3,
+          "damage": 20,
+          "attackInterval": 5,
+          "dpsEstimate": 4,
+          "elapsed": 4.999999999999851,
+          "attacksPerMinute": 11,
+          "effects": [
+            "persistent_area"
+          ]
+        },
+        {
+          "id": "taiping",
+          "level": 4,
+          "damage": 20,
+          "attackInterval": 5,
+          "dpsEstimate": 4,
+          "elapsed": 4.999999999999851,
+          "attacksPerMinute": 11,
+          "effects": [
+            "persistent_area"
+          ]
+        },
+        {
+          "id": "taiping",
+          "level": 5,
+          "damage": 20,
+          "attackInterval": 5,
+          "dpsEstimate": 4,
+          "elapsed": 4.999999999999851,
+          "attacksPerMinute": 11,
+          "effects": [
+            "persistent_area",
+            "persistent_area"
+          ]
+        },
+        {
+          "id": "taiping",
+          "level": 6,
+          "damage": 20,
+          "attackInterval": 5,
+          "dpsEstimate": 4,
+          "elapsed": 4.999999999999851,
+          "attacksPerMinute": 11,
+          "effects": [
+            "persistent_area",
+            "persistent_area"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -8,6 +8,7 @@
     "baseline:e2e": "node tests/e2e/run-baseline.mjs --browser chrome --record tests/recordings/smoke.json",
     "baseline:flags": "node tools/run-baseline.mjs --browser chrome --compare-enabled-flags --json-config --system-split --generic-weapon --pixi-renderer --hot-reload",
     "validate:config": "tsx src/config/validateSpec.ts",
+    "validate:weapons": "tsx src/effects/validateGenericWeapons.ts",
     "check:architecture": "node tools/check-architecture.mjs",
     "typecheck": "tsc --noEmit",
     "dev": "vite --host 127.0.0.1"
