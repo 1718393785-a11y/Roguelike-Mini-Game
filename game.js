@@ -2332,16 +2332,21 @@ class FireTornado {
                 }
                 genericShadowHits.sort((a, b) => a - b);
             }
+            const genericHitIdSet = genericShadowEnabled ? new Set(genericShadowHits) : null;
             const legacyHits = [];
             for (let i = nearbyEnemies.length - 1; i >= 0; i--) {
                 const enemy = nearbyEnemies[i];
                 const dx = enemy.x - this.x;
                 const dy = enemy.y - this.y;
                 const distSq = dx * dx + dy * dy;
-                if (distSq <= (this.currentRadius + enemy.size / 2) * (this.currentRadius + enemy.size / 2)) {
+                const legacyShouldHit = distSq <= (this.currentRadius + enemy.size / 2) * (this.currentRadius + enemy.size / 2);
+                if (legacyShouldHit) {
                     if (genericShadowEnabled) {
                         legacyHits.push(getDebugEntityId(enemy));
                     }
+                }
+                const shouldHit = genericShadowEnabled ? genericHitIdSet.has(getDebugEntityId(enemy)) : legacyShouldHit;
+                if (shouldHit) {
                     enemy.hp -= this.currentDamage * this.currentTickInterval;
                     // 检查死亡
                     if (enemy.hp <= 0) {
