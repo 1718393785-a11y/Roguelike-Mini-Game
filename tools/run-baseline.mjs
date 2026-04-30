@@ -97,11 +97,12 @@ async function runSnapshot(browser, baseUrl, { seed, record, seconds, flags = {}
   await page.goto(url.toString(), { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__BASELINE_DONE__, null, { timeout: Math.max(30000, seconds * 2000) });
   const result = await page.evaluate(() => window.__BASELINE_DONE__);
+  const genericWeaponShadow = await page.evaluate(() => window.__GENERIC_WEAPON_SHADOW__ ?? null);
   await context.close();
   if (errors.length || result.error) {
     throw new Error(`Browser baseline error: ${[result.error, ...errors].filter(Boolean).join('\n')}`);
   }
-  return result.snapshots;
+  return { snapshots: result.snapshots, genericWeaponShadow };
 }
 
 async function runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags }) {
@@ -122,24 +123,26 @@ async function runRngProbe(browser, baseUrl, { seed, count }) {
 
 function diffSnapshots(a, b) {
   const diffs = [];
-  const len = Math.max(a.length, b.length);
+  const leftSnapshots = Array.isArray(a) ? a : a.snapshots;
+  const rightSnapshots = Array.isArray(b) ? b : b.snapshots;
+  const len = Math.max(leftSnapshots.length, rightSnapshots.length);
   for (let i = 0; i < len; i++) {
-    const left = a[i];
-    const right = b[i];
+    const left = leftSnapshots[i];
+    const right = rightSnapshots[i];
     if (JSON.stringify(left) !== JSON.stringify(right)) {
       diffs.push({ index: i, left, right });
       if (diffs.length >= 20) break;
     }
   }
-  const bossA = a.findIndex(snapshot => snapshot.bossSpawned);
-  const bossB = b.findIndex(snapshot => snapshot.bossSpawned);
+  const bossA = leftSnapshots.findIndex(snapshot => snapshot.bossSpawned);
+  const bossB = rightSnapshots.findIndex(snapshot => snapshot.bossSpawned);
   return {
-    equal: diffs.length === 0 && a.length === b.length,
-    snapshotCountA: a.length,
-    snapshotCountB: b.length,
-    bossFrameA: bossA >= 0 ? a[bossA].frame : null,
-    bossFrameB: bossB >= 0 ? b[bossB].frame : null,
-    bossFrameDelta: bossA >= 0 && bossB >= 0 ? Math.abs(a[bossA].frame - b[bossB].frame) : null,
+    equal: diffs.length === 0 && leftSnapshots.length === rightSnapshots.length,
+    snapshotCountA: leftSnapshots.length,
+    snapshotCountB: rightSnapshots.length,
+    bossFrameA: bossA >= 0 ? leftSnapshots[bossA].frame : null,
+    bossFrameB: bossB >= 0 ? rightSnapshots[bossB].frame : null,
+    bossFrameDelta: bossA >= 0 && bossB >= 0 ? Math.abs(leftSnapshots[bossA].frame - rightSnapshots[bossB].frame) : null,
     firstDiffs: diffs,
   };
 }
@@ -216,6 +219,8 @@ async function main() {
       const legacy = await runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags: {} });
       const enabled = await runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags: enabledFlags });
       const diff = diffSnapshots(legacy, enabled);
+      const genericDpsThreshold = Number(args['generic-dps-threshold'] ?? 0.01);
+      const genericWeaponShadow = enabled.genericWeaponShadow;
       const report = {
         type: 'enabled-flags-compare',
         seed,
@@ -223,10 +228,20 @@ async function main() {
         record,
         chromePath,
         enabledFlags,
+        genericDpsThreshold,
+        genericWeaponShadow,
         ...diff,
       };
       await fs.writeFile(path.join(rootDir, 'reports', 'enabled-flags-compare.json'), JSON.stringify(report, null, 2));
       if (!diff.equal) throw new Error('Enabled feature flags output differs from legacy. See reports/enabled-flags-compare.json.');
+      if (enabledFlags.ENABLE_GENERIC_WEAPON) {
+        if (!genericWeaponShadow || genericWeaponShadow.samples <= 0) {
+          throw new Error('Generic weapon shadow produced no samples. See reports/enabled-flags-compare.json.');
+        }
+        if (genericWeaponShadow.maxDpsDiffRatio >= genericDpsThreshold) {
+          throw new Error('Generic weapon shadow DPS diff exceeded threshold. See reports/enabled-flags-compare.json.');
+        }
+      }
       console.log(`Enabled flags compare OK: ${diff.snapshotCountA} frames, zero diff.`);
       return;
     }

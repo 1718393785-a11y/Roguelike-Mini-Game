@@ -497,6 +497,85 @@ function applyWeaponJsonConfig(weaponSpec) {
     }
 }
 
+function resolveWeaponSpecNumber(config, level, key, fallback) {
+    if (!config) return fallback;
+    let value = typeof config.params?.[key] === 'number' ? config.params[key] : fallback;
+    const levels = (config.levels || [])
+        .filter(item => item.level <= level)
+        .sort((a, b) => a.level - b.level);
+    for (const levelConfig of levels) {
+        const patches = levelConfig.numericPatches || {};
+        if (typeof patches[key] === 'number') value = patches[key];
+        if (typeof patches[`${key}Add`] === 'number') value += patches[`${key}Add`];
+        if (typeof patches[`${key}Multiplier`] === 'number') value *= patches[`${key}Multiplier`];
+    }
+    return value;
+}
+
+class GenericWeaponShadowMonitor {
+    constructor() {
+        this.samples = 0;
+        this.maxDpsDiffRatio = 0;
+        this.maxDamageDiffRatio = 0;
+        this.maxIntervalDiffRatio = 0;
+        this.lastSamples = [];
+        window.__GENERIC_WEAPON_SHADOW__ = this.getReport();
+    }
+
+    update(game) {
+        if (!FEATURE_FLAGS.ENABLE_GENERIC_WEAPON || !LEGACY_JSON_WEAPON_CONFIG || !game.player) return;
+        const samples = [];
+        for (const weapon of game.activeWeapons || []) {
+            const spec = LEGACY_JSON_WEAPON_CONFIG[weapon.type];
+            if (!spec) continue;
+            const level = weapon.level || 1;
+            const legacyDamage = weapon.type === 'taiping' ? weapon.baseDamagePerSecond : weapon.baseDamage;
+            const legacyInterval = weapon.baseAttackInterval;
+            const genericDamage = resolveWeaponSpecNumber(spec, level, 'damage', spec.damage);
+            const genericInterval = resolveWeaponSpecNumber(spec, level, 'attackInterval', spec.attackInterval);
+            const legacyDps = legacyInterval > 0 ? legacyDamage / legacyInterval : 0;
+            const genericDps = genericInterval > 0 ? genericDamage / genericInterval : 0;
+            const sample = {
+                type: weapon.type,
+                level,
+                legacyDamage,
+                genericDamage,
+                legacyInterval,
+                genericInterval,
+                legacyDps,
+                genericDps,
+                damageDiffRatio: this.diffRatio(legacyDamage, genericDamage),
+                intervalDiffRatio: this.diffRatio(legacyInterval, genericInterval),
+                dpsDiffRatio: this.diffRatio(legacyDps, genericDps)
+            };
+            this.maxDamageDiffRatio = Math.max(this.maxDamageDiffRatio, sample.damageDiffRatio);
+            this.maxIntervalDiffRatio = Math.max(this.maxIntervalDiffRatio, sample.intervalDiffRatio);
+            this.maxDpsDiffRatio = Math.max(this.maxDpsDiffRatio, sample.dpsDiffRatio);
+            samples.push(sample);
+            this.samples++;
+        }
+        if (samples.length > 0) {
+            this.lastSamples = samples;
+            window.__GENERIC_WEAPON_SHADOW__ = this.getReport();
+        }
+    }
+
+    diffRatio(left, right) {
+        const denominator = Math.max(Math.abs(left), Math.abs(right), 1e-9);
+        return Math.abs(left - right) / denominator;
+    }
+
+    getReport() {
+        return {
+            samples: this.samples,
+            maxDpsDiffRatio: this.maxDpsDiffRatio,
+            maxDamageDiffRatio: this.maxDamageDiffRatio,
+            maxIntervalDiffRatio: this.maxIntervalDiffRatio,
+            lastSamples: this.lastSamples
+        };
+    }
+}
+
 if (FEATURE_FLAGS.ENABLE_JSON_CONFIG) {
     fetch('src/spec/weapons.json')
         .then(response => {
@@ -3766,6 +3845,7 @@ class LegacyWeaponSystem {
     update(game, deltaTime) {
         game.updateWeaponSystem(deltaTime);
         game.updateLevelProgressionSystem();
+        game.genericWeaponShadow?.update(game);
     }
 }
 
@@ -3826,6 +3906,7 @@ class GameManager {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.legacySystemPipeline = FEATURE_FLAGS.ENABLE_SYSTEM_SPLIT ? new LegacySystemPipeline() : null;
+        this.genericWeaponShadow = FEATURE_FLAGS.ENABLE_GENERIC_WEAPON ? new GenericWeaponShadowMonitor() : null;
 
         // 加载局外升级（从localStorage）
         this.loadPersistentData();
@@ -5443,6 +5524,7 @@ class GameManager {
         this.updatePickupSystem(deltaTime);
         this.updateWeaponSystem(deltaTime);
         this.updateLevelProgressionSystem();
+        this.genericWeaponShadow?.update(this);
     }
 
     autoShoot(deltaTime) {
