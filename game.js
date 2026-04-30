@@ -532,6 +532,86 @@ function resolveWeaponSpecNumberWithAliases(config, level, key, fallback, aliase
 
 const GENERIC_WEAPON_MIGRATION_IDS = new Set(['saber', 'spear', 'crossbow', 'qinggang', 'shield', 'taiping']);
 
+const GENERIC_WEAPON_SCALAR_MIGRATION_FIELDS = {
+    saber: [
+        { target: 'baseDamage', source: 'damage', fallback: spec => spec.damage },
+        { target: 'baseAttackInterval', source: 'attackInterval', fallback: spec => spec.attackInterval },
+        { target: 'radius', source: 'radius' },
+        { target: 'halfAngle', source: 'halfAngleRadians' },
+        { target: 'comboMax', source: 'comboMax' },
+        { target: 'comboInterval', source: 'comboInterval' }
+    ],
+    spear: [
+        { target: 'baseDamage', source: 'damage', fallback: spec => spec.damage },
+        { target: 'baseAttackInterval', source: 'attackInterval', fallback: spec => spec.attackInterval },
+        { target: 'length', source: 'length' },
+        { target: 'width', source: 'width' },
+        { target: 'knockbackDist', source: 'knockbackDist', aliases: { multiplier: 'knockbackMultiplier' } },
+        { target: 'spreadCount', source: 'spreadCount' }
+    ],
+    crossbow: [
+        { target: 'baseDamage', source: 'damage', fallback: spec => spec.damage },
+        { target: 'baseAttackInterval', source: 'attackInterval', fallback: spec => spec.attackInterval },
+        { target: 'burstCount', source: 'burstCount' },
+        { target: 'burstInterval', source: 'burstInterval' },
+        { target: 'basePierceCount', source: 'basePierceCount' },
+        { target: 'projectileSpeed', source: 'projectileSpeed' }
+    ],
+    qinggang: [
+        { target: 'baseDamage', source: 'damage', fallback: spec => spec.damage },
+        { target: 'baseAttackInterval', source: 'attackInterval', fallback: spec => spec.attackInterval },
+        { target: 'count', source: 'count' },
+        { target: 'baseOrbitRadius', source: 'baseOrbitRadius' },
+        { target: 'minRadius', source: 'minRadius' },
+        { target: 'maxRadius', source: 'maxRadius' },
+        { target: 'rotationSpeed', source: 'rotationSpeedRadians', aliases: { multiplier: 'rotationSpeedMultiplier' } },
+        { target: 'lifesteal', source: 'lifesteal' },
+        { target: 'swordLength', source: 'swordLength' },
+        { target: 'swordHalfWidth', source: 'swordHalfWidth' },
+        { target: 'smoothSpeed', source: 'smoothSpeed' }
+    ],
+    shield: [
+        { target: 'baseDamage', source: 'damage', fallback: spec => spec.damage },
+        { target: 'baseAttackInterval', source: 'attackInterval', fallback: spec => spec.attackInterval },
+        { target: 'maxRadius', source: 'maxRadius' },
+        { target: 'baseKnockback', source: 'baseKnockback', aliases: { multiplier: 'knockbackMultiplier' } },
+        { target: 'chargeDuration', source: 'chargeDuration' },
+        { target: 'explodeDuration', source: 'explodeDuration' },
+        { target: 'chargeStartRadius', source: 'chargeStartRadius' },
+        { target: 'chargeEndRadius', source: 'chargeEndRadius' }
+    ],
+    taiping: [
+        { target: 'baseDamagePerSecond', source: 'damage', fallback: spec => spec.damage },
+        { target: 'baseAttackInterval', source: 'attackInterval', fallback: spec => spec.attackInterval },
+        { target: 'baseRadius', source: 'baseRadius', aliases: { multiplier: 'radiusMultiplier' } },
+        { target: 'baseLifetime', source: 'baseLifetime', aliases: { multiplier: 'lifetimeMultiplier' } },
+        { target: 'baseTickInterval', source: 'baseTickInterval', aliases: { multiplier: 'tickIntervalMultiplier' } },
+        { target: 'maxTornados', source: 'maxTornados' }
+    ]
+};
+
+const GENERIC_WEAPON_BOOLEAN_MIGRATION_FIELDS = {
+    spear: [
+        { target: 'hasDash', minLevel: 5 },
+        { target: 'isUltimate', minLevel: 6 }
+    ],
+    crossbow: [
+        { target: 'hasLightningAOE', minLevel: 5 },
+        { target: 'hasLightningColumn', minLevel: 6 }
+    ],
+    qinggang: [
+        { target: 'dualOrbit', minLevel: 6 }
+    ],
+    shield: [
+        { target: 'canDestroyProjectiles', minLevel: 5 },
+        { target: 'spawnFireRing', minLevel: 6 }
+    ],
+    taiping: [
+        { target: 'autoSeek', minLevel: 5 },
+        { target: 'hasProximityStorm', minLevel: 6 }
+    ]
+};
+
 function isGenericWeaponMigrated(weaponType) {
     return FEATURE_FLAGS.ENABLE_GENERIC_WEAPON && GENERIC_WEAPON_MIGRATION_IDS.has(weaponType);
 }
@@ -542,76 +622,15 @@ function applyGenericWeaponScalarMigration(weapon) {
     if (!spec) return;
     const level = weapon.level || 1;
 
-    if (weapon.type === 'saber') {
-        weapon.baseDamage = resolveWeaponSpecNumber(spec, level, 'damage', spec.damage);
-        weapon.baseAttackInterval = resolveWeaponSpecNumber(spec, level, 'attackInterval', spec.attackInterval);
-        weapon.radius = resolveWeaponSpecNumber(spec, level, 'radius', weapon.radius);
-        weapon.halfAngle = resolveWeaponSpecNumber(spec, level, 'halfAngleRadians', weapon.halfAngle);
-        weapon.comboMax = resolveWeaponSpecNumber(spec, level, 'comboMax', weapon.comboMax);
-        weapon.comboInterval = resolveWeaponSpecNumber(spec, level, 'comboInterval', weapon.comboInterval);
-    } else if (weapon.type === 'spear') {
-        weapon.baseDamage = resolveWeaponSpecNumber(spec, level, 'damage', spec.damage);
-        weapon.baseAttackInterval = resolveWeaponSpecNumber(spec, level, 'attackInterval', spec.attackInterval);
-        weapon.length = resolveWeaponSpecNumber(spec, level, 'length', weapon.length);
-        weapon.width = resolveWeaponSpecNumber(spec, level, 'width', weapon.width);
-        weapon.knockbackDist = resolveWeaponSpecNumberWithAliases(spec, level, 'knockbackDist', weapon.knockbackDist, {
-            multiplier: 'knockbackMultiplier'
-        });
-        weapon.spreadCount = resolveWeaponSpecNumber(spec, level, 'spreadCount', weapon.spreadCount);
-        weapon.hasDash = level >= 5;
-        weapon.isUltimate = level >= 6;
-    } else if (weapon.type === 'crossbow') {
-        weapon.baseDamage = resolveWeaponSpecNumber(spec, level, 'damage', spec.damage);
-        weapon.baseAttackInterval = resolveWeaponSpecNumber(spec, level, 'attackInterval', spec.attackInterval);
-        weapon.burstCount = resolveWeaponSpecNumber(spec, level, 'burstCount', weapon.burstCount);
-        weapon.burstInterval = resolveWeaponSpecNumber(spec, level, 'burstInterval', weapon.burstInterval);
-        weapon.basePierceCount = resolveWeaponSpecNumber(spec, level, 'basePierceCount', weapon.basePierceCount);
-        weapon.projectileSpeed = resolveWeaponSpecNumber(spec, level, 'projectileSpeed', weapon.projectileSpeed);
-        weapon.hasLightningAOE = level >= 5;
-        weapon.hasLightningColumn = level >= 6;
-    } else if (weapon.type === 'shield') {
-        weapon.baseDamage = resolveWeaponSpecNumber(spec, level, 'damage', spec.damage);
-        weapon.baseAttackInterval = resolveWeaponSpecNumber(spec, level, 'attackInterval', spec.attackInterval);
-        weapon.maxRadius = resolveWeaponSpecNumber(spec, level, 'maxRadius', weapon.maxRadius);
-        weapon.baseKnockback = resolveWeaponSpecNumberWithAliases(spec, level, 'baseKnockback', weapon.baseKnockback, {
-            multiplier: 'knockbackMultiplier'
-        });
-        weapon.chargeDuration = resolveWeaponSpecNumber(spec, level, 'chargeDuration', weapon.chargeDuration);
-        weapon.explodeDuration = resolveWeaponSpecNumber(spec, level, 'explodeDuration', weapon.explodeDuration);
-        weapon.chargeStartRadius = resolveWeaponSpecNumber(spec, level, 'chargeStartRadius', weapon.chargeStartRadius);
-        weapon.chargeEndRadius = resolveWeaponSpecNumber(spec, level, 'chargeEndRadius', weapon.chargeEndRadius);
-        weapon.canDestroyProjectiles = level >= 5;
-        weapon.spawnFireRing = level >= 6;
-    } else if (weapon.type === 'taiping') {
-        weapon.baseDamagePerSecond = resolveWeaponSpecNumber(spec, level, 'damage', spec.damage);
-        weapon.baseAttackInterval = resolveWeaponSpecNumber(spec, level, 'attackInterval', spec.attackInterval);
-        weapon.baseRadius = resolveWeaponSpecNumberWithAliases(spec, level, 'baseRadius', weapon.baseRadius, {
-            multiplier: 'radiusMultiplier'
-        });
-        weapon.baseLifetime = resolveWeaponSpecNumberWithAliases(spec, level, 'baseLifetime', weapon.baseLifetime, {
-            multiplier: 'lifetimeMultiplier'
-        });
-        weapon.baseTickInterval = resolveWeaponSpecNumberWithAliases(spec, level, 'baseTickInterval', weapon.baseTickInterval, {
-            multiplier: 'tickIntervalMultiplier'
-        });
-        weapon.maxTornados = resolveWeaponSpecNumber(spec, level, 'maxTornados', weapon.maxTornados);
-        weapon.autoSeek = level >= 5;
-        weapon.hasProximityStorm = level >= 6;
-    } else if (weapon.type === 'qinggang') {
-        weapon.baseDamage = resolveWeaponSpecNumber(spec, level, 'damage', spec.damage);
-        weapon.baseAttackInterval = resolveWeaponSpecNumber(spec, level, 'attackInterval', spec.attackInterval);
-        weapon.count = resolveWeaponSpecNumber(spec, level, 'count', weapon.count);
-        weapon.baseOrbitRadius = resolveWeaponSpecNumber(spec, level, 'baseOrbitRadius', weapon.baseOrbitRadius);
-        weapon.minRadius = resolveWeaponSpecNumber(spec, level, 'minRadius', weapon.minRadius);
-        weapon.maxRadius = resolveWeaponSpecNumber(spec, level, 'maxRadius', weapon.maxRadius);
-        weapon.rotationSpeed = resolveWeaponSpecNumberWithAliases(spec, level, 'rotationSpeedRadians', weapon.rotationSpeed, {
-            multiplier: 'rotationSpeedMultiplier'
-        });
-        weapon.lifesteal = resolveWeaponSpecNumber(spec, level, 'lifesteal', weapon.lifesteal);
-        weapon.swordLength = resolveWeaponSpecNumber(spec, level, 'swordLength', weapon.swordLength);
-        weapon.swordHalfWidth = resolveWeaponSpecNumber(spec, level, 'swordHalfWidth', weapon.swordHalfWidth);
-        weapon.smoothSpeed = resolveWeaponSpecNumber(spec, level, 'smoothSpeed', weapon.smoothSpeed);
-        weapon.dualOrbit = level >= 6;
+    for (const field of GENERIC_WEAPON_SCALAR_MIGRATION_FIELDS[weapon.type] || []) {
+        const fallback = typeof field.fallback === 'function' ? field.fallback(spec, weapon) : weapon[field.target];
+        weapon[field.target] = field.aliases
+            ? resolveWeaponSpecNumberWithAliases(spec, level, field.source, fallback, field.aliases)
+            : resolveWeaponSpecNumber(spec, level, field.source, fallback);
+    }
+
+    for (const field of GENERIC_WEAPON_BOOLEAN_MIGRATION_FIELDS[weapon.type] || []) {
+        weapon[field.target] = level >= field.minLevel;
     }
 }
 
