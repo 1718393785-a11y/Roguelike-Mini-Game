@@ -162,6 +162,9 @@ async function main() {
   const defaultFlags = {
     ENABLE_JSON_CONFIG: Boolean(args['json-config']),
     ENABLE_SYSTEM_SPLIT: Boolean(args['system-split']),
+    ENABLE_GENERIC_WEAPON: Boolean(args['generic-weapon']),
+    ENABLE_PIXI_RENDERER: Boolean(args['pixi-renderer']),
+    ENABLE_HOT_RELOAD: Boolean(args['hot-reload']),
   };
   await fs.mkdir(path.join(rootDir, 'reports'), { recursive: true });
   const { server, baseUrl } = await createServer();

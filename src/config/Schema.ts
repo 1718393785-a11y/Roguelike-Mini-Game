@@ -178,5 +178,6 @@ export const RawConfigSchema = z.object({
 });
 
 export type WeaponConfig = z.infer<typeof WeaponConfigSchema>;
+export type WeaponLevelConfig = z.infer<typeof WeaponLevelSchema>;
 export type RawConfig = z.infer<typeof RawConfigSchema>;
 export type ValidationIssue = z.ZodIssue;
