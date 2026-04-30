@@ -5696,8 +5696,10 @@ class GameManager {
                         enemy.x - enemy.size/2, enemy.y - enemy.size/2, enemy.size, enemy.size
                     );
                 }
+                let shouldCollide = collided;
                 if (this.genericWeaponShadow && projectile.type === 'crossbow_arrow') {
                     const genericCollided = doesProjectileCollideWithEnemyShadow(projectile, enemy);
+                    shouldCollide = genericCollided;
                     const enemyId = getDebugEntityId(enemy);
                     this.genericWeaponShadow.recordBehaviorSample({
                         type: 'crossbow',
@@ -5708,7 +5710,7 @@ class GameManager {
                     });
                 }
 
-                if (collided) {
+                if (shouldCollide) {
                     // Check if this is a CrossbowArrow with custom hit handling (piercing + lightning)
                     if (typeof projectile.onHit === 'function') {
                         const shouldDestroy = projectile.onHit(enemy, this);
