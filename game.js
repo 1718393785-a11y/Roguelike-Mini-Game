@@ -2273,12 +2273,29 @@ class FireTornado {
 
             const gm = window.gameManager;
             const nearbyEnemies = gm.queryEnemiesInRange(this.x, this.y, this.currentRadius + 80);
+            const genericShadowEnabled = !!gm.genericWeaponShadow;
+            const genericShadowHits = [];
+            if (genericShadowEnabled) {
+                for (const enemy of nearbyEnemies) {
+                    const dx = enemy.x - this.x;
+                    const dy = enemy.y - this.y;
+                    const radius = this.currentRadius + enemy.size / 2;
+                    if (dx * dx + dy * dy <= radius * radius) {
+                        genericShadowHits.push(getDebugEntityId(enemy));
+                    }
+                }
+                genericShadowHits.sort((a, b) => a - b);
+            }
+            const legacyHits = [];
             for (let i = nearbyEnemies.length - 1; i >= 0; i--) {
                 const enemy = nearbyEnemies[i];
                 const dx = enemy.x - this.x;
                 const dy = enemy.y - this.y;
                 const distSq = dx * dx + dy * dy;
                 if (distSq <= (this.currentRadius + enemy.size / 2) * (this.currentRadius + enemy.size / 2)) {
+                    if (genericShadowEnabled) {
+                        legacyHits.push(getDebugEntityId(enemy));
+                    }
                     enemy.hp -= this.currentDamage * this.currentTickInterval;
                     // 检查死亡
                     if (enemy.hp <= 0) {
@@ -2288,6 +2305,15 @@ class FireTornado {
                         }
                     }
                 }
+            }
+            if (genericShadowEnabled) {
+                gm.genericWeaponShadow.recordBehaviorSample({
+                    type: 'taiping',
+                    effect: 'persistent_area_geometry',
+                    level: this.book?.level || 1,
+                    genericHits: genericShadowHits,
+                    legacyHits: legacyHits.sort((a, b) => a - b)
+                });
             }
         }
 
