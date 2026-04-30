@@ -3741,17 +3741,10 @@ class LegacyCollisionSystem {
     }
 
     update(game, deltaTime) {
-        return game.updateCollisionSystem(deltaTime);
-    }
-}
-
-class LegacyPlayerRecoverySystem {
-    constructor() {
-        this.name = 'PlayerRecoverySystem';
-    }
-
-    update(game, deltaTime) {
+        const shouldContinue = game.updateCollisionSystem(deltaTime);
+        if (shouldContinue === false) return false;
         game.updatePlayerRecoverySystem(deltaTime);
+        return shouldContinue;
     }
 }
 
@@ -3793,7 +3786,6 @@ const LEGACY_SYSTEM_EXECUTION_ORDER = [
     'DamageSystem',
     'AnimationSystem',
     'CollisionSystem',
-    'PlayerRecoverySystem',
     'PickupSystem',
     'WeaponSystem',
     'LegacyCanvasRenderSystem'
@@ -3808,7 +3800,6 @@ class LegacySystemPipeline {
             new LegacyDamageSystem(),
             new LegacyAnimationSystem(),
             new LegacyCollisionSystem(),
-            new LegacyPlayerRecoverySystem(),
             new LegacyPickupSystem(),
             new LegacyWeaponSystem(),
             new LegacyCanvasRenderSystem()
