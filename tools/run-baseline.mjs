@@ -75,7 +75,7 @@ function normalizeRecordPath(recordPath) {
   return recordPath.replaceAll('\\', '/');
 }
 
-async function runSnapshot(browser, baseUrl, { seed, record, seconds, flags = {} }) {
+async function runSnapshot(browser, baseUrl, { seed, record, seconds, flags = {}, query = {} }) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   await context.addInitScript(() => localStorage.clear());
   const page = await context.newPage();
@@ -94,6 +94,9 @@ async function runSnapshot(browser, baseUrl, { seed, record, seconds, flags = {}
   for (const [name, enabled] of Object.entries(flags)) {
     if (enabled) url.searchParams.set(name, '1');
   }
+  for (const [name, value] of Object.entries(query)) {
+    if (value !== undefined && value !== null && value !== false) url.searchParams.set(name, String(value));
+  }
   await page.goto(url.toString(), { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__BASELINE_DONE__, null, { timeout: Math.max(30000, seconds * 2000) });
   const result = await page.evaluate(() => window.__BASELINE_DONE__);
@@ -105,8 +108,8 @@ async function runSnapshot(browser, baseUrl, { seed, record, seconds, flags = {}
   return { snapshots: result.snapshots, genericWeaponShadow };
 }
 
-async function runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags }) {
-  return await runSnapshot(browser, baseUrl, { seed, record, seconds, flags });
+async function runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags, query = {} }) {
+  return await runSnapshot(browser, baseUrl, { seed, record, seconds, flags, query });
 }
 
 async function runRngProbe(browser, baseUrl, { seed, count }) {
@@ -243,6 +246,53 @@ async function main() {
         }
       }
       console.log(`Enabled flags compare OK: ${diff.snapshotCountA} frames, zero diff.`);
+      return;
+    }
+
+    if (args['compare-generic-weapon-matrix']) {
+      const weaponIds = String(args.weapons ?? 'saber,spear,crossbow,qinggang,shield,taiping').split(',').filter(Boolean);
+      const genericDpsThreshold = Number(args['generic-dps-threshold'] ?? 0.01);
+      const entries = [];
+      for (const weaponId of weaponIds) {
+        const query = { debugInitialWeapon: weaponId };
+        const legacyFlags = {
+          ENABLE_JSON_CONFIG: true,
+          ENABLE_SYSTEM_SPLIT: true,
+        };
+        const enabledFlags = {
+          ENABLE_JSON_CONFIG: true,
+          ENABLE_SYSTEM_SPLIT: true,
+          ENABLE_GENERIC_WEAPON: true,
+        };
+        const legacy = await runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags: legacyFlags, query });
+        const enabled = await runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags: enabledFlags, query });
+        const diff = diffSnapshots(legacy, enabled);
+        const genericWeaponShadow = enabled.genericWeaponShadow;
+        const entry = {
+          weaponId,
+          genericDpsThreshold,
+          genericWeaponShadow,
+          ...diff,
+        };
+        entries.push(entry);
+        if (!diff.equal) throw new Error(`Generic weapon matrix snapshot diff for ${weaponId}. See reports/generic-weapon-matrix.json.`);
+        if (!genericWeaponShadow || genericWeaponShadow.samples <= 0) {
+          throw new Error(`Generic weapon matrix produced no samples for ${weaponId}. See reports/generic-weapon-matrix.json.`);
+        }
+        if (genericWeaponShadow.maxDpsDiffRatio >= genericDpsThreshold) {
+          throw new Error(`Generic weapon matrix DPS diff exceeded threshold for ${weaponId}. See reports/generic-weapon-matrix.json.`);
+        }
+      }
+      const report = {
+        type: 'generic-weapon-matrix',
+        seed,
+        seconds,
+        record,
+        chromePath,
+        entries,
+      };
+      await fs.writeFile(path.join(rootDir, 'reports', 'generic-weapon-matrix.json'), JSON.stringify(report, null, 2));
+      console.log(`Generic weapon matrix OK: ${entries.length} weapons, zero diff.`);
       return;
     }
 

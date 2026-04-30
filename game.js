@@ -2548,7 +2548,9 @@ class Player {
             { type: 'shield', cls: Shield },
             { type: 'taiping', cls: TaipingBook }
         ];
-        const picked = weaponChoices[Math.floor(GameRuntime.random() * weaponChoices.length)];
+        const forcedWeaponType = new URLSearchParams(window.location.search).get('debugInitialWeapon');
+        const forcedWeapon = weaponChoices.find(choice => choice.type === forcedWeaponType);
+        const picked = forcedWeapon || weaponChoices[Math.floor(GameRuntime.random() * weaponChoices.length)];
         const config = WEAPON_UPGRADES[picked.type];
 
         // 直接使用纯净的基础伤害，所有乘区计算交给攻击判定瞬间
