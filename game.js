@@ -1026,6 +1026,7 @@ class Saber extends Weapon {
             nearbyEnemies,
             this.hitRecords
         ) : [];
+        const genericHitIdSet = genericShadowEnabled ? new Set(genericShadowHits) : null;
         const legacyHits = [];
 
         // 遍历附近敌人做扇形碰撞检测
@@ -1045,10 +1046,14 @@ class Saber extends Weapon {
             const enemyAngle = Math.atan2(dy, dx);
             let angleDiff = Math.abs(enemyAngle - this.aimAngle);
             angleDiff = Math.min(angleDiff, 2 * Math.PI - angleDiff);
-            if (angleDiff <= this.halfAngle) {
+            const legacyShouldHit = angleDiff <= this.halfAngle;
+            if (legacyShouldHit) {
                 if (genericShadowEnabled) {
                     legacyHits.push(getDebugEntityId(enemy));
                 }
+            }
+            const shouldHit = genericShadowEnabled ? genericHitIdSet.has(getDebugEntityId(enemy)) : legacyShouldHit;
+            if (shouldHit) {
                 // 计算总伤害加成 - 使用统一跨源乘算
                 const effectiveDamage = this.baseDamage * player.getDamageMultiplier();
                 this.hitRecords.add(enemy);
