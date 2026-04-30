@@ -1141,6 +1141,18 @@ class Saber extends Weapon {
         }
 
         // 额外遍历清除敌方投射物在扇形范围内
+        const enemyProjectiles = projectiles.filter(proj => proj.isEnemyProjectile);
+        const genericProjectileHits = genericShadowEnabled ? collectMeleeArcShadowHits(
+            currentX,
+            currentY,
+            this.aimAngle,
+            this.currentRadius,
+            this.halfAngle,
+            enemyProjectiles
+        ) : [];
+        const genericProjectileHitIdSet = genericShadowEnabled ? new Set(genericProjectileHits) : null;
+        const legacyProjectileHits = [];
+
         for (let i = projectiles.length - 1; i >= 0; i--) {
             const proj = projectiles[i];
             if (!proj.isEnemyProjectile) continue;
@@ -1153,9 +1165,25 @@ class Saber extends Weapon {
             const projAngle = Math.atan2(dy, dx);
             let angleDiff = Math.abs(projAngle - this.aimAngle);
             angleDiff = Math.min(angleDiff, 2 * Math.PI - angleDiff);
-            if (angleDiff <= this.halfAngle) {
+            const legacyShouldDestroy = angleDiff <= this.halfAngle;
+            if (legacyShouldDestroy) {
+                if (genericShadowEnabled) {
+                    legacyProjectileHits.push(getDebugEntityId(proj));
+                }
+            }
+            const shouldDestroy = genericShadowEnabled ? genericProjectileHitIdSet.has(getDebugEntityId(proj)) : legacyShouldDestroy;
+            if (shouldDestroy) {
                 projectiles.splice(i, 1);
             }
+        }
+        if (genericShadowEnabled && enemyProjectiles.length > 0) {
+            gm.genericWeaponShadow.recordBehaviorSample({
+                type: 'saber',
+                effect: 'melee_arc_projectile_clear',
+                level: this.level,
+                genericHits: genericProjectileHits,
+                legacyHits: legacyProjectileHits.sort((a, b) => a - b)
+            });
         }
     }
 
