@@ -12,11 +12,11 @@ export interface GenericWeaponRuntimeStats {
 
 export class GenericWeapon {
   private elapsed = 0;
-  private levelConfig: WeaponLevelConfig;
+  private currentLevel: number;
 
   constructor(private readonly config: WeaponConfig, level = 1) {
-    this.levelConfig = this.findLevel(level);
-    for (const effect of [...config.effects, ...this.levelConfig.effects]) {
+    this.currentLevel = this.clampLevel(level);
+    for (const effect of this.getEffectConfigs()) {
       assertWhitelistedEffect(effect.type);
     }
   }
@@ -26,11 +26,11 @@ export class GenericWeapon {
   }
 
   get level(): number {
-    return this.levelConfig.level;
+    return this.currentLevel;
   }
 
   setLevel(level: number): void {
-    this.levelConfig = this.findLevel(level);
+    this.currentLevel = this.clampLevel(level);
   }
 
   updateClock(deltaTime: number): void {
@@ -47,23 +47,25 @@ export class GenericWeapon {
   resolveNumber(key: string, fallback: number): number {
     const param = this.config.params[key];
     let value = typeof param === 'number' ? param : fallback;
-    const direct = this.levelConfig.numericPatches[key];
-    if (typeof direct === 'number') {
-      value = direct;
-    }
-    const additive = this.levelConfig.numericPatches[`${key}Add`];
-    if (typeof additive === 'number') {
-      value += additive;
-    }
-    const multiplier = this.levelConfig.numericPatches[`${key}Multiplier`];
-    if (typeof multiplier === 'number') {
-      value *= multiplier;
+    for (const levelConfig of this.getAppliedLevels()) {
+      const direct = levelConfig.numericPatches[key];
+      if (typeof direct === 'number') {
+        value = direct;
+      }
+      const additive = levelConfig.numericPatches[`${key}Add`];
+      if (typeof additive === 'number') {
+        value += additive;
+      }
+      const multiplier = levelConfig.numericPatches[`${key}Multiplier`];
+      if (typeof multiplier === 'number') {
+        value *= multiplier;
+      }
     }
     return value;
   }
 
   getEffects(): readonly WeaponEffectType[] {
-    return [...this.config.effects, ...this.levelConfig.effects].map(effect => effect.type);
+    return this.getEffectConfigs().map(effect => effect.type);
   }
 
   snapshot(): GenericWeaponRuntimeStats {
@@ -79,7 +81,18 @@ export class GenericWeapon {
     };
   }
 
-  private findLevel(level: number): WeaponLevelConfig {
-    return this.config.levels.find(item => item.level === level) ?? this.config.levels[0];
+  private clampLevel(level: number): number {
+    const maxLevel = Math.max(...this.config.levels.map(item => item.level));
+    return Math.max(1, Math.min(level, maxLevel));
+  }
+
+  private getAppliedLevels(): WeaponLevelConfig[] {
+    return this.config.levels
+      .filter(item => item.level <= this.currentLevel)
+      .sort((a, b) => a.level - b.level);
+  }
+
+  private getEffectConfigs(): Array<{ type: WeaponEffectType; params: Record<string, unknown> }> {
+    return [...this.config.effects, ...this.getAppliedLevels().flatMap(level => level.effects)];
   }
 }

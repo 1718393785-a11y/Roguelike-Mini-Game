@@ -45,9 +45,9 @@
         {
           "id": "saber",
           "level": 4,
-          "damage": 18,
+          "damage": 25.2,
           "attackInterval": 1.5,
-          "dpsEstimate": 12,
+          "dpsEstimate": 16.8,
           "elapsed": 1.4999999999999822,
           "attacksPerMinute": 39,
           "effects": [
@@ -57,9 +57,9 @@
         {
           "id": "saber",
           "level": 5,
-          "damage": 18,
+          "damage": 25.2,
           "attackInterval": 1.5,
-          "dpsEstimate": 12,
+          "dpsEstimate": 16.8,
           "elapsed": 1.4999999999999822,
           "attacksPerMinute": 39,
           "effects": [
@@ -70,13 +70,14 @@
         {
           "id": "saber",
           "level": 6,
-          "damage": 20.7,
+          "damage": 28.979999999999997,
           "attackInterval": 1.2000000000000002,
-          "dpsEstimate": 17.249999999999996,
+          "dpsEstimate": 24.149999999999995,
           "elapsed": 3.3084646133829665e-14,
           "attacksPerMinute": 50,
           "effects": [
             "melee_arc",
+            "mod_combo",
             "mod_combo"
           ]
         }
@@ -125,38 +126,42 @@
         {
           "id": "spear",
           "level": 4,
-          "damage": 25,
+          "damage": 35,
           "attackInterval": 1.0499999999999998,
-          "dpsEstimate": 23.809523809523814,
+          "dpsEstimate": 33.333333333333336,
           "elapsed": 0.15000000000008837,
           "attacksPerMinute": 57,
           "effects": [
-            "melee_arc"
+            "melee_arc",
+            "mod_knockback"
           ]
         },
         {
           "id": "spear",
           "level": 5,
-          "damage": 25,
-          "attackInterval": 1.5,
-          "dpsEstimate": 16.666666666666668,
-          "elapsed": 1.4999999999999822,
-          "attacksPerMinute": 39,
+          "damage": 35,
+          "attackInterval": 1.0499999999999998,
+          "dpsEstimate": 33.333333333333336,
+          "elapsed": 0.15000000000008837,
+          "attacksPerMinute": 57,
           "effects": [
             "melee_arc",
+            "mod_knockback",
             "mod_pierce"
           ]
         },
         {
           "id": "spear",
           "level": 6,
-          "damage": 25,
-          "attackInterval": 1.5,
-          "dpsEstimate": 16.666666666666668,
-          "elapsed": 1.4999999999999822,
-          "attacksPerMinute": 39,
+          "damage": 35,
+          "attackInterval": 1.0499999999999998,
+          "dpsEstimate": 33.333333333333336,
+          "elapsed": 0.15000000000008837,
+          "attacksPerMinute": 57,
           "effects": [
             "melee_arc",
+            "mod_knockback",
+            "mod_pierce",
             "mod_pierce"
           ]
         }
@@ -211,19 +216,21 @@
           "elapsed": 0.08000000000002606,
           "attacksPerMinute": 107,
           "effects": [
-            "projectile"
+            "projectile",
+            "mod_pierce"
           ]
         },
         {
           "id": "crossbow",
           "level": 5,
           "damage": 8,
-          "attackInterval": 0.8,
-          "dpsEstimate": 10,
-          "elapsed": 6.650235917504688e-14,
-          "attacksPerMinute": 75,
+          "attackInterval": 0.5599999999999999,
+          "dpsEstimate": 14.285714285714286,
+          "elapsed": 0.08000000000002606,
+          "attacksPerMinute": 107,
           "effects": [
             "projectile",
+            "mod_pierce",
             "area_pulse"
           ]
         },
@@ -231,12 +238,14 @@
           "id": "crossbow",
           "level": 6,
           "damage": 8,
-          "attackInterval": 0.8,
-          "dpsEstimate": 10,
-          "elapsed": 6.650235917504688e-14,
-          "attacksPerMinute": 75,
+          "attackInterval": 0.5599999999999999,
+          "dpsEstimate": 14.285714285714286,
+          "elapsed": 0.08000000000002606,
+          "attacksPerMinute": 107,
           "effects": [
             "projectile",
+            "mod_pierce",
+            "area_pulse",
             "area_pulse"
           ]
         }
@@ -363,10 +372,10 @@
           "id": "shield",
           "level": 4,
           "damage": 90,
-          "attackInterval": 3.5,
-          "dpsEstimate": 25.714285714285715,
-          "elapsed": 0.4999999999998715,
-          "attacksPerMinute": 17,
+          "attackInterval": 2.4499999999999997,
+          "dpsEstimate": 36.734693877551024,
+          "elapsed": 1.1999999999999154,
+          "attacksPerMinute": 24,
           "effects": [
             "area_pulse",
             "mod_knockback"
@@ -375,25 +384,28 @@
         {
           "id": "shield",
           "level": 5,
-          "damage": 45,
-          "attackInterval": 3.5,
-          "dpsEstimate": 12.857142857142858,
-          "elapsed": 0.4999999999998715,
-          "attacksPerMinute": 17,
+          "damage": 90,
+          "attackInterval": 2.4499999999999997,
+          "dpsEstimate": 36.734693877551024,
+          "elapsed": 1.1999999999999154,
+          "attacksPerMinute": 24,
           "effects": [
             "area_pulse",
+            "mod_knockback",
             "area_pulse"
           ]
         },
         {
           "id": "shield",
           "level": 6,
-          "damage": 45,
-          "attackInterval": 3.5,
-          "dpsEstimate": 12.857142857142858,
-          "elapsed": 0.4999999999998715,
-          "attacksPerMinute": 17,
+          "damage": 90,
+          "attackInterval": 2.4499999999999997,
+          "dpsEstimate": 36.734693877551024,
+          "elapsed": 1.1999999999999154,
+          "attacksPerMinute": 24,
           "effects": [
+            "area_pulse",
+            "mod_knockback",
             "area_pulse",
             "persistent_area"
           ]
@@ -473,6 +485,7 @@
           "elapsed": 4.999999999999851,
           "attacksPerMinute": 11,
           "effects": [
+            "persistent_area",
             "persistent_area",
             "persistent_area"
           ]
