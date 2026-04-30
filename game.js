@@ -660,6 +660,21 @@ function collectMeleeArcShadowHits(originX, originY, aimAngle, radius, halfAngle
     return hits.sort((a, b) => a - b);
 }
 
+function collectLineRectShadowHits(originX, originY, dirX, dirY, length, width, candidates, excluded) {
+    const hits = [];
+    for (const enemy of candidates) {
+        if (excluded?.has(enemy)) continue;
+        const dx = enemy.x - originX;
+        const dy = enemy.y - originY;
+        const projLength = dx * dirX + dy * dirY;
+        const projWidth = dx * (-dirY) + dy * dirX;
+        if (projLength >= 0 && projLength <= length && Math.abs(projWidth) <= width / 2 + enemy.size / 2) {
+            hits.push(getDebugEntityId(enemy));
+        }
+    }
+    return hits.sort((a, b) => a - b);
+}
+
 class GenericWeaponShadowMonitor {
     constructor() {
         this.samples = 0;
@@ -1246,6 +1261,19 @@ class Spear extends Weapon {
 
         // apply area multiplier from passive skill
         const effectiveLength = this.length * (1 + (player.modifiers.areaMulti || 0));
+        const gm = window.gameManager;
+        const genericShadowEnabled = !!gm.genericWeaponShadow;
+        const genericShadowHits = genericShadowEnabled ? collectLineRectShadowHits(
+            playerX,
+            playerY,
+            dirX,
+            dirY,
+            effectiveLength,
+            this.width,
+            enemies,
+            stab.hitRecords
+        ) : [];
+        const legacyHits = [];
 
         // AABB碰撞检查：检查每个敌人是否在矩形内（无限穿透）
         for (let i = enemies.length - 1; i >= 0; i--) {
@@ -1259,6 +1287,9 @@ class Spear extends Weapon {
             const projWidth = dxEn * (-dirY) + dyEn * dirX;
 
             if (projLength >= 0 && projLength <= effectiveLength && Math.abs(projWidth) <= this.width / 2 + enemy.size / 2) {
+                if (genericShadowEnabled) {
+                    legacyHits.push(getDebugEntityId(enemy));
+                }
                 enemy.hp -= effectiveDamage;
                 stab.hitRecords.add(enemy);
 
@@ -1300,6 +1331,15 @@ class Spear extends Weapon {
                     gameManager.handleEnemyDeath(enemy, i);
                 }
             }
+        }
+        if (genericShadowEnabled) {
+            gm.genericWeaponShadow.recordBehaviorSample({
+                type: 'spear',
+                effect: 'line_rect',
+                level: this.level,
+                genericHits: genericShadowHits,
+                legacyHits: legacyHits.sort((a, b) => a - b)
+            });
         }
     }
 

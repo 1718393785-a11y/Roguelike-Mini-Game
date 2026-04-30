@@ -236,7 +236,7 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
-        "behaviorSamples": 0,
+        "behaviorSamples": 98,
         "behaviorMismatches": 0,
         "lastBehaviorMismatches": [],
         "lastSamples": [
@@ -273,7 +273,7 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
-        "behaviorSamples": 0,
+        "behaviorSamples": 98,
         "behaviorMismatches": 0,
         "lastBehaviorMismatches": [],
         "lastSamples": [
@@ -310,7 +310,7 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
-        "behaviorSamples": 0,
+        "behaviorSamples": 98,
         "behaviorMismatches": 0,
         "lastBehaviorMismatches": [],
         "lastSamples": [
@@ -347,7 +347,7 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
-        "behaviorSamples": 0,
+        "behaviorSamples": 144,
         "behaviorMismatches": 0,
         "lastBehaviorMismatches": [],
         "lastSamples": [
@@ -384,7 +384,7 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
-        "behaviorSamples": 0,
+        "behaviorSamples": 144,
         "behaviorMismatches": 0,
         "lastBehaviorMismatches": [],
         "lastSamples": [
@@ -421,7 +421,7 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
-        "behaviorSamples": 0,
+        "behaviorSamples": 720,
         "behaviorMismatches": 0,
         "lastBehaviorMismatches": [],
         "lastSamples": [
