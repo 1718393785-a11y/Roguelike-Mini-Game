@@ -1202,6 +1202,9 @@ class Spear extends Weapon {
         let closestInAngle = null;
         let minDistSq = Infinity;
         const maxAngleDiff = Math.PI / 4; // ±45度 = 总共90度扇形
+        const gm = window.gameManager;
+        const genericShadowEnabled = !!gm.genericWeaponShadow;
+        const genericTarget = genericShadowEnabled ? selectForwardConeTarget(player, enemies, maxAngleDiff) : null;
 
         for (const enemy of enemies) {
             const dx = enemy.x - player.x;
@@ -1219,18 +1222,42 @@ class Spear extends Weapon {
             }
         }
 
-        let mainDirX, mainDirY;
+        let legacyDirX, legacyDirY;
         if (closestInAngle) {
             // 前方扇形范围内有敌人，瞄准最近的那个
             const dx = closestInAngle.x - player.x;
             const dy = closestInAngle.y - player.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
+            legacyDirX = dx / dist;
+            legacyDirY = dy / dist;
+        } else {
+            // 前方没有敌人，严格使用玩家面向方向
+            legacyDirX = player.facingDirX;
+            legacyDirY = player.facingDirY;
+        }
+        const fireTarget = genericShadowEnabled ? genericTarget : closestInAngle;
+        let mainDirX, mainDirY;
+        if (fireTarget) {
+            const dx = fireTarget.x - player.x;
+            const dy = fireTarget.y - player.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
             mainDirX = dx / dist;
             mainDirY = dy / dist;
         } else {
-            // 前方没有敌人，严格使用玩家面向方向
             mainDirX = player.facingDirX;
             mainDirY = player.facingDirY;
+        }
+        if (genericShadowEnabled) {
+            gm.genericWeaponShadow.recordBehaviorSample({
+                type: 'spear',
+                effect: 'target_direction',
+                level: this.level,
+                genericHits: [genericTarget ? getDebugEntityId(genericTarget) : 0],
+                legacyHits: [closestInAngle ? getDebugEntityId(closestInAngle) : 0],
+                genericValue: Math.atan2(mainDirY, mainDirX),
+                legacyValue: Math.atan2(legacyDirY, legacyDirX),
+                epsilon: 1e-12
+            });
         }
 
         // 生成枪影列表：Lv6终极是扇形多根，否则只有一根
