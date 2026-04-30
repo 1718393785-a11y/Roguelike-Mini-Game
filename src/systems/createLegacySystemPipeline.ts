@@ -34,13 +34,13 @@ export type LegacyPipelineWorld =
 export function createLegacySystemPipeline<TWorld extends LegacyPipelineWorld>(): GameManager<TWorld> {
   return new GameManager<TWorld>([
     new InputSystem<TWorld>(),
-    new MovementSystem<TWorld>(),
-    new CollisionSystem<TWorld>(),
-    new WeaponSystem<TWorld>(),
-    new DamageSystem<TWorld>(),
     new SpawnSystem<TWorld>(),
-    new PickupSystem<TWorld>(),
+    new MovementSystem<TWorld>(),
+    new DamageSystem<TWorld>(),
     new AnimationSystem<TWorld>(),
+    new CollisionSystem<TWorld>(),
+    new PickupSystem<TWorld>(),
+    new WeaponSystem<TWorld>(),
     new LegacyCanvasRenderSystem<TWorld>(),
   ]);
 }

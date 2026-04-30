@@ -20,6 +20,7 @@ export interface LegacyGameManagerPort {
   updateProjectileSystem?(deltaTime: number): void | boolean;
   updateAnimationSystem?(deltaTime: number): void;
   updateCollisionSystem?(deltaTime: number): void | boolean;
+  updatePlayerRecoverySystem?(deltaTime: number): void;
   updatePickupSystem?(deltaTime: number): void;
   updateWeaponSystem?(deltaTime: number): void;
   updateLevelProgressionSystem?(): void;
@@ -49,7 +50,10 @@ export class LegacyWorldAdapter
   }
 
   updateCollision(deltaTime: number): void | boolean {
-    return this.legacy.updateCollisionSystem?.(deltaTime);
+    const shouldContinue = this.legacy.updateCollisionSystem?.(deltaTime);
+    if (shouldContinue === false) return false;
+    this.legacy.updatePlayerRecoverySystem?.(deltaTime);
+    return shouldContinue;
   }
 
   updateWeapons(deltaTime: number): void {

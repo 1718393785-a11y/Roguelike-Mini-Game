@@ -7,13 +7,13 @@ export interface GameSystem<TWorld = unknown> {
 
 export const SYSTEM_EXECUTION_ORDER = [
   'InputSystem',
-  'MovementSystem',
-  'CollisionSystem',
-  'WeaponSystem',
-  'DamageSystem',
   'SpawnSystem',
-  'PickupSystem',
+  'MovementSystem',
+  'DamageSystem',
   'AnimationSystem',
+  'CollisionSystem',
+  'PickupSystem',
+  'WeaponSystem',
   'LegacyCanvasRenderSystem',
 ] as const;
 
