@@ -530,7 +530,7 @@ function resolveWeaponSpecNumberWithAliases(config, level, key, fallback, aliase
     return value;
 }
 
-const GENERIC_WEAPON_MIGRATION_IDS = new Set(['saber', 'spear', 'crossbow', 'shield']);
+const GENERIC_WEAPON_MIGRATION_IDS = new Set(['saber', 'spear', 'crossbow', 'shield', 'taiping']);
 
 function isGenericWeaponMigrated(weaponType) {
     return FEATURE_FLAGS.ENABLE_GENERIC_WEAPON && GENERIC_WEAPON_MIGRATION_IDS.has(weaponType);
@@ -582,6 +582,21 @@ function applyGenericWeaponScalarMigration(weapon) {
         weapon.chargeEndRadius = resolveWeaponSpecNumber(spec, level, 'chargeEndRadius', weapon.chargeEndRadius);
         weapon.canDestroyProjectiles = level >= 5;
         weapon.spawnFireRing = level >= 6;
+    } else if (weapon.type === 'taiping') {
+        weapon.baseDamagePerSecond = resolveWeaponSpecNumber(spec, level, 'damage', spec.damage);
+        weapon.baseAttackInterval = resolveWeaponSpecNumber(spec, level, 'attackInterval', spec.attackInterval);
+        weapon.baseRadius = resolveWeaponSpecNumberWithAliases(spec, level, 'baseRadius', weapon.baseRadius, {
+            multiplier: 'radiusMultiplier'
+        });
+        weapon.baseLifetime = resolveWeaponSpecNumberWithAliases(spec, level, 'baseLifetime', weapon.baseLifetime, {
+            multiplier: 'lifetimeMultiplier'
+        });
+        weapon.baseTickInterval = resolveWeaponSpecNumberWithAliases(spec, level, 'baseTickInterval', weapon.baseTickInterval, {
+            multiplier: 'tickIntervalMultiplier'
+        });
+        weapon.maxTornados = resolveWeaponSpecNumber(spec, level, 'maxTornados', weapon.maxTornados);
+        weapon.autoSeek = level >= 5;
+        weapon.hasProximityStorm = level >= 6;
     }
 }
 

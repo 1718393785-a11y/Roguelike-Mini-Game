@@ -1038,7 +1038,7 @@
           {
             "type": "taiping",
             "level": 1,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 5,
@@ -1072,7 +1072,7 @@
           {
             "type": "taiping",
             "level": 2,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 5,
@@ -1106,7 +1106,7 @@
           {
             "type": "taiping",
             "level": 3,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 5,
@@ -1140,7 +1140,7 @@
           {
             "type": "taiping",
             "level": 4,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 5,
@@ -1174,7 +1174,7 @@
           {
             "type": "taiping",
             "level": 5,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 5,
@@ -1208,7 +1208,7 @@
           {
             "type": "taiping",
             "level": 6,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 5,

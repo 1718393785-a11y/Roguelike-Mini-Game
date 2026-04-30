@@ -30,9 +30,9 @@ export const GENERIC_WEAPON_MIGRATION_STATUS = {
     lastVerified: 'baseline:generic-weapon-levels',
   },
   taiping: {
-    scalarConfig: false,
+    scalarConfig: true,
     behavior: false,
     render: false,
-    lastVerified: 'shadow-only',
+    lastVerified: 'baseline:generic-weapon-levels',
   },
 } as const;
