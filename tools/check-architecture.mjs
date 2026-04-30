@@ -70,6 +70,24 @@ function assertWeaponEffectWhitelist() {
   }
 }
 
+function extractStringArray(text, constName) {
+  const match = text.match(new RegExp(`const\\s+${constName}\\s*=\\s*\\[([\\s\\S]*?)\\]`));
+  if (!match) return null;
+  return [...match[1].matchAll(/'([^']+)'/g)].map(item => item[1]);
+}
+
+function assertSystemOrderMatchesRuntime() {
+  const runtimeOrder = extractStringArray(readText('game.js'), 'LEGACY_SYSTEM_EXECUTION_ORDER');
+  const tsOrder = extractStringArray(readText(path.join('src', 'systems', 'System.ts')), 'SYSTEM_EXECUTION_ORDER');
+  if (!runtimeOrder || !tsOrder) {
+    fail('Could not read runtime or TypeScript System execution order');
+    return;
+  }
+  if (JSON.stringify(runtimeOrder) !== JSON.stringify(tsOrder)) {
+    fail(`System execution order mismatch: runtime=${runtimeOrder.join(',')} ts=${tsOrder.join(',')}`);
+  }
+}
+
 function assertBackupPreserved() {
   const backupPath = path.join(rootDir, 'backup', 'game.js');
   if (!existsSync(backupPath)) {
@@ -86,6 +104,7 @@ function assertBackupPreserved() {
 assertSpecFilesArePureJson();
 assertSystemBoundaries();
 assertWeaponEffectWhitelist();
+assertSystemOrderMatchesRuntime();
 assertBackupPreserved();
 
 if (failures.length > 0) {
