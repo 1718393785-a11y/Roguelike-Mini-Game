@@ -834,7 +834,7 @@
           {
             "type": "shield",
             "level": 1,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 45,
             "genericDamage": 45,
             "legacyInterval": 3.5,
@@ -868,7 +868,7 @@
           {
             "type": "shield",
             "level": 2,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 45,
             "genericDamage": 45,
             "legacyInterval": 3.5,
@@ -902,7 +902,7 @@
           {
             "type": "shield",
             "level": 3,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 45,
             "genericDamage": 45,
             "legacyInterval": 2.4499999999999997,
@@ -936,7 +936,7 @@
           {
             "type": "shield",
             "level": 4,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 90,
             "genericDamage": 90,
             "legacyInterval": 2.4499999999999997,
@@ -970,7 +970,7 @@
           {
             "type": "shield",
             "level": 5,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 90,
             "genericDamage": 90,
             "legacyInterval": 2.4499999999999997,
@@ -1004,7 +1004,7 @@
           {
             "type": "shield",
             "level": 6,
-            "migrated": false,
+            "migrated": true,
             "legacyDamage": 90,
             "genericDamage": 90,
             "legacyInterval": 2.4499999999999997,

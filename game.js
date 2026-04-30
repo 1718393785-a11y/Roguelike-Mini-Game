@@ -530,7 +530,7 @@ function resolveWeaponSpecNumberWithAliases(config, level, key, fallback, aliase
     return value;
 }
 
-const GENERIC_WEAPON_MIGRATION_IDS = new Set(['saber', 'spear', 'crossbow']);
+const GENERIC_WEAPON_MIGRATION_IDS = new Set(['saber', 'spear', 'crossbow', 'shield']);
 
 function isGenericWeaponMigrated(weaponType) {
     return FEATURE_FLAGS.ENABLE_GENERIC_WEAPON && GENERIC_WEAPON_MIGRATION_IDS.has(weaponType);
@@ -569,6 +569,19 @@ function applyGenericWeaponScalarMigration(weapon) {
         weapon.projectileSpeed = resolveWeaponSpecNumber(spec, level, 'projectileSpeed', weapon.projectileSpeed);
         weapon.hasLightningAOE = level >= 5;
         weapon.hasLightningColumn = level >= 6;
+    } else if (weapon.type === 'shield') {
+        weapon.baseDamage = resolveWeaponSpecNumber(spec, level, 'damage', spec.damage);
+        weapon.baseAttackInterval = resolveWeaponSpecNumber(spec, level, 'attackInterval', spec.attackInterval);
+        weapon.maxRadius = resolveWeaponSpecNumber(spec, level, 'maxRadius', weapon.maxRadius);
+        weapon.baseKnockback = resolveWeaponSpecNumberWithAliases(spec, level, 'baseKnockback', weapon.baseKnockback, {
+            multiplier: 'knockbackMultiplier'
+        });
+        weapon.chargeDuration = resolveWeaponSpecNumber(spec, level, 'chargeDuration', weapon.chargeDuration);
+        weapon.explodeDuration = resolveWeaponSpecNumber(spec, level, 'explodeDuration', weapon.explodeDuration);
+        weapon.chargeStartRadius = resolveWeaponSpecNumber(spec, level, 'chargeStartRadius', weapon.chargeStartRadius);
+        weapon.chargeEndRadius = resolveWeaponSpecNumber(spec, level, 'chargeEndRadius', weapon.chargeEndRadius);
+        weapon.canDestroyProjectiles = level >= 5;
+        weapon.spawnFireRing = level >= 6;
     }
 }
 
