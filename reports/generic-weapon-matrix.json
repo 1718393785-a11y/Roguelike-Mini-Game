@@ -1,15 +1,16 @@
 {
   "type": "generic-weapon-matrix",
   "seed": "12345",
-  "seconds": 30,
+  "seconds": 10,
   "record": "records\\smoke.json",
   "chromePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
   "entries": [
     {
       "weaponId": "saber",
+      "level": 1,
       "genericDpsThreshold": 0.01,
       "genericWeaponShadow": {
-        "samples": 1025,
+        "samples": 601,
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
@@ -30,18 +31,184 @@
         ]
       },
       "equal": true,
-      "snapshotCountA": 1801,
-      "snapshotCountB": 1801,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
       "bossFrameA": 600,
       "bossFrameB": 600,
       "bossFrameDelta": 0,
       "firstDiffs": []
     },
     {
-      "weaponId": "spear",
+      "weaponId": "saber",
+      "level": 2,
       "genericDpsThreshold": 0.01,
       "genericWeaponShadow": {
-        "samples": 1004,
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "saber",
+            "level": 2,
+            "legacyDamage": 18,
+            "genericDamage": 18,
+            "legacyInterval": 1.5,
+            "genericInterval": 1.5,
+            "legacyDps": 12,
+            "genericDps": 12,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": 600,
+      "bossFrameB": 600,
+      "bossFrameDelta": 0,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "saber",
+      "level": 3,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "saber",
+            "level": 3,
+            "legacyDamage": 25.2,
+            "genericDamage": 25.2,
+            "legacyInterval": 1.5,
+            "genericInterval": 1.5,
+            "legacyDps": 16.8,
+            "genericDps": 16.8,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": 600,
+      "bossFrameB": 600,
+      "bossFrameDelta": 0,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "saber",
+      "level": 4,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "saber",
+            "level": 4,
+            "legacyDamage": 25.2,
+            "genericDamage": 25.2,
+            "legacyInterval": 1.5,
+            "genericInterval": 1.5,
+            "legacyDps": 16.8,
+            "genericDps": 16.8,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": 600,
+      "bossFrameB": 600,
+      "bossFrameDelta": 0,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "saber",
+      "level": 5,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "saber",
+            "level": 5,
+            "legacyDamage": 25.2,
+            "genericDamage": 25.2,
+            "legacyInterval": 1.5,
+            "genericInterval": 1.5,
+            "legacyDps": 16.8,
+            "genericDps": 16.8,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "saber",
+      "level": 6,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "saber",
+            "level": 6,
+            "legacyDamage": 28.979999999999997,
+            "genericDamage": 28.979999999999997,
+            "legacyInterval": 1.2000000000000002,
+            "genericInterval": 1.2000000000000002,
+            "legacyDps": 24.149999999999995,
+            "genericDps": 24.149999999999995,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "spear",
+      "level": 1,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
@@ -62,8 +229,173 @@
         ]
       },
       "equal": true,
-      "snapshotCountA": 1801,
-      "snapshotCountB": 1801,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "spear",
+      "level": 2,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "spear",
+            "level": 2,
+            "legacyDamage": 25,
+            "genericDamage": 25,
+            "legacyInterval": 1.5,
+            "genericInterval": 1.5,
+            "legacyDps": 16.666666666666668,
+            "genericDps": 16.666666666666668,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "spear",
+      "level": 3,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "spear",
+            "level": 3,
+            "legacyDamage": 35,
+            "genericDamage": 35,
+            "legacyInterval": 1.5,
+            "genericInterval": 1.5,
+            "legacyDps": 23.333333333333332,
+            "genericDps": 23.333333333333332,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "spear",
+      "level": 4,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "spear",
+            "level": 4,
+            "legacyDamage": 35,
+            "genericDamage": 35,
+            "legacyInterval": 1.0499999999999998,
+            "genericInterval": 1.0499999999999998,
+            "legacyDps": 33.333333333333336,
+            "genericDps": 33.333333333333336,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "spear",
+      "level": 5,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "spear",
+            "level": 5,
+            "legacyDamage": 35,
+            "genericDamage": 35,
+            "legacyInterval": 1.0499999999999998,
+            "genericInterval": 1.0499999999999998,
+            "legacyDps": 33.333333333333336,
+            "genericDps": 33.333333333333336,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "spear",
+      "level": 6,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "spear",
+            "level": 6,
+            "legacyDamage": 35,
+            "genericDamage": 35,
+            "legacyInterval": 1.0499999999999998,
+            "genericInterval": 1.0499999999999998,
+            "legacyDps": 33.333333333333336,
+            "genericDps": 33.333333333333336,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
       "bossFrameA": null,
       "bossFrameB": null,
       "bossFrameDelta": null,
@@ -71,9 +403,10 @@
     },
     {
       "weaponId": "crossbow",
+      "level": 1,
       "genericDpsThreshold": 0.01,
       "genericWeaponShadow": {
-        "samples": 1069,
+        "samples": 601,
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
@@ -94,18 +427,184 @@
         ]
       },
       "equal": true,
-      "snapshotCountA": 1801,
-      "snapshotCountB": 1801,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
       "bossFrameA": null,
       "bossFrameB": null,
       "bossFrameDelta": null,
       "firstDiffs": []
     },
     {
-      "weaponId": "qinggang",
+      "weaponId": "crossbow",
+      "level": 2,
       "genericDpsThreshold": 0.01,
       "genericWeaponShadow": {
-        "samples": 1175,
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "crossbow",
+            "level": 2,
+            "legacyDamage": 8,
+            "genericDamage": 8,
+            "legacyInterval": 0.8,
+            "genericInterval": 0.8,
+            "legacyDps": 10,
+            "genericDps": 10,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": 300,
+      "bossFrameB": 300,
+      "bossFrameDelta": 0,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "crossbow",
+      "level": 3,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 595,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "crossbow",
+            "level": 3,
+            "legacyDamage": 8,
+            "genericDamage": 8,
+            "legacyInterval": 0.8,
+            "genericInterval": 0.8,
+            "legacyDps": 10,
+            "genericDps": 10,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "crossbow",
+      "level": 4,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 595,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "crossbow",
+            "level": 4,
+            "legacyDamage": 8,
+            "genericDamage": 8,
+            "legacyInterval": 0.5599999999999999,
+            "genericInterval": 0.5599999999999999,
+            "legacyDps": 14.285714285714286,
+            "genericDps": 14.285714285714286,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": 300,
+      "bossFrameB": 300,
+      "bossFrameDelta": 0,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "crossbow",
+      "level": 5,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 595,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "crossbow",
+            "level": 5,
+            "legacyDamage": 8,
+            "genericDamage": 8,
+            "legacyInterval": 0.5599999999999999,
+            "genericInterval": 0.5599999999999999,
+            "legacyDps": 14.285714285714286,
+            "genericDps": 14.285714285714286,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": 300,
+      "bossFrameB": 300,
+      "bossFrameDelta": 0,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "crossbow",
+      "level": 6,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 593,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "crossbow",
+            "level": 6,
+            "legacyDamage": 8,
+            "genericDamage": 8,
+            "legacyInterval": 0.5599999999999999,
+            "genericInterval": 0.5599999999999999,
+            "legacyDps": 14.285714285714286,
+            "genericDps": 14.285714285714286,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": 300,
+      "bossFrameB": 300,
+      "bossFrameDelta": 0,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "qinggang",
+      "level": 1,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
@@ -126,18 +625,184 @@
         ]
       },
       "equal": true,
-      "snapshotCountA": 1801,
-      "snapshotCountB": 1801,
-      "bossFrameA": 1080,
-      "bossFrameB": 1080,
-      "bossFrameDelta": 0,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "qinggang",
+      "level": 2,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "qinggang",
+            "level": 2,
+            "legacyDamage": 20,
+            "genericDamage": 20,
+            "legacyInterval": 0.016,
+            "genericInterval": 0.016,
+            "legacyDps": 1250,
+            "genericDps": 1250,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "qinggang",
+      "level": 3,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "qinggang",
+            "level": 3,
+            "legacyDamage": 20,
+            "genericDamage": 20,
+            "legacyInterval": 0.016,
+            "genericInterval": 0.016,
+            "legacyDps": 1250,
+            "genericDps": 1250,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "qinggang",
+      "level": 4,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "qinggang",
+            "level": 4,
+            "legacyDamage": 20,
+            "genericDamage": 20,
+            "legacyInterval": 0.016,
+            "genericInterval": 0.016,
+            "legacyDps": 1250,
+            "genericDps": 1250,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "qinggang",
+      "level": 5,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "qinggang",
+            "level": 5,
+            "legacyDamage": 20,
+            "genericDamage": 20,
+            "legacyInterval": 0.016,
+            "genericInterval": 0.016,
+            "legacyDps": 1250,
+            "genericDps": 1250,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "qinggang",
+      "level": 6,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "qinggang",
+            "level": 6,
+            "legacyDamage": 20,
+            "genericDamage": 20,
+            "legacyInterval": 0.016,
+            "genericInterval": 0.016,
+            "legacyDps": 1250,
+            "genericDps": 1250,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
       "firstDiffs": []
     },
     {
       "weaponId": "shield",
+      "level": 1,
       "genericDpsThreshold": 0.01,
       "genericWeaponShadow": {
-        "samples": 1801,
+        "samples": 601,
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
@@ -158,8 +823,173 @@
         ]
       },
       "equal": true,
-      "snapshotCountA": 1801,
-      "snapshotCountB": 1801,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "shield",
+      "level": 2,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "shield",
+            "level": 2,
+            "legacyDamage": 45,
+            "genericDamage": 45,
+            "legacyInterval": 3.5,
+            "genericInterval": 3.5,
+            "legacyDps": 12.857142857142858,
+            "genericDps": 12.857142857142858,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "shield",
+      "level": 3,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "shield",
+            "level": 3,
+            "legacyDamage": 45,
+            "genericDamage": 45,
+            "legacyInterval": 2.4499999999999997,
+            "genericInterval": 2.4499999999999997,
+            "legacyDps": 18.367346938775512,
+            "genericDps": 18.367346938775512,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "shield",
+      "level": 4,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "shield",
+            "level": 4,
+            "legacyDamage": 90,
+            "genericDamage": 90,
+            "legacyInterval": 2.4499999999999997,
+            "genericInterval": 2.4499999999999997,
+            "legacyDps": 36.734693877551024,
+            "genericDps": 36.734693877551024,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "shield",
+      "level": 5,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "shield",
+            "level": 5,
+            "legacyDamage": 90,
+            "genericDamage": 90,
+            "legacyInterval": 2.4499999999999997,
+            "genericInterval": 2.4499999999999997,
+            "legacyDps": 36.734693877551024,
+            "genericDps": 36.734693877551024,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "shield",
+      "level": 6,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "shield",
+            "level": 6,
+            "legacyDamage": 90,
+            "genericDamage": 90,
+            "legacyInterval": 2.4499999999999997,
+            "genericInterval": 2.4499999999999997,
+            "legacyDps": 36.734693877551024,
+            "genericDps": 36.734693877551024,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
       "bossFrameA": null,
       "bossFrameB": null,
       "bossFrameDelta": null,
@@ -167,9 +997,10 @@
     },
     {
       "weaponId": "taiping",
+      "level": 1,
       "genericDpsThreshold": 0.01,
       "genericWeaponShadow": {
-        "samples": 975,
+        "samples": 601,
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
@@ -190,8 +1021,173 @@
         ]
       },
       "equal": true,
-      "snapshotCountA": 1801,
-      "snapshotCountB": 1801,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "taiping",
+      "level": 2,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "taiping",
+            "level": 2,
+            "legacyDamage": 20,
+            "genericDamage": 20,
+            "legacyInterval": 5,
+            "genericInterval": 5,
+            "legacyDps": 4,
+            "genericDps": 4,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "taiping",
+      "level": 3,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "taiping",
+            "level": 3,
+            "legacyDamage": 20,
+            "genericDamage": 20,
+            "legacyInterval": 5,
+            "genericInterval": 5,
+            "legacyDps": 4,
+            "genericDps": 4,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "taiping",
+      "level": 4,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "taiping",
+            "level": 4,
+            "legacyDamage": 20,
+            "genericDamage": 20,
+            "legacyInterval": 5,
+            "genericInterval": 5,
+            "legacyDps": 4,
+            "genericDps": 4,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "taiping",
+      "level": 5,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "taiping",
+            "level": 5,
+            "legacyDamage": 20,
+            "genericDamage": 20,
+            "legacyInterval": 5,
+            "genericInterval": 5,
+            "legacyDps": 4,
+            "genericDps": 4,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
+      "bossFrameA": null,
+      "bossFrameB": null,
+      "bossFrameDelta": null,
+      "firstDiffs": []
+    },
+    {
+      "weaponId": "taiping",
+      "level": 6,
+      "genericDpsThreshold": 0.01,
+      "genericWeaponShadow": {
+        "samples": 601,
+        "maxDpsDiffRatio": 0,
+        "maxDamageDiffRatio": 0,
+        "maxIntervalDiffRatio": 0,
+        "lastSamples": [
+          {
+            "type": "taiping",
+            "level": 6,
+            "legacyDamage": 20,
+            "genericDamage": 20,
+            "legacyInterval": 5,
+            "genericInterval": 5,
+            "legacyDps": 4,
+            "genericDps": 4,
+            "damageDiffRatio": 0,
+            "intervalDiffRatio": 0,
+            "dpsDiffRatio": 0
+          }
+        ]
+      },
+      "equal": true,
+      "snapshotCountA": 601,
+      "snapshotCountB": 601,
       "bossFrameA": null,
       "bossFrameB": null,
       "bossFrameDelta": null,

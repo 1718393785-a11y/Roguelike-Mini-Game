@@ -251,36 +251,40 @@ async function main() {
 
     if (args['compare-generic-weapon-matrix']) {
       const weaponIds = String(args.weapons ?? 'saber,spear,crossbow,qinggang,shield,taiping').split(',').filter(Boolean);
+      const levels = String(args.levels ?? '1').split(',').map(Number).filter(Number.isFinite);
       const genericDpsThreshold = Number(args['generic-dps-threshold'] ?? 0.01);
       const entries = [];
       for (const weaponId of weaponIds) {
-        const query = { debugInitialWeapon: weaponId };
-        const legacyFlags = {
-          ENABLE_JSON_CONFIG: true,
-          ENABLE_SYSTEM_SPLIT: true,
-        };
-        const enabledFlags = {
-          ENABLE_JSON_CONFIG: true,
-          ENABLE_SYSTEM_SPLIT: true,
-          ENABLE_GENERIC_WEAPON: true,
-        };
-        const legacy = await runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags: legacyFlags, query });
-        const enabled = await runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags: enabledFlags, query });
-        const diff = diffSnapshots(legacy, enabled);
-        const genericWeaponShadow = enabled.genericWeaponShadow;
-        const entry = {
-          weaponId,
-          genericDpsThreshold,
-          genericWeaponShadow,
-          ...diff,
-        };
-        entries.push(entry);
-        if (!diff.equal) throw new Error(`Generic weapon matrix snapshot diff for ${weaponId}. See reports/generic-weapon-matrix.json.`);
-        if (!genericWeaponShadow || genericWeaponShadow.samples <= 0) {
-          throw new Error(`Generic weapon matrix produced no samples for ${weaponId}. See reports/generic-weapon-matrix.json.`);
-        }
-        if (genericWeaponShadow.maxDpsDiffRatio >= genericDpsThreshold) {
-          throw new Error(`Generic weapon matrix DPS diff exceeded threshold for ${weaponId}. See reports/generic-weapon-matrix.json.`);
+        for (const level of levels) {
+          const query = { debugInitialWeapon: weaponId, debugInitialWeaponLevel: level };
+          const legacyFlags = {
+            ENABLE_JSON_CONFIG: true,
+            ENABLE_SYSTEM_SPLIT: true,
+          };
+          const enabledFlags = {
+            ENABLE_JSON_CONFIG: true,
+            ENABLE_SYSTEM_SPLIT: true,
+            ENABLE_GENERIC_WEAPON: true,
+          };
+          const legacy = await runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags: legacyFlags, query });
+          const enabled = await runSnapshotWithFlags(browser, baseUrl, { seed, record, seconds, flags: enabledFlags, query });
+          const diff = diffSnapshots(legacy, enabled);
+          const genericWeaponShadow = enabled.genericWeaponShadow;
+          const entry = {
+            weaponId,
+            level,
+            genericDpsThreshold,
+            genericWeaponShadow,
+            ...diff,
+          };
+          entries.push(entry);
+          if (!diff.equal) throw new Error(`Generic weapon matrix snapshot diff for ${weaponId} level ${level}. See reports/generic-weapon-matrix.json.`);
+          if (!genericWeaponShadow || genericWeaponShadow.samples <= 0) {
+            throw new Error(`Generic weapon matrix produced no samples for ${weaponId} level ${level}. See reports/generic-weapon-matrix.json.`);
+          }
+          if (genericWeaponShadow.maxDpsDiffRatio >= genericDpsThreshold) {
+            throw new Error(`Generic weapon matrix DPS diff exceeded threshold for ${weaponId} level ${level}. See reports/generic-weapon-matrix.json.`);
+          }
         }
       }
       const report = {

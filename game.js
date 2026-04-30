@@ -2562,6 +2562,17 @@ class Player {
             }
         }
         weapon.level = 1;
+        const forcedWeaponLevel = Number(new URLSearchParams(window.location.search).get('debugInitialWeaponLevel') || 1);
+        if (forcedWeapon && Number.isInteger(forcedWeaponLevel) && forcedWeaponLevel > 1) {
+            const targetLevel = Math.min(forcedWeaponLevel, 6);
+            for (let lvl = 2; lvl <= targetLevel; lvl++) {
+                if (config[lvl]?.action) {
+                    config[lvl].action(weapon);
+                }
+            }
+            weapon.level = targetLevel;
+            weapon.onStatsUpdated(this.modifiers);
+        }
         this.weapons.push(weapon);
         this.refreshWeapons();
         console.log('Player Init Stats:', this.modifiers, 'MaxHP:', this.maxHp, `Initial Weapon: ${config.name} Lv1, BaseDmg: ${config.baseDamage}`);
