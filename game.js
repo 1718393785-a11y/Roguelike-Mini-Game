@@ -2717,6 +2717,7 @@ class Shield extends Weapon {
             nearbyEnemies,
             this.hitRecords
         ) : [];
+        const genericHitIdSet = genericShadowEnabled ? new Set(genericShadowHits) : null;
         const legacyHits = [];
 
         for (let i = nearbyEnemies.length - 1; i >= 0; i--) {
@@ -2728,11 +2729,15 @@ class Shield extends Weapon {
             const dx = enemy.x - this.x;
             const dy = enemy.y - this.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
+            const legacyShouldHit = dist <= this.currentRadius + enemy.size / 2;
 
-            if (dist <= this.currentRadius + enemy.size / 2) {
+            if (legacyShouldHit) {
                 if (genericShadowEnabled) {
                     legacyHits.push(getDebugEntityId(enemy));
                 }
+            }
+            const shouldHit = genericShadowEnabled ? genericHitIdSet.has(getDebugEntityId(enemy)) : legacyShouldHit;
+            if (shouldHit) {
                 // 计算总伤害加成
                 // 计算总伤害加成 - 使用统一跨源乘算
                 const effectiveDamage = this.baseDamage * player.getDamageMultiplier();
