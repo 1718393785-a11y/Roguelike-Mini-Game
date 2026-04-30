@@ -512,7 +512,25 @@ function resolveWeaponSpecNumber(config, level, key, fallback) {
     return value;
 }
 
-const GENERIC_WEAPON_MIGRATION_IDS = new Set(['saber']);
+function resolveWeaponSpecNumberWithAliases(config, level, key, fallback, aliases = {}) {
+    if (!config) return fallback;
+    let value = typeof config.params?.[key] === 'number' ? config.params[key] : fallback;
+    const levels = (config.levels || [])
+        .filter(item => item.level <= level)
+        .sort((a, b) => a.level - b.level);
+    for (const levelConfig of levels) {
+        const patches = levelConfig.numericPatches || {};
+        const directKey = aliases.direct || key;
+        const addKey = aliases.add || `${key}Add`;
+        const multiplierKey = aliases.multiplier || `${key}Multiplier`;
+        if (typeof patches[directKey] === 'number') value = patches[directKey];
+        if (typeof patches[addKey] === 'number') value += patches[addKey];
+        if (typeof patches[multiplierKey] === 'number') value *= patches[multiplierKey];
+    }
+    return value;
+}
+
+const GENERIC_WEAPON_MIGRATION_IDS = new Set(['saber', 'spear']);
 
 function isGenericWeaponMigrated(weaponType) {
     return FEATURE_FLAGS.ENABLE_GENERIC_WEAPON && GENERIC_WEAPON_MIGRATION_IDS.has(weaponType);
@@ -531,6 +549,17 @@ function applyGenericWeaponScalarMigration(weapon) {
         weapon.halfAngle = resolveWeaponSpecNumber(spec, level, 'halfAngleRadians', weapon.halfAngle);
         weapon.comboMax = resolveWeaponSpecNumber(spec, level, 'comboMax', weapon.comboMax);
         weapon.comboInterval = resolveWeaponSpecNumber(spec, level, 'comboInterval', weapon.comboInterval);
+    } else if (weapon.type === 'spear') {
+        weapon.baseDamage = resolveWeaponSpecNumber(spec, level, 'damage', spec.damage);
+        weapon.baseAttackInterval = resolveWeaponSpecNumber(spec, level, 'attackInterval', spec.attackInterval);
+        weapon.length = resolveWeaponSpecNumber(spec, level, 'length', weapon.length);
+        weapon.width = resolveWeaponSpecNumber(spec, level, 'width', weapon.width);
+        weapon.knockbackDist = resolveWeaponSpecNumberWithAliases(spec, level, 'knockbackDist', weapon.knockbackDist, {
+            multiplier: 'knockbackMultiplier'
+        });
+        weapon.spreadCount = resolveWeaponSpecNumber(spec, level, 'spreadCount', weapon.spreadCount);
+        weapon.hasDash = level >= 5;
+        weapon.isUltimate = level >= 6;
     }
 }
 
