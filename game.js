@@ -512,6 +512,28 @@ function resolveWeaponSpecNumber(config, level, key, fallback) {
     return value;
 }
 
+const GENERIC_WEAPON_MIGRATION_IDS = new Set(['saber']);
+
+function isGenericWeaponMigrated(weaponType) {
+    return FEATURE_FLAGS.ENABLE_GENERIC_WEAPON && GENERIC_WEAPON_MIGRATION_IDS.has(weaponType);
+}
+
+function applyGenericWeaponScalarMigration(weapon) {
+    if (!isGenericWeaponMigrated(weapon.type) || !LEGACY_JSON_WEAPON_CONFIG) return;
+    const spec = LEGACY_JSON_WEAPON_CONFIG[weapon.type];
+    if (!spec) return;
+    const level = weapon.level || 1;
+
+    if (weapon.type === 'saber') {
+        weapon.baseDamage = resolveWeaponSpecNumber(spec, level, 'damage', spec.damage);
+        weapon.baseAttackInterval = resolveWeaponSpecNumber(spec, level, 'attackInterval', spec.attackInterval);
+        weapon.radius = resolveWeaponSpecNumber(spec, level, 'radius', weapon.radius);
+        weapon.halfAngle = resolveWeaponSpecNumber(spec, level, 'halfAngleRadians', weapon.halfAngle);
+        weapon.comboMax = resolveWeaponSpecNumber(spec, level, 'comboMax', weapon.comboMax);
+        weapon.comboInterval = resolveWeaponSpecNumber(spec, level, 'comboInterval', weapon.comboInterval);
+    }
+}
+
 class GenericWeaponShadowMonitor {
     constructor() {
         this.samples = 0;
@@ -538,6 +560,7 @@ class GenericWeaponShadowMonitor {
             const sample = {
                 type: weapon.type,
                 level,
+                migrated: isGenericWeaponMigrated(weapon.type),
                 legacyDamage,
                 genericDamage,
                 legacyInterval,
@@ -2573,6 +2596,7 @@ class Player {
             weapon.level = targetLevel;
             weapon.onStatsUpdated(this.modifiers);
         }
+        applyGenericWeaponScalarMigration(weapon);
         this.weapons.push(weapon);
         this.refreshWeapons();
         console.log('Player Init Stats:', this.modifiers, 'MaxHP:', this.maxHp, `Initial Weapon: ${config.name} Lv1, BaseDmg: ${config.baseDamage}`);
@@ -4857,6 +4881,7 @@ class GameManager {
                         }
                         // 升级等级
                         weapon.level = nextLevel;
+                        applyGenericWeaponScalarMigration(weapon);
                         weapon.onStatsUpdated(this.player.modifiers);
                         console.log(`Weapon Upgrade: ${config.name} → lv${nextLevel}`);
                     }
@@ -4896,6 +4921,7 @@ class GameManager {
                             firstCfg.action(weapon);
                         }
                         weapon.level = firstLevel;
+                        applyGenericWeaponScalarMigration(weapon);
                         weapon.onStatsUpdated(this.player.modifiers);
                         this.player.weapons.push(weapon);
                         console.log(`Unlocked New Weapon: ${config.name} lv1, BaseDmg: ${config.baseDamage}`);

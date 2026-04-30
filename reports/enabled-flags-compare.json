@@ -21,6 +21,7 @@
       {
         "type": "shield",
         "level": 1,
+        "migrated": false,
         "legacyDamage": 45,
         "genericDamage": 45,
         "legacyInterval": 3.5,

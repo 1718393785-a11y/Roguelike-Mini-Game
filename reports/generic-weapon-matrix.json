@@ -18,6 +18,7 @@
           {
             "type": "saber",
             "level": 1,
+            "migrated": true,
             "legacyDamage": 18,
             "genericDamage": 18,
             "legacyInterval": 1.5,
@@ -51,6 +52,7 @@
           {
             "type": "saber",
             "level": 2,
+            "migrated": true,
             "legacyDamage": 18,
             "genericDamage": 18,
             "legacyInterval": 1.5,
@@ -84,6 +86,7 @@
           {
             "type": "saber",
             "level": 3,
+            "migrated": true,
             "legacyDamage": 25.2,
             "genericDamage": 25.2,
             "legacyInterval": 1.5,
@@ -117,6 +120,7 @@
           {
             "type": "saber",
             "level": 4,
+            "migrated": true,
             "legacyDamage": 25.2,
             "genericDamage": 25.2,
             "legacyInterval": 1.5,
@@ -150,6 +154,7 @@
           {
             "type": "saber",
             "level": 5,
+            "migrated": true,
             "legacyDamage": 25.2,
             "genericDamage": 25.2,
             "legacyInterval": 1.5,
@@ -183,6 +188,7 @@
           {
             "type": "saber",
             "level": 6,
+            "migrated": true,
             "legacyDamage": 28.979999999999997,
             "genericDamage": 28.979999999999997,
             "legacyInterval": 1.2000000000000002,
@@ -216,6 +222,7 @@
           {
             "type": "spear",
             "level": 1,
+            "migrated": false,
             "legacyDamage": 25,
             "genericDamage": 25,
             "legacyInterval": 1.5,
@@ -249,6 +256,7 @@
           {
             "type": "spear",
             "level": 2,
+            "migrated": false,
             "legacyDamage": 25,
             "genericDamage": 25,
             "legacyInterval": 1.5,
@@ -282,6 +290,7 @@
           {
             "type": "spear",
             "level": 3,
+            "migrated": false,
             "legacyDamage": 35,
             "genericDamage": 35,
             "legacyInterval": 1.5,
@@ -315,6 +324,7 @@
           {
             "type": "spear",
             "level": 4,
+            "migrated": false,
             "legacyDamage": 35,
             "genericDamage": 35,
             "legacyInterval": 1.0499999999999998,
@@ -348,6 +358,7 @@
           {
             "type": "spear",
             "level": 5,
+            "migrated": false,
             "legacyDamage": 35,
             "genericDamage": 35,
             "legacyInterval": 1.0499999999999998,
@@ -381,6 +392,7 @@
           {
             "type": "spear",
             "level": 6,
+            "migrated": false,
             "legacyDamage": 35,
             "genericDamage": 35,
             "legacyInterval": 1.0499999999999998,
@@ -414,6 +426,7 @@
           {
             "type": "crossbow",
             "level": 1,
+            "migrated": false,
             "legacyDamage": 8,
             "genericDamage": 8,
             "legacyInterval": 0.8,
@@ -447,6 +460,7 @@
           {
             "type": "crossbow",
             "level": 2,
+            "migrated": false,
             "legacyDamage": 8,
             "genericDamage": 8,
             "legacyInterval": 0.8,
@@ -480,6 +494,7 @@
           {
             "type": "crossbow",
             "level": 3,
+            "migrated": false,
             "legacyDamage": 8,
             "genericDamage": 8,
             "legacyInterval": 0.8,
@@ -513,6 +528,7 @@
           {
             "type": "crossbow",
             "level": 4,
+            "migrated": false,
             "legacyDamage": 8,
             "genericDamage": 8,
             "legacyInterval": 0.5599999999999999,
@@ -546,6 +562,7 @@
           {
             "type": "crossbow",
             "level": 5,
+            "migrated": false,
             "legacyDamage": 8,
             "genericDamage": 8,
             "legacyInterval": 0.5599999999999999,
@@ -579,6 +596,7 @@
           {
             "type": "crossbow",
             "level": 6,
+            "migrated": false,
             "legacyDamage": 8,
             "genericDamage": 8,
             "legacyInterval": 0.5599999999999999,
@@ -612,6 +630,7 @@
           {
             "type": "qinggang",
             "level": 1,
+            "migrated": false,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 0.016,
@@ -645,6 +664,7 @@
           {
             "type": "qinggang",
             "level": 2,
+            "migrated": false,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 0.016,
@@ -678,6 +698,7 @@
           {
             "type": "qinggang",
             "level": 3,
+            "migrated": false,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 0.016,
@@ -711,6 +732,7 @@
           {
             "type": "qinggang",
             "level": 4,
+            "migrated": false,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 0.016,
@@ -744,6 +766,7 @@
           {
             "type": "qinggang",
             "level": 5,
+            "migrated": false,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 0.016,
@@ -777,6 +800,7 @@
           {
             "type": "qinggang",
             "level": 6,
+            "migrated": false,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 0.016,
@@ -810,6 +834,7 @@
           {
             "type": "shield",
             "level": 1,
+            "migrated": false,
             "legacyDamage": 45,
             "genericDamage": 45,
             "legacyInterval": 3.5,
@@ -843,6 +868,7 @@
           {
             "type": "shield",
             "level": 2,
+            "migrated": false,
             "legacyDamage": 45,
             "genericDamage": 45,
             "legacyInterval": 3.5,
@@ -876,6 +902,7 @@
           {
             "type": "shield",
             "level": 3,
+            "migrated": false,
             "legacyDamage": 45,
             "genericDamage": 45,
             "legacyInterval": 2.4499999999999997,
@@ -909,6 +936,7 @@
           {
             "type": "shield",
             "level": 4,
+            "migrated": false,
             "legacyDamage": 90,
             "genericDamage": 90,
             "legacyInterval": 2.4499999999999997,
@@ -942,6 +970,7 @@
           {
             "type": "shield",
             "level": 5,
+            "migrated": false,
             "legacyDamage": 90,
             "genericDamage": 90,
             "legacyInterval": 2.4499999999999997,
@@ -975,6 +1004,7 @@
           {
             "type": "shield",
             "level": 6,
+            "migrated": false,
             "legacyDamage": 90,
             "genericDamage": 90,
             "legacyInterval": 2.4499999999999997,
@@ -1008,6 +1038,7 @@
           {
             "type": "taiping",
             "level": 1,
+            "migrated": false,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 5,
@@ -1041,6 +1072,7 @@
           {
             "type": "taiping",
             "level": 2,
+            "migrated": false,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 5,
@@ -1074,6 +1106,7 @@
           {
             "type": "taiping",
             "level": 3,
+            "migrated": false,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 5,
@@ -1107,6 +1140,7 @@
           {
             "type": "taiping",
             "level": 4,
+            "migrated": false,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 5,
@@ -1140,6 +1174,7 @@
           {
             "type": "taiping",
             "level": 5,
+            "migrated": false,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 5,
@@ -1173,6 +1208,7 @@
           {
             "type": "taiping",
             "level": 6,
+            "migrated": false,
             "legacyDamage": 20,
             "genericDamage": 20,
             "legacyInterval": 5,
