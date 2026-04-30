@@ -687,6 +687,18 @@ function collectCircleShadowHits(originX, originY, radius, candidates, excluded)
     return hits.sort((a, b) => a - b);
 }
 
+function collectInclusiveCircleShadowHits(originX, originY, radius, candidates, excluded) {
+    const hits = [];
+    for (const entity of candidates) {
+        if (excluded?.has(entity)) continue;
+        const dist = Math.hypot(entity.x - originX, entity.y - originY);
+        if (dist <= radius + entity.size / 2) {
+            hits.push(getDebugEntityId(entity));
+        }
+    }
+    return hits.sort((a, b) => a - b);
+}
+
 function selectForwardConeTarget(player, enemies, maxAngleDiff) {
     const playerAngle = Math.atan2(player.facingDirY, player.facingDirX);
     let closestInAngle = null;
@@ -2818,6 +2830,18 @@ class Shield extends Weapon {
     }
 
     destroyProjectilesInRadius(projectiles) {
+        const gm = window.gameManager;
+        const genericShadowEnabled = !!gm.genericWeaponShadow;
+        const enemyProjectiles = projectiles.filter(proj => proj.isEnemyProjectile);
+        const genericShadowHits = genericShadowEnabled ? collectInclusiveCircleShadowHits(
+            this.x,
+            this.y,
+            this.currentRadius,
+            enemyProjectiles
+        ) : [];
+        const genericHitIdSet = genericShadowEnabled ? new Set(genericShadowHits) : null;
+        const legacyHits = [];
+
         // 遍历所有飞行物，摧毁敌方投射物在当前半径内
         for (let i = projectiles.length - 1; i >= 0; i--) {
             const proj = projectiles[i];
@@ -2827,9 +2851,25 @@ class Shield extends Weapon {
             const dx = proj.x - this.x;
             const dy = proj.y - this.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist <= this.currentRadius + proj.size / 2) {
+            const legacyShouldDestroy = dist <= this.currentRadius + proj.size / 2;
+            if (legacyShouldDestroy) {
+                if (genericShadowEnabled) {
+                    legacyHits.push(getDebugEntityId(proj));
+                }
+            }
+            const shouldDestroy = genericShadowEnabled ? genericHitIdSet.has(getDebugEntityId(proj)) : legacyShouldDestroy;
+            if (shouldDestroy) {
                 projectiles.splice(i, 1);
             }
+        }
+        if (genericShadowEnabled && enemyProjectiles.length > 0) {
+            gm.genericWeaponShadow.recordBehaviorSample({
+                type: 'shield',
+                effect: 'area_pulse_projectile_clear',
+                level: this.level,
+                genericHits: genericShadowHits,
+                legacyHits: legacyHits.sort((a, b) => a - b)
+            });
         }
     }
 
