@@ -711,6 +711,24 @@ function selectForwardConeTarget(player, enemies, maxAngleDiff) {
     return closestInAngle;
 }
 
+function doesProjectileCollideWithEnemyShadow(projectile, enemy) {
+    if (enemy.isBoss) {
+        const dx = enemy.x - projectile.x;
+        const dy = enemy.y - projectile.y;
+        const radius = enemy.size / 2 + projectile.size / 2;
+        return dx * dx + dy * dy <= radius * radius;
+    }
+    const ax = projectile.x - projectile.size / 2;
+    const ay = projectile.y - projectile.size / 2;
+    const aw = projectile.size;
+    const ah = projectile.size;
+    const bx = enemy.x - enemy.size / 2;
+    const by = enemy.y - enemy.size / 2;
+    const bw = enemy.size;
+    const bh = enemy.size;
+    return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
+}
+
 class GenericWeaponShadowMonitor {
     constructor() {
         this.samples = 0;
@@ -1695,6 +1713,7 @@ class HomingProjectile {
 // 霹雳惊弦弓 - 可穿透箭矢投射物（新版支持穿透和闪电特效）
 class CrossbowArrow {
     constructor(x, y, angle, damage, extraPierce, projectileSpeed, hasLightningAOE, hasLightningColumn, weaponLevel = 1) {
+        this.type = 'crossbow_arrow';
         this.x = x + Math.cos(angle) * 10; // 从玩家身前射出
         this.y = y + Math.sin(angle) * 10;
         this.vx = Math.cos(angle) * projectileSpeed; // 配置化速度
@@ -5676,6 +5695,17 @@ class GameManager {
                         projectile.x - projectile.size/2, projectile.y - projectile.size/2, projectile.size, projectile.size,
                         enemy.x - enemy.size/2, enemy.y - enemy.size/2, enemy.size, enemy.size
                     );
+                }
+                if (this.genericWeaponShadow && projectile.type === 'crossbow_arrow') {
+                    const genericCollided = doesProjectileCollideWithEnemyShadow(projectile, enemy);
+                    const enemyId = getDebugEntityId(enemy);
+                    this.genericWeaponShadow.recordBehaviorSample({
+                        type: 'crossbow',
+                        effect: 'projectile_collision',
+                        level: projectile.weaponLevel || 1,
+                        genericHits: genericCollided ? [enemyId] : [],
+                        legacyHits: collided ? [enemyId] : []
+                    });
                 }
 
                 if (collided) {
