@@ -88,6 +88,15 @@ function assertSystemOrderMatchesRuntime() {
   }
 }
 
+function assertGenericWeaponMigrationStatus() {
+  const text = readText(path.join('src', 'effects', 'migrationStatus.ts'));
+  for (const weaponId of ['saber', 'spear', 'crossbow', 'qinggang', 'shield', 'taiping']) {
+    if (!text.includes(`${weaponId}:`)) {
+      fail(`Generic weapon migration status is missing ${weaponId}`);
+    }
+  }
+}
+
 function assertBackupPreserved() {
   const backupPath = path.join(rootDir, 'backup', 'game.js');
   if (!existsSync(backupPath)) {
@@ -105,6 +114,7 @@ assertSpecFilesArePureJson();
 assertSystemBoundaries();
 assertWeaponEffectWhitelist();
 assertSystemOrderMatchesRuntime();
+assertGenericWeaponMigrationStatus();
 assertBackupPreserved();
 
 if (failures.length > 0) {
