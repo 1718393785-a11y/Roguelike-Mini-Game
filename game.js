@@ -675,6 +675,18 @@ function collectLineRectShadowHits(originX, originY, dirX, dirY, length, width, 
     return hits.sort((a, b) => a - b);
 }
 
+function collectCircleShadowHits(originX, originY, radius, candidates, excluded) {
+    const hits = [];
+    for (const enemy of candidates) {
+        if (excluded?.has(enemy)) continue;
+        const dist = Math.hypot(enemy.x - originX, enemy.y - originY);
+        if (dist < radius + enemy.size / 2) {
+            hits.push(getDebugEntityId(enemy));
+        }
+    }
+    return hits.sort((a, b) => a - b);
+}
+
 function selectForwardConeTarget(player, enemies, maxAngleDiff) {
     const playerAngle = Math.atan2(player.facingDirY, player.facingDirX);
     let closestInAngle = null;
@@ -1985,6 +1997,8 @@ class QinggangSword extends Weapon {
 
         const now = Date.now();
         const collisionRadius = 20 * areaMul;
+        const gm = window.gameManager;
+        const genericShadowEnabled = !!gm.genericWeaponShadow;
 
         // 处理飞剑轨道：单轨道或双轨道
         let orbitConfigs = [];
@@ -2022,14 +2036,23 @@ class QinggangSword extends Weapon {
                 const actualY = player.y + Math.sin(actualAngle) * orbit.radius;
 
                 // 空间网格优化：只查询飞剑附近格子的敌人
-                const gm = window.gameManager;
                 const nearbyEnemies = gm.queryEnemiesInRange(actualX, actualY, collisionRadius + 40);
+                const genericShadowHits = genericShadowEnabled ? collectCircleShadowHits(
+                    actualX,
+                    actualY,
+                    collisionRadius,
+                    nearbyEnemies
+                ) : [];
+                const legacyHits = [];
 
                 // 碰撞检测 - 只遍历附近敌人
                 for (let j = nearbyEnemies.length - 1; j >= 0; j--) {
                     const enemy = nearbyEnemies[j];
                     const dist = Math.hypot(enemy.x - actualX, enemy.y - actualY);
                     if (dist < collisionRadius + enemy.size / 2) {
+                        if (genericShadowEnabled) {
+                            legacyHits.push(getDebugEntityId(enemy));
+                        }
                         const lastHitTime = this.hitRecords.get(enemy) || 0;
                         // 内部伤害 Tick 同步吃减 CD，确保转得快也能高频触发伤害
                         const tickInterval = 500 * Math.max(0.1, 1 - cdr);
@@ -2063,6 +2086,15 @@ class QinggangSword extends Weapon {
                             }
                         }
                     }
+                }
+                if (genericShadowEnabled) {
+                    gm.genericWeaponShadow.recordBehaviorSample({
+                        type: 'qinggang',
+                        effect: 'orbit_entity_geometry',
+                        level: this.level,
+                        genericHits: genericShadowHits,
+                        legacyHits: legacyHits.sort((a, b) => a - b)
+                    });
                 }
             }
         }
