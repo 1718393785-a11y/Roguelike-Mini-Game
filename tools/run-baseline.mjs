@@ -244,6 +244,9 @@ async function main() {
         if (genericWeaponShadow.maxDpsDiffRatio >= genericDpsThreshold) {
           throw new Error('Generic weapon shadow DPS diff exceeded threshold. See reports/enabled-flags-compare.json.');
         }
+        if (genericWeaponShadow.behaviorMismatches > 0) {
+          throw new Error('Generic weapon behavior shadow mismatch. See reports/enabled-flags-compare.json.');
+        }
       }
       console.log(`Enabled flags compare OK: ${diff.snapshotCountA} frames, zero diff.`);
       return;
@@ -284,6 +287,9 @@ async function main() {
           }
           if (genericWeaponShadow.maxDpsDiffRatio >= genericDpsThreshold) {
             throw new Error(`Generic weapon matrix DPS diff exceeded threshold for ${weaponId} level ${level}. See reports/generic-weapon-matrix.json.`);
+          }
+          if (genericWeaponShadow.behaviorMismatches > 0) {
+            throw new Error(`Generic weapon behavior shadow mismatch for ${weaponId} level ${level}. See reports/generic-weapon-matrix.json.`);
           }
         }
       }

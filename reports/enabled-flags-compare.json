@@ -17,6 +17,9 @@
     "maxDpsDiffRatio": 0,
     "maxDamageDiffRatio": 0,
     "maxIntervalDiffRatio": 0,
+    "behaviorSamples": 0,
+    "behaviorMismatches": 0,
+    "lastBehaviorMismatches": [],
     "lastSamples": [
       {
         "type": "shield",

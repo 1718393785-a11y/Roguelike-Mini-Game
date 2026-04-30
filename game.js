@@ -634,12 +634,41 @@ function applyGenericWeaponScalarMigration(weapon) {
     }
 }
 
+function getDebugEntityId(entity) {
+    if (!entity.__debugEntityId) {
+        window.__NEXT_DEBUG_ENTITY_ID__ = (window.__NEXT_DEBUG_ENTITY_ID__ || 1) + 1;
+        entity.__debugEntityId = window.__NEXT_DEBUG_ENTITY_ID__;
+    }
+    return entity.__debugEntityId;
+}
+
+function collectMeleeArcShadowHits(originX, originY, aimAngle, radius, halfAngle, candidates, excluded) {
+    const hits = [];
+    for (const enemy of candidates) {
+        if (excluded?.has(enemy)) continue;
+        const dx = enemy.x - originX;
+        const dy = enemy.y - originY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > radius) continue;
+        const enemyAngle = Math.atan2(dy, dx);
+        let angleDiff = Math.abs(enemyAngle - aimAngle);
+        angleDiff = Math.min(angleDiff, 2 * Math.PI - angleDiff);
+        if (angleDiff <= halfAngle) {
+            hits.push(getDebugEntityId(enemy));
+        }
+    }
+    return hits.sort((a, b) => a - b);
+}
+
 class GenericWeaponShadowMonitor {
     constructor() {
         this.samples = 0;
         this.maxDpsDiffRatio = 0;
         this.maxDamageDiffRatio = 0;
         this.maxIntervalDiffRatio = 0;
+        this.behaviorSamples = 0;
+        this.behaviorMismatches = 0;
+        this.lastBehaviorMismatches = [];
         this.lastSamples = [];
         window.__GENERIC_WEAPON_SHADOW__ = this.getReport();
     }
@@ -683,6 +712,20 @@ class GenericWeaponShadowMonitor {
         }
     }
 
+    recordBehaviorSample(sample) {
+        if (!FEATURE_FLAGS.ENABLE_GENERIC_WEAPON) return;
+        this.behaviorSamples++;
+        const matches = JSON.stringify(sample.legacyHits) === JSON.stringify(sample.genericHits);
+        if (!matches) {
+            this.behaviorMismatches++;
+            this.lastBehaviorMismatches.push(sample);
+            if (this.lastBehaviorMismatches.length > 20) {
+                this.lastBehaviorMismatches.shift();
+            }
+        }
+        window.__GENERIC_WEAPON_SHADOW__ = this.getReport();
+    }
+
     diffRatio(left, right) {
         const denominator = Math.max(Math.abs(left), Math.abs(right), 1e-9);
         return Math.abs(left - right) / denominator;
@@ -694,6 +737,9 @@ class GenericWeaponShadowMonitor {
             maxDpsDiffRatio: this.maxDpsDiffRatio,
             maxDamageDiffRatio: this.maxDamageDiffRatio,
             maxIntervalDiffRatio: this.maxIntervalDiffRatio,
+            behaviorSamples: this.behaviorSamples,
+            behaviorMismatches: this.behaviorMismatches,
+            lastBehaviorMismatches: this.lastBehaviorMismatches,
             lastSamples: this.lastSamples
         };
     }
@@ -916,6 +962,17 @@ class Saber extends Weapon {
         // 空间网格优化：只查询扇形半径范围内附近格子的敌人
         const gm = window.gameManager;
         const nearbyEnemies = gm.queryEnemiesInRange(currentX, currentY, this.currentRadius);
+        const genericShadowEnabled = !!gm.genericWeaponShadow;
+        const genericShadowHits = genericShadowEnabled ? collectMeleeArcShadowHits(
+            currentX,
+            currentY,
+            this.aimAngle,
+            this.currentRadius,
+            this.halfAngle,
+            nearbyEnemies,
+            this.hitRecords
+        ) : [];
+        const legacyHits = [];
 
         // 遍历附近敌人做扇形碰撞检测
         for (let i = nearbyEnemies.length - 1; i >= 0; i--) {
@@ -935,6 +992,9 @@ class Saber extends Weapon {
             let angleDiff = Math.abs(enemyAngle - this.aimAngle);
             angleDiff = Math.min(angleDiff, 2 * Math.PI - angleDiff);
             if (angleDiff <= this.halfAngle) {
+                if (genericShadowEnabled) {
+                    legacyHits.push(getDebugEntityId(enemy));
+                }
                 // 计算总伤害加成 - 使用统一跨源乘算
                 const effectiveDamage = this.baseDamage * player.getDamageMultiplier();
                 this.hitRecords.add(enemy);
@@ -980,6 +1040,15 @@ class Saber extends Weapon {
                     this.hitRecords.delete(enemy);
                 }
             }
+        }
+        if (genericShadowEnabled) {
+            gm.genericWeaponShadow.recordBehaviorSample({
+                type: 'saber',
+                effect: 'melee_arc',
+                level: this.level,
+                genericHits: genericShadowHits,
+                legacyHits: legacyHits.sort((a, b) => a - b)
+            });
         }
 
         // 额外遍历清除敌方投射物在扇形范围内

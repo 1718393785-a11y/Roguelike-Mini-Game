@@ -14,6 +14,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 62,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "saber",
@@ -48,6 +51,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 62,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "saber",
@@ -82,6 +88,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 62,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "saber",
@@ -116,6 +125,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 62,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "saber",
@@ -150,6 +162,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 176,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "saber",
@@ -184,6 +199,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 508,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "saber",
@@ -218,6 +236,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "spear",
@@ -252,6 +273,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "spear",
@@ -286,6 +310,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "spear",
@@ -320,6 +347,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "spear",
@@ -354,6 +384,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "spear",
@@ -388,6 +421,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "spear",
@@ -422,6 +458,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "crossbow",
@@ -456,6 +495,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "crossbow",
@@ -490,6 +532,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "crossbow",
@@ -524,6 +569,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "crossbow",
@@ -558,6 +606,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "crossbow",
@@ -592,6 +643,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "crossbow",
@@ -626,6 +680,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "qinggang",
@@ -660,6 +717,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "qinggang",
@@ -694,6 +754,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "qinggang",
@@ -728,6 +791,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "qinggang",
@@ -762,6 +828,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "qinggang",
@@ -796,6 +865,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "qinggang",
@@ -830,6 +902,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "shield",
@@ -864,6 +939,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "shield",
@@ -898,6 +976,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "shield",
@@ -932,6 +1013,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "shield",
@@ -966,6 +1050,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "shield",
@@ -1000,6 +1087,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "shield",
@@ -1034,6 +1124,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "taiping",
@@ -1068,6 +1161,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "taiping",
@@ -1102,6 +1198,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "taiping",
@@ -1136,6 +1235,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "taiping",
@@ -1170,6 +1272,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "taiping",
@@ -1204,6 +1309,9 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
+        "behaviorSamples": 0,
+        "behaviorMismatches": 0,
+        "lastBehaviorMismatches": [],
         "lastSamples": [
           {
             "type": "taiping",
