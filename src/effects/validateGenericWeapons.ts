@@ -35,6 +35,7 @@ async function main(): Promise<void> {
             ...snapshot,
             attacksPerMinute,
             effects: weapon.getEffects(),
+            effectInstanceCount: weapon.getEffectInstances().length,
           };
         }),
       };

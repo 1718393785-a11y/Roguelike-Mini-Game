@@ -1,5 +1,10 @@
 import type { WeaponConfig, WeaponLevelConfig } from '../config/Schema';
-import { assertWhitelistedEffect, type WeaponEffectType } from './weaponEffects';
+import {
+  assertWhitelistedEffect,
+  createWeaponEffect,
+  type WeaponEffect,
+  type WeaponEffectType,
+} from './weaponEffects';
 
 export interface GenericWeaponRuntimeStats {
   readonly id: string;
@@ -66,6 +71,10 @@ export class GenericWeapon {
 
   getEffects(): readonly WeaponEffectType[] {
     return this.getEffectConfigs().map(effect => effect.type);
+  }
+
+  getEffectInstances(): readonly WeaponEffect[] {
+    return this.getEffectConfigs().map(effect => createWeaponEffect(effect.type, effect.params));
   }
 
   snapshot(): GenericWeaponRuntimeStats {

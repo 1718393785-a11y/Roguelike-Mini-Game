@@ -16,7 +16,8 @@
           "attacksPerMinute": 39,
           "effects": [
             "melee_arc"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "saber",
@@ -28,7 +29,8 @@
           "attacksPerMinute": 39,
           "effects": [
             "melee_arc"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "saber",
@@ -40,7 +42,8 @@
           "attacksPerMinute": 39,
           "effects": [
             "melee_arc"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "saber",
@@ -52,7 +55,8 @@
           "attacksPerMinute": 39,
           "effects": [
             "melee_arc"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "saber",
@@ -65,7 +69,8 @@
           "effects": [
             "melee_arc",
             "mod_combo"
-          ]
+          ],
+          "effectInstanceCount": 2
         },
         {
           "id": "saber",
@@ -79,7 +84,8 @@
             "melee_arc",
             "mod_combo",
             "mod_combo"
-          ]
+          ],
+          "effectInstanceCount": 3
         }
       ]
     },
@@ -96,7 +102,8 @@
           "attacksPerMinute": 39,
           "effects": [
             "melee_arc"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "spear",
@@ -108,7 +115,8 @@
           "attacksPerMinute": 39,
           "effects": [
             "melee_arc"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "spear",
@@ -121,7 +129,8 @@
           "effects": [
             "melee_arc",
             "mod_knockback"
-          ]
+          ],
+          "effectInstanceCount": 2
         },
         {
           "id": "spear",
@@ -134,7 +143,8 @@
           "effects": [
             "melee_arc",
             "mod_knockback"
-          ]
+          ],
+          "effectInstanceCount": 2
         },
         {
           "id": "spear",
@@ -148,7 +158,8 @@
             "melee_arc",
             "mod_knockback",
             "mod_pierce"
-          ]
+          ],
+          "effectInstanceCount": 3
         },
         {
           "id": "spear",
@@ -163,7 +174,8 @@
             "mod_knockback",
             "mod_pierce",
             "mod_pierce"
-          ]
+          ],
+          "effectInstanceCount": 4
         }
       ]
     },
@@ -180,7 +192,8 @@
           "attacksPerMinute": 75,
           "effects": [
             "projectile"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "crossbow",
@@ -192,7 +205,8 @@
           "attacksPerMinute": 75,
           "effects": [
             "projectile"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "crossbow",
@@ -205,7 +219,8 @@
           "effects": [
             "projectile",
             "mod_pierce"
-          ]
+          ],
+          "effectInstanceCount": 2
         },
         {
           "id": "crossbow",
@@ -218,7 +233,8 @@
           "effects": [
             "projectile",
             "mod_pierce"
-          ]
+          ],
+          "effectInstanceCount": 2
         },
         {
           "id": "crossbow",
@@ -232,7 +248,8 @@
             "projectile",
             "mod_pierce",
             "area_pulse"
-          ]
+          ],
+          "effectInstanceCount": 3
         },
         {
           "id": "crossbow",
@@ -247,7 +264,8 @@
             "mod_pierce",
             "area_pulse",
             "area_pulse"
-          ]
+          ],
+          "effectInstanceCount": 4
         }
       ]
     },
@@ -264,7 +282,8 @@
           "attacksPerMinute": 3600,
           "effects": [
             "orbit_entity"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "qinggang",
@@ -276,7 +295,8 @@
           "attacksPerMinute": 3600,
           "effects": [
             "orbit_entity"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "qinggang",
@@ -288,7 +308,8 @@
           "attacksPerMinute": 3600,
           "effects": [
             "orbit_entity"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "qinggang",
@@ -300,7 +321,8 @@
           "attacksPerMinute": 3600,
           "effects": [
             "orbit_entity"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "qinggang",
@@ -312,7 +334,8 @@
           "attacksPerMinute": 3600,
           "effects": [
             "orbit_entity"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "qinggang",
@@ -325,7 +348,8 @@
           "effects": [
             "orbit_entity",
             "orbit_entity"
-          ]
+          ],
+          "effectInstanceCount": 2
         }
       ]
     },
@@ -342,7 +366,8 @@
           "attacksPerMinute": 17,
           "effects": [
             "area_pulse"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "shield",
@@ -354,7 +379,8 @@
           "attacksPerMinute": 17,
           "effects": [
             "area_pulse"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "shield",
@@ -366,7 +392,8 @@
           "attacksPerMinute": 24,
           "effects": [
             "area_pulse"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "shield",
@@ -379,7 +406,8 @@
           "effects": [
             "area_pulse",
             "mod_knockback"
-          ]
+          ],
+          "effectInstanceCount": 2
         },
         {
           "id": "shield",
@@ -393,7 +421,8 @@
             "area_pulse",
             "mod_knockback",
             "area_pulse"
-          ]
+          ],
+          "effectInstanceCount": 3
         },
         {
           "id": "shield",
@@ -408,7 +437,8 @@
             "mod_knockback",
             "area_pulse",
             "persistent_area"
-          ]
+          ],
+          "effectInstanceCount": 4
         }
       ]
     },
@@ -425,7 +455,8 @@
           "attacksPerMinute": 11,
           "effects": [
             "persistent_area"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "taiping",
@@ -437,7 +468,8 @@
           "attacksPerMinute": 11,
           "effects": [
             "persistent_area"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "taiping",
@@ -449,7 +481,8 @@
           "attacksPerMinute": 11,
           "effects": [
             "persistent_area"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "taiping",
@@ -461,7 +494,8 @@
           "attacksPerMinute": 11,
           "effects": [
             "persistent_area"
-          ]
+          ],
+          "effectInstanceCount": 1
         },
         {
           "id": "taiping",
@@ -474,7 +508,8 @@
           "effects": [
             "persistent_area",
             "persistent_area"
-          ]
+          ],
+          "effectInstanceCount": 2
         },
         {
           "id": "taiping",
@@ -488,7 +523,8 @@
             "persistent_area",
             "persistent_area",
             "persistent_area"
-          ]
+          ],
+          "effectInstanceCount": 3
         }
       ]
     }

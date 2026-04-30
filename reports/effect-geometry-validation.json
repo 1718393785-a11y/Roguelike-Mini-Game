@@ -1,0 +1,35 @@
+{
+  "meleeArc": [
+    1,
+    2,
+    4
+  ],
+  "lineRect": [
+    1,
+    4
+  ],
+  "projectileTarget": 4,
+  "orbitPoints": [
+    {
+      "x": 15,
+      "y": 20
+    },
+    {
+      "x": 5,
+      "y": 20
+    }
+  ],
+  "orbitHits": [
+    1,
+    4
+  ],
+  "areaPulse": [
+    3,
+    4
+  ],
+  "persistentArea": [
+    1,
+    3,
+    4
+  ]
+}

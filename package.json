@@ -11,6 +11,7 @@
     "baseline:generic-weapon-levels": "node tools/run-baseline.mjs --browser chrome --compare-generic-weapon-matrix --seconds 10 --levels 1,2,3,4,5,6",
     "validate:config": "tsx src/config/validateSpec.ts",
     "validate:weapons": "tsx src/effects/validateGenericWeapons.ts",
+    "validate:effects": "tsx src/effects/validateEffectGeometry.ts",
     "check:architecture": "node tools/check-architecture.mjs",
     "typecheck": "tsc --noEmit",
     "dev": "vite --host 127.0.0.1"
