@@ -2652,6 +2652,15 @@ class Shield extends Weapon {
         // 空间网格优化：只查询脉冲半径范围内附近格子的敌人
         const gm = window.gameManager;
         const nearbyEnemies = gm.queryEnemiesInRange(this.x, this.y, this.currentRadius + 40);
+        const genericShadowEnabled = !!gm.genericWeaponShadow;
+        const genericShadowHits = genericShadowEnabled ? collectCircleShadowHits(
+            this.x,
+            this.y,
+            this.currentRadius,
+            nearbyEnemies,
+            this.hitRecords
+        ) : [];
+        const legacyHits = [];
 
         for (let i = nearbyEnemies.length - 1; i >= 0; i--) {
             const enemy = nearbyEnemies[i];
@@ -2664,6 +2673,9 @@ class Shield extends Weapon {
             const dist = Math.sqrt(dx * dx + dy * dy);
 
             if (dist <= this.currentRadius + enemy.size / 2) {
+                if (genericShadowEnabled) {
+                    legacyHits.push(getDebugEntityId(enemy));
+                }
                 // 计算总伤害加成
                 // 计算总伤害加成 - 使用统一跨源乘算
                 const effectiveDamage = this.baseDamage * player.getDamageMultiplier();
@@ -2692,6 +2704,15 @@ class Shield extends Weapon {
 
                 if (killed) continue;
             }
+        }
+        if (genericShadowEnabled) {
+            gm.genericWeaponShadow.recordBehaviorSample({
+                type: 'shield',
+                effect: 'area_pulse_geometry',
+                level: this.level,
+                genericHits: genericShadowHits,
+                legacyHits: legacyHits.sort((a, b) => a - b)
+            });
         }
     }
 
