@@ -675,6 +675,30 @@ function collectLineRectShadowHits(originX, originY, dirX, dirY, length, width, 
     return hits.sort((a, b) => a - b);
 }
 
+function selectForwardConeTarget(player, enemies, maxAngleDiff) {
+    const playerAngle = Math.atan2(player.facingDirY, player.facingDirX);
+    let closestInAngle = null;
+    let minDistSq = Infinity;
+
+    for (const enemy of enemies) {
+        const dx = enemy.x - player.x;
+        const dy = enemy.y - player.y;
+        const enemyAngle = Math.atan2(dy, dx);
+        let angleDiff = Math.abs(enemyAngle - playerAngle);
+        angleDiff = Math.min(angleDiff, 2 * Math.PI - angleDiff);
+
+        if (angleDiff <= maxAngleDiff) {
+            const distSq = dx * dx + dy * dy;
+            if (distSq < minDistSq) {
+                minDistSq = distSq;
+                closestInAngle = enemy;
+            }
+        }
+    }
+
+    return closestInAngle;
+}
+
 class GenericWeaponShadowMonitor {
     constructor() {
         this.samples = 0;
@@ -730,7 +754,10 @@ class GenericWeaponShadowMonitor {
     recordBehaviorSample(sample) {
         if (!FEATURE_FLAGS.ENABLE_GENERIC_WEAPON) return;
         this.behaviorSamples++;
-        const matches = JSON.stringify(sample.legacyHits) === JSON.stringify(sample.genericHits);
+        const hitsMatch = JSON.stringify(sample.legacyHits) === JSON.stringify(sample.genericHits);
+        const hasValueCheck = typeof sample.legacyValue === 'number' && typeof sample.genericValue === 'number';
+        const valueMatch = !hasValueCheck || Math.abs(sample.legacyValue - sample.genericValue) <= (sample.epsilon ?? 1e-9);
+        const matches = hitsMatch && valueMatch;
         if (!matches) {
             this.behaviorMismatches++;
             this.lastBehaviorMismatches.push(sample);
@@ -1500,6 +1527,9 @@ class Crossbow extends Weapon {
         let closestInAngle = null;
         let minDistSq = Infinity;
         const maxAngleDiff = Math.PI / 4; // ±45度 = 总共90度扇形
+        const gm = window.gameManager;
+        const genericShadowEnabled = !!gm.genericWeaponShadow;
+        const genericTarget = genericShadowEnabled ? selectForwardConeTarget(player, enemies, maxAngleDiff) : null;
 
         for (const enemy of enemies) {
             const dx = enemy.x - player.x;
@@ -1526,6 +1556,21 @@ class Crossbow extends Weapon {
         } else {
             // 前方没有敌人，严格使用玩家面向方向
             angle = playerAngle;
+        }
+        if (genericShadowEnabled) {
+            const genericAngle = genericTarget
+                ? Math.atan2(genericTarget.y - player.y, genericTarget.x - player.x)
+                : playerAngle;
+            gm.genericWeaponShadow.recordBehaviorSample({
+                type: 'crossbow',
+                effect: 'projectile_target',
+                level: this.level,
+                genericHits: [genericTarget ? getDebugEntityId(genericTarget) : 0],
+                legacyHits: [closestInAngle ? getDebugEntityId(closestInAngle) : 0],
+                genericValue: genericAngle,
+                legacyValue: angle,
+                epsilon: 1e-12
+            });
         }
 
         const totalDamage = this.baseDamage * player.getDamageMultiplier();
