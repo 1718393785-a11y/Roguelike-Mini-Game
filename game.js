@@ -2084,16 +2084,21 @@ class QinggangSword extends Weapon {
                     collisionRadius,
                     nearbyEnemies
                 ) : [];
+                const genericHitIdSet = genericShadowEnabled ? new Set(genericShadowHits) : null;
                 const legacyHits = [];
 
                 // 碰撞检测 - 只遍历附近敌人
                 for (let j = nearbyEnemies.length - 1; j >= 0; j--) {
                     const enemy = nearbyEnemies[j];
                     const dist = Math.hypot(enemy.x - actualX, enemy.y - actualY);
-                    if (dist < collisionRadius + enemy.size / 2) {
+                    const legacyShouldHit = dist < collisionRadius + enemy.size / 2;
+                    if (legacyShouldHit) {
                         if (genericShadowEnabled) {
                             legacyHits.push(getDebugEntityId(enemy));
                         }
+                    }
+                    const shouldHit = genericShadowEnabled ? genericHitIdSet.has(getDebugEntityId(enemy)) : legacyShouldHit;
+                    if (shouldHit) {
                         const lastHitTime = this.hitRecords.get(enemy) || 0;
                         // 内部伤害 Tick 同步吃减 CD，确保转得快也能高频触发伤害
                         const tickInterval = 500 * Math.max(0.1, 1 - cdr);
