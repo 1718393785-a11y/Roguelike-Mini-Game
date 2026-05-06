@@ -876,6 +876,15 @@ function resolveShieldFireRingHitSettlement(fireRing, enemy, dx, dy, dist) {
     };
 }
 
+function resolveTaipingTornadoHitSettlement(tornado, enemy) {
+    const damage = tornado.currentDamage * tornado.currentTickInterval;
+    return {
+        damage,
+        finalHp: enemy.hp - damage,
+        willKill: enemy.hp - damage <= 0
+    };
+}
+
 class GenericWeaponShadowMonitor {
     constructor() {
         this.samples = 0;
@@ -2675,13 +2684,36 @@ class FireTornado {
                 }
                 const shouldHit = genericShadowEnabled ? genericHitIdSet.has(getDebugEntityId(enemy)) : legacyShouldHit;
                 if (shouldHit) {
-                    enemy.hp -= this.currentDamage * this.currentTickInterval;
+                    const preSettlementHp = enemy.hp;
+                    const genericSettlement = genericShadowEnabled
+                        ? resolveTaipingTornadoHitSettlement(this, enemy)
+                        : null;
+                    if (genericSettlement) {
+                        enemy.hp = genericSettlement.finalHp;
+                    } else {
+                        enemy.hp -= this.currentDamage * this.currentTickInterval;
+                    }
                     // 检查死亡
                     if (enemy.hp <= 0) {
                         const originalIdx = gameManager.enemies.indexOf(enemy);
                         if (originalIdx >= 0) {
                             gameManager.handleEnemyDeath(enemy, originalIdx);
                         }
+                    }
+                    if (genericSettlement) {
+                        gm.genericWeaponShadow.recordBehaviorSample({
+                            type: 'taiping',
+                            effect: 'persistent_area_settlement',
+                            level: this.book?.level || 1,
+                            genericHits: [getDebugEntityId(enemy)],
+                            legacyHits: [getDebugEntityId(enemy)],
+                            genericState: genericSettlement,
+                            legacyState: {
+                                damage: this.currentDamage * this.currentTickInterval,
+                                finalHp: preSettlementHp - this.currentDamage * this.currentTickInterval,
+                                willKill: preSettlementHp - this.currentDamage * this.currentTickInterval <= 0
+                            }
+                        });
                     }
                 }
             }
