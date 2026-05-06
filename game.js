@@ -4981,7 +4981,7 @@ class Pickup {
     }
 
     getArtPickupId() {
-        if (this.type === PICKUP_TYPES.EXP) return 'EXP';
+        if (this.type === PICKUP_TYPES.EXP) return this.expValue > 10 ? 'EXP_LARGE' : 'EXP';
         if (this.type === PICKUP_TYPES.BOSS_EXP) return 'BOSS_EXP';
         if (this.type === PICKUP_TYPES.RESONANCE) return 'RESONANCE';
         if (this.type === PICKUP_TYPES.BUN) return 'BUN';
@@ -5014,11 +5014,21 @@ class Pickup {
             const icon = pickupId ? assets.getPickupIcon(pickupId) : null;
             if (assets.canDraw(icon)) {
                 const iconSize = Math.max(displaySize, this.type === PICKUP_TYPES.MAGNET ? 24 : displaySize);
+                const useDiamondFrame = pickupId === 'EXP' || pickupId === 'EXP_LARGE' || pickupId === 'BOSS_EXP' || pickupId === 'RESONANCE';
                 ctx.save();
                 ctx.globalAlpha = 0.35;
                 ctx.fillStyle = displayColor;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, iconSize * 0.62, 0, Math.PI * 2);
+                if (useDiamondFrame) {
+                    const glowHalf = iconSize * 0.68;
+                    ctx.moveTo(this.x, this.y - glowHalf);
+                    ctx.lineTo(this.x + glowHalf, this.y);
+                    ctx.lineTo(this.x, this.y + glowHalf);
+                    ctx.lineTo(this.x - glowHalf, this.y);
+                    ctx.closePath();
+                } else {
+                    ctx.arc(this.x, this.y, iconSize * 0.62, 0, Math.PI * 2);
+                }
                 ctx.fill();
                 ctx.globalAlpha = 1;
                 ctx.drawImage(icon, this.x - iconSize / 2, this.y - iconSize / 2, iconSize, iconSize);

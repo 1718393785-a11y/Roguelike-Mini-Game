@@ -24,9 +24,10 @@ const SKILLS = [
 ];
 
 const PICKUPS = [
-  { id: 'EXP', file: 'asset_pickup_exp.png', color: '#4da3ff', accent: '#d8efff', symbol: 'diamond' },
-  { id: 'BOSS_EXP', file: 'asset_pickup_boss_exp.png', color: '#ff3d45', accent: '#ffd45a', symbol: 'diamond2' },
-  { id: 'RESONANCE', file: 'asset_pickup_resonance.png', color: '#ff9a2e', accent: '#ffe1a8', symbol: 'shard' },
+  { id: 'EXP', file: 'asset_pickup_exp.png', color: '#4da3ff', accent: '#d8efff', symbol: 'diamond', frame: 'diamond' },
+  { id: 'EXP_LARGE', file: 'asset_pickup_exp_large.png', color: '#ff5a36', accent: '#ffd45a', symbol: 'diamond2', frame: 'diamond' },
+  { id: 'BOSS_EXP', file: 'asset_pickup_boss_exp.png', color: '#ff3d45', accent: '#ffd45a', symbol: 'diamond2', frame: 'diamond' },
+  { id: 'RESONANCE', file: 'asset_pickup_resonance.png', color: '#ff9a2e', accent: '#ffe1a8', symbol: 'shard', frame: 'diamond' },
   { id: 'BUN', file: 'asset_pickup_bun.png', color: '#f1dfb5', accent: '#ffffff', symbol: 'bun' },
   { id: 'CHICKEN', file: 'asset_pickup_chicken.png', color: '#d76a2d', accent: '#ffd085', symbol: 'drumstick' },
   { id: 'MAGNET', file: 'asset_pickup_magnet.png', color: '#b542ff', accent: '#ffd6ff', symbol: 'magnet' },
@@ -187,17 +188,33 @@ function drawSymbol(png, symbol, size, color, accent) {
   }
 }
 
-function makeIcon({ color, accent, symbol }, size, outPath) {
+function makeIcon({ color, accent, symbol, frame = 'circle' }, size, outPath) {
   const png = new PNG({ width: size, height: size, colorType: 6 });
   const cx = size / 2;
   const cy = size / 2;
   const s = size / 256;
-  for (let r = 110 * s; r >= 18 * s; r -= 3 * s) {
-    circle(png, cx, cy, r, color, 0.015);
+  if (frame === 'diamond') {
+    for (let i = 0; i < 9; i++) {
+      const r = (98 - i * 5) * s;
+      polygon(png, [[cx, cy - r], [cx + r, cy], [cx, cy + r], [cx - r, cy]], color, 0.035);
+    }
+    polygon(png, [[cx, cy - 82 * s], [cx + 82 * s, cy], [cx, cy + 82 * s], [cx - 82 * s, cy]], '#0f1117', 0.78);
+    line(png, cx, cy - 86 * s, cx + 86 * s, cy, 4 * s, accent, 0.95);
+    line(png, cx + 86 * s, cy, cx, cy + 86 * s, 4 * s, accent, 0.95);
+    line(png, cx, cy + 86 * s, cx - 86 * s, cy, 4 * s, accent, 0.95);
+    line(png, cx - 86 * s, cy, cx, cy - 86 * s, 4 * s, accent, 0.95);
+    line(png, cx, cy - 98 * s, cx + 98 * s, cy, 2 * s, color, 0.55);
+    line(png, cx + 98 * s, cy, cx, cy + 98 * s, 2 * s, color, 0.55);
+    line(png, cx, cy + 98 * s, cx - 98 * s, cy, 2 * s, color, 0.55);
+    line(png, cx - 98 * s, cy, cx, cy - 98 * s, 2 * s, color, 0.55);
+  } else {
+    for (let r = 110 * s; r >= 18 * s; r -= 3 * s) {
+      circle(png, cx, cy, r, color, 0.015);
+    }
+    circle(png, cx, cy, 78 * s, '#0f1117', 0.76);
+    ring(png, cx, cy, 82 * s, 5 * s, accent, 0.85);
+    ring(png, cx, cy, 96 * s, 2 * s, color, 0.35);
   }
-  circle(png, cx, cy, 78 * s, '#0f1117', 0.76);
-  ring(png, cx, cy, 82 * s, 5 * s, accent, 0.85);
-  ring(png, cx, cy, 96 * s, 2 * s, color, 0.35);
   drawSymbol(png, symbol, size, color, accent);
   fs.writeFileSync(outPath, PNG.sync.write(png));
 }

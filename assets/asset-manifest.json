@@ -51,6 +51,7 @@
   },
   "pickups": {
     "EXP": { "src": "pickups/asset_pickup_exp.png", "sourceSize": [128, 128], "usage": ["world_pickup"] },
+    "EXP_LARGE": { "src": "pickups/asset_pickup_exp_large.png", "sourceSize": [128, 128], "usage": ["world_pickup"] },
     "BOSS_EXP": { "src": "pickups/asset_pickup_boss_exp.png", "sourceSize": [128, 128], "usage": ["world_pickup"] },
     "RESONANCE": { "src": "pickups/asset_pickup_resonance.png", "sourceSize": [128, 128], "usage": ["world_pickup"] },
     "BUN": { "src": "pickups/asset_pickup_bun.png", "sourceSize": [128, 128], "usage": ["world_pickup"] },
@@ -89,6 +90,7 @@
         "skills/asset_skill_RESONANCE.png",
         "skills/asset_skill_ARMOR.png",
         "pickups/asset_pickup_exp.png",
+        "pickups/asset_pickup_exp_large.png",
         "pickups/asset_pickup_boss_exp.png",
         "pickups/asset_pickup_resonance.png",
         "pickups/asset_pickup_bun.png",
