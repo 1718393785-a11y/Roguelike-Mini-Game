@@ -71,6 +71,10 @@ if (FEATURE_FLAG_PARAMS.get('artA1A2') === '1') {
     FEATURE_FLAGS.ENABLE_ART_SKILL_ICONS = true;
     FEATURE_FLAGS.ENABLE_ART_PICKUPS = true;
 }
+if (FEATURE_FLAG_PARAMS.get('artEnemies') === '1') {
+    FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
+    FEATURE_FLAGS.ENABLE_ART_ENEMY_SPRITES = true;
+}
 
 function getGameSetting(path, fallback) {
     if (!FEATURE_FLAGS.ENABLE_GAME_SETTINGS) return fallback;
@@ -4085,8 +4089,43 @@ class Enemy {
         return true;
     }
 
-    render(ctx) {
-        if (this.type === 'spearman') {
+    getArtEnemyId() {
+        if (this.isBoss || this.isLevelBoss) return null;
+        if (this.isProp) return 'prop';
+        if (this.type === 'wooden_ox') return 'wooden_ox';
+        if (this.type === 'tiger_guard') return 'tiger_guard';
+        if (this.type === 'spearman') return 'spearman';
+        if (this.type === 'cavalry') return 'cavalry';
+        if (this.type === 'archer') return 'archer';
+        if (this.isElite) return 'elite';
+        return 'soldier';
+    }
+
+    getArtRenderSize() {
+        if (this.isProp) return this.size * 1.55;
+        if (this.type === 'tiger_guard') return this.size * 1.65;
+        if (this.type === 'wooden_ox') return this.size * 2.05;
+        return this.size * 1.9;
+    }
+
+    tryRenderArtEnemy(ctx, assets, rotation = 0) {
+        if (!FEATURE_FLAGS.ENABLE_ART_ASSETS || !FEATURE_FLAGS.ENABLE_ART_ENEMY_SPRITES || !assets) return false;
+        const enemyId = this.getArtEnemyId();
+        const sprite = enemyId ? assets.getEnemySprite(enemyId) : null;
+        if (!assets.canDraw(sprite)) return false;
+        const size = this.getArtRenderSize();
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        if (rotation) ctx.rotate(rotation);
+        ctx.drawImage(sprite, -size / 2, -size / 2, size, size);
+        ctx.restore();
+        return true;
+    }
+
+    render(ctx, assets = null) {
+        if (this.tryRenderArtEnemy(ctx, assets)) {
+            // Sprite branch only replaces body rendering. Health bars remain unchanged below.
+        } else if (this.type === 'spearman') {
             const half = this.size / 2;
             ctx.fillStyle = this.color;
             ctx.fillRect(this.x - half, this.y - half, this.size, this.size);
@@ -4243,7 +4282,7 @@ class TigerGuardEnemy extends Enemy {
         return this.hp > 0;
     }
 
-    render(ctx) {
+    render(ctx, assets = null) {
         let rotation;
         if (this.isClosingIn && this.boss && this.boss.hp > 0) {
             // 收网时盾牌死死朝向圆心（像推土机一样往里推）
@@ -4256,22 +4295,24 @@ class TigerGuardEnemy extends Enemy {
             rotation = this.angle;
         }
 
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate(rotation);
-
         const half = this.size / 2;
-        ctx.fillStyle = this.color;
-        ctx.fillRect(-half, -half, this.size, this.size);
+        if (!this.tryRenderArtEnemy(ctx, assets, rotation)) {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(rotation);
 
-        // 正面木纹巨盾+包边
-        ctx.fillStyle = this.shieldColor;
-        ctx.fillRect(half - 8, -this.shieldSize / 2, 14, this.shieldSize);
-        ctx.fillStyle = '#808080';
-        ctx.fillRect(half - 9, -this.shieldSize / 2 + 2, 16, 6);
-        ctx.fillRect(half - 9, this.shieldSize / 2 - 8, 16, 6);
+            ctx.fillStyle = this.color;
+            ctx.fillRect(-half, -half, this.size, this.size);
 
-        ctx.restore();
+            // 正面木纹巨盾+包边
+            ctx.fillStyle = this.shieldColor;
+            ctx.fillRect(half - 8, -this.shieldSize / 2, 14, this.shieldSize);
+            ctx.fillStyle = '#808080';
+            ctx.fillRect(half - 9, -this.shieldSize / 2 + 2, 16, 6);
+            ctx.fillRect(half - 9, this.shieldSize / 2 - 8, 16, 6);
+
+            ctx.restore();
+        }
 
         // 血条
         if (this.hp < this.maxHp) {
@@ -7847,7 +7888,7 @@ class GameManager {
         // 敌人
         for (const enemy of this.enemies) {
             if (!this.isInCameraView(enemy, 50)) continue;
-            enemy.render(ctx);
+            enemy.render(ctx, this.assets);
         }
 
         // 子弹/追踪弹

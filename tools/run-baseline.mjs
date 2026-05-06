@@ -203,6 +203,10 @@ async function main() {
     defaultFlags.ENABLE_ART_SKILL_ICONS = true;
     defaultFlags.ENABLE_ART_PICKUPS = true;
   }
+  if (args['art-enemies']) {
+    defaultFlags.ENABLE_ART_ASSETS = true;
+    defaultFlags.ENABLE_ART_ENEMY_SPRITES = true;
+  }
   if (Object.entries(defaultFlags).some(([name, enabled]) => name.startsWith('ENABLE_ART_') && name !== 'ENABLE_ART_ASSETS' && enabled)) {
     defaultFlags.ENABLE_ART_ASSETS = true;
   }

@@ -17,6 +17,7 @@
     "validate:assets": "node tools/validate-assets.mjs",
     "normalize:asset-prompts": "node tools/normalize-asset-queue.mjs",
     "generate:art-a1-a2": "node tools/generate-a1-a2-assets.mjs",
+    "generate:art-a3": "node tools/generate-a3-enemy-assets.mjs",
     "validate:weapons": "tsx src/effects/validateGenericWeapons.ts",
     "validate:effects": "tsx src/effects/validateEffectGeometry.ts",
     "check:architecture": "node tools/check-architecture.mjs",

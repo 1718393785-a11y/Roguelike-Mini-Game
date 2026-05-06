@@ -35,7 +35,16 @@
     }
   },
   "player": {},
-  "enemies": {},
+  "enemies": {
+    "soldier": { "idle": { "src": "enemies/asset_enemy_soldier.png", "sourceSize": [256, 256], "usage": ["world_enemy"] } },
+    "spearman": { "idle": { "src": "enemies/asset_enemy_spearman.png", "sourceSize": [256, 256], "usage": ["world_enemy"] } },
+    "cavalry": { "idle": { "src": "enemies/asset_enemy_cavalry.png", "sourceSize": [256, 256], "usage": ["world_enemy"] } },
+    "archer": { "idle": { "src": "enemies/asset_enemy_archer.png", "sourceSize": [256, 256], "usage": ["world_enemy"] } },
+    "elite": { "idle": { "src": "enemies/asset_enemy_elite.png", "sourceSize": [256, 256], "usage": ["world_enemy"] } },
+    "wooden_ox": { "idle": { "src": "enemies/asset_enemy_wooden_ox.png", "sourceSize": [256, 256], "usage": ["world_enemy"] } },
+    "tiger_guard": { "idle": { "src": "enemies/asset_enemy_tiger_guard.png", "sourceSize": [256, 256], "usage": ["world_enemy"] } },
+    "prop": { "idle": { "src": "enemies/asset_enemy_prop_box.png", "sourceSize": [128, 128], "usage": ["world_enemy"] } }
+  },
   "bosses": {},
   "skills": {
     "DAMAGE": { "src": "skills/asset_skill_DAMAGE.png", "sourceSize": [256, 256], "usage": ["upgrade_panel", "passive_list"] },
@@ -96,6 +105,20 @@
         "pickups/asset_pickup_bun.png",
         "pickups/asset_pickup_chicken.png",
         "pickups/asset_pickup_magnet.png"
+      ]
+    },
+    "enemy_sprite_atlas": {
+      "src": "style-proofs/enemy-sprite-atlas.png",
+      "sourceSize": [640, 320],
+      "derived": [
+        "enemies/asset_enemy_soldier.png",
+        "enemies/asset_enemy_spearman.png",
+        "enemies/asset_enemy_cavalry.png",
+        "enemies/asset_enemy_archer.png",
+        "enemies/asset_enemy_elite.png",
+        "enemies/asset_enemy_wooden_ox.png",
+        "enemies/asset_enemy_tiger_guard.png",
+        "enemies/asset_enemy_prop_box.png"
       ]
     }
   }

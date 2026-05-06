@@ -42,8 +42,8 @@
         }
 
         getEnemySprite(enemyId, state = 'idle') {
-            const frames = this.manifest?.enemies?.[enemyId]?.[state]?.frames;
-            return this.resolveImage(frames?.[0]);
+            const entry = this.manifest?.enemies?.[enemyId]?.[state];
+            return this.resolveImage(entry?.frames?.[0] || entry?.src);
         }
 
         resolveImage(src) {
