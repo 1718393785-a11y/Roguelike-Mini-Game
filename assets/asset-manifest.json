@@ -37,8 +37,26 @@
   "player": {},
   "enemies": {},
   "bosses": {},
-  "skills": {},
-  "pickups": {},
+  "skills": {
+    "DAMAGE": { "src": "skills/asset_skill_DAMAGE.png", "sourceSize": [256, 256], "usage": ["upgrade_panel", "passive_list"] },
+    "SPEED": { "src": "skills/asset_skill_SPEED.png", "sourceSize": [256, 256], "usage": ["upgrade_panel", "passive_list"] },
+    "COOLDOWN": { "src": "skills/asset_skill_COOLDOWN.png", "sourceSize": [256, 256], "usage": ["upgrade_panel", "passive_list"] },
+    "MAGNET": { "src": "skills/asset_skill_MAGNET.png", "sourceSize": [256, 256], "usage": ["upgrade_panel", "passive_list"] },
+    "MAXHP": { "src": "skills/asset_skill_MAXHP.png", "sourceSize": [256, 256], "usage": ["upgrade_panel", "passive_list"] },
+    "AREA": { "src": "skills/asset_skill_AREA.png", "sourceSize": [256, 256], "usage": ["upgrade_panel", "passive_list"] },
+    "REGEN": { "src": "skills/asset_skill_REGEN.png", "sourceSize": [256, 256], "usage": ["upgrade_panel", "passive_list"] },
+    "EXP": { "src": "skills/asset_skill_EXP.png", "sourceSize": [256, 256], "usage": ["upgrade_panel", "passive_list"] },
+    "RESONANCE": { "src": "skills/asset_skill_RESONANCE.png", "sourceSize": [256, 256], "usage": ["upgrade_panel", "passive_list"] },
+    "ARMOR": { "src": "skills/asset_skill_ARMOR.png", "sourceSize": [256, 256], "usage": ["upgrade_panel", "passive_list"] }
+  },
+  "pickups": {
+    "EXP": { "src": "pickups/asset_pickup_exp.png", "sourceSize": [128, 128], "usage": ["world_pickup"] },
+    "BOSS_EXP": { "src": "pickups/asset_pickup_boss_exp.png", "sourceSize": [128, 128], "usage": ["world_pickup"] },
+    "RESONANCE": { "src": "pickups/asset_pickup_resonance.png", "sourceSize": [128, 128], "usage": ["world_pickup"] },
+    "BUN": { "src": "pickups/asset_pickup_bun.png", "sourceSize": [128, 128], "usage": ["world_pickup"] },
+    "CHICKEN": { "src": "pickups/asset_pickup_chicken.png", "sourceSize": [128, 128], "usage": ["world_pickup"] },
+    "MAGNET": { "src": "pickups/asset_pickup_magnet.png", "sourceSize": [128, 128], "usage": ["world_pickup"] }
+  },
   "effects": {},
   "ui": {},
   "tiles": {},
@@ -54,6 +72,28 @@
         "weapons/asset_weapon_qinggang_lv1.png",
         "weapons/asset_weapon_shield_lv1.png",
         "weapons/asset_weapon_taiping_lv1.png"
+      ]
+    },
+    "skill_pickup_icon_atlas": {
+      "src": "style-proofs/skill-pickup-icon-atlas.png",
+      "sourceSize": [800, 640],
+      "derived": [
+        "skills/asset_skill_DAMAGE.png",
+        "skills/asset_skill_SPEED.png",
+        "skills/asset_skill_COOLDOWN.png",
+        "skills/asset_skill_MAGNET.png",
+        "skills/asset_skill_MAXHP.png",
+        "skills/asset_skill_AREA.png",
+        "skills/asset_skill_REGEN.png",
+        "skills/asset_skill_EXP.png",
+        "skills/asset_skill_RESONANCE.png",
+        "skills/asset_skill_ARMOR.png",
+        "pickups/asset_pickup_exp.png",
+        "pickups/asset_pickup_boss_exp.png",
+        "pickups/asset_pickup_resonance.png",
+        "pickups/asset_pickup_bun.png",
+        "pickups/asset_pickup_chicken.png",
+        "pickups/asset_pickup_magnet.png"
       ]
     }
   }

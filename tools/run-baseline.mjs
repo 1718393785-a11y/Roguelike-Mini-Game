@@ -198,6 +198,11 @@ async function main() {
     defaultFlags.ENABLE_ART_WEAPON_ICONS = true;
     defaultFlags.ENABLE_WEAPON_COOLDOWN_HUD = true;
   }
+  if (args['art-a1-a2']) {
+    defaultFlags.ENABLE_ART_ASSETS = true;
+    defaultFlags.ENABLE_ART_SKILL_ICONS = true;
+    defaultFlags.ENABLE_ART_PICKUPS = true;
+  }
   if (Object.entries(defaultFlags).some(([name, enabled]) => name.startsWith('ENABLE_ART_') && name !== 'ENABLE_ART_ASSETS' && enabled)) {
     defaultFlags.ENABLE_ART_ASSETS = true;
   }

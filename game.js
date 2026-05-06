@@ -62,6 +62,15 @@ if (FEATURE_FLAG_PARAMS.get('artSkillIcons') === '1') {
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
     FEATURE_FLAGS.ENABLE_ART_SKILL_ICONS = true;
 }
+if (FEATURE_FLAG_PARAMS.get('artPickups') === '1') {
+    FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
+    FEATURE_FLAGS.ENABLE_ART_PICKUPS = true;
+}
+if (FEATURE_FLAG_PARAMS.get('artA1A2') === '1') {
+    FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
+    FEATURE_FLAGS.ENABLE_ART_SKILL_ICONS = true;
+    FEATURE_FLAGS.ENABLE_ART_PICKUPS = true;
+}
 
 function getGameSetting(path, fallback) {
     if (!FEATURE_FLAGS.ENABLE_GAME_SETTINGS) return fallback;
@@ -4971,7 +4980,17 @@ class Pickup {
         }
     }
 
-    render(ctx) {
+    getArtPickupId() {
+        if (this.type === PICKUP_TYPES.EXP) return 'EXP';
+        if (this.type === PICKUP_TYPES.BOSS_EXP) return 'BOSS_EXP';
+        if (this.type === PICKUP_TYPES.RESONANCE) return 'RESONANCE';
+        if (this.type === PICKUP_TYPES.BUN) return 'BUN';
+        if (this.type === PICKUP_TYPES.CHICKEN) return 'CHICKEN';
+        if (this.type === PICKUP_TYPES.MAGNET) return 'MAGNET';
+        return null;
+    }
+
+    render(ctx, assets = null) {
         // 经验珠动态颜色：根据存储的经验容量，大小随等级变
         let displayColor = this.type.color;
         let displaySize = this.size;
@@ -4987,6 +5006,24 @@ class Pickup {
             } else {
                 // expValue = 1 → 保持原蓝色，15px
                 displaySize = 15;
+            }
+        }
+
+        if (FEATURE_FLAGS.ENABLE_ART_ASSETS && FEATURE_FLAGS.ENABLE_ART_PICKUPS && assets) {
+            const pickupId = this.getArtPickupId();
+            const icon = pickupId ? assets.getPickupIcon(pickupId) : null;
+            if (assets.canDraw(icon)) {
+                const iconSize = Math.max(displaySize, this.type === PICKUP_TYPES.MAGNET ? 24 : displaySize);
+                ctx.save();
+                ctx.globalAlpha = 0.35;
+                ctx.fillStyle = displayColor;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, iconSize * 0.62, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+                ctx.drawImage(icon, this.x - iconSize / 2, this.y - iconSize / 2, iconSize, iconSize);
+                ctx.restore();
+                return;
             }
         }
 
@@ -5626,13 +5663,15 @@ class GameManager {
     handleMenuClick(x, y) {
         // 三个按钮：开始游戏 / 局外升级 / 退出
         const centerX = this.canvas.width / 2;
-        if (y > 400 && y < 470) {
+        const centerY = this.canvas.height / 2;
+        const buttonStartY = FEATURE_FLAGS.ENABLE_ART_DEBUG_PREVIEW ? Math.max(430, centerY + 35) : 400;
+        if (y > buttonStartY && y < buttonStartY + 70) {
             // 开始新游戏
             this.startNewGame();
-        } else if (y > 490 && y < 560) {
+        } else if (y > buttonStartY + 90 && y < buttonStartY + 160) {
             // 进入局外升级
             this.gameState = GAME_STATE.PERK_UPGRADE;
-        } else if (y > 580 && y < 650) {
+        } else if (y > buttonStartY + 180 && y < buttonStartY + 250) {
             // 退出（刷新）
             location.reload();
         }
@@ -7788,7 +7827,7 @@ class GameManager {
         // 掉落物
         for (const pickup of this.pickups) {
             if (!this.isInCameraView(pickup, 50)) continue;
-            pickup.render(ctx);
+            pickup.render(ctx, this.assets);
         }
 
         // 玩家
@@ -8034,13 +8073,26 @@ class GameManager {
             { key: 'RESONANCE', name: '历史共鸣' },
             { key: 'ARMOR', name: '不动如山' }
         ];
+        const hasArtSkillIcons = FEATURE_FLAGS.ENABLE_ART_ASSETS && FEATURE_FLAGS.ENABLE_ART_SKILL_ICONS && this.assets;
         for (const info of skillInfos) {
             const level = this.player.inGameSkills[info.key];
             const metaLevel = this.player.metaSkills[info.key] || 0;
             const totalLevel = level + metaLevel * 0.05;
+            let textX = statusX + 8;
+            if (hasArtSkillIcons) {
+                const icon = this.assets.getSkillIcon(info.key);
+                const iconX = statusX + 9;
+                const iconY = currentY - 5;
+                ctx.save();
+                ctx.globalAlpha = level > 0 ? 1 : 0.35;
+                if (this.drawArtImage(ctx, icon, iconX, iconY, 16)) {
+                    textX = statusX + 22;
+                }
+                ctx.restore();
+            }
             ctx.fillStyle = level > 0 ? '#ffffff' : '#666666';
             ctx.font = '14px Arial';
-            ctx.fillText(`${info.name}  Lv.${totalLevel.toFixed(1)}`, statusX + 8, currentY);
+            ctx.fillText(`${info.name}  Lv.${totalLevel.toFixed(1)}`, textX, currentY);
             currentY += itemHeight;
         }
 
@@ -8122,11 +8174,17 @@ class GameManager {
             ctx.lineWidth = isHover ? 4 : 2;
             ctx.strokeRect(x, y, boxWidth, boxHeight);
 
+            const optionSkillKey = option.type === 'passive'
+                ? option.skillKey
+                : skillNameToKey[option.title.split(' ')[0]];
             const iconY = y + 70;
             const iconSize = 64;
             let hasArtIcon = false;
             if (FEATURE_FLAGS.ENABLE_ART_ASSETS && FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS && option.weaponType) {
                 const icon = this.assets?.getWeaponIcon?.(option.weaponType, option.weaponLevel || 1);
+                hasArtIcon = this.drawArtImage(ctx, icon, x + boxWidth / 2, iconY, iconSize);
+            } else if (FEATURE_FLAGS.ENABLE_ART_ASSETS && FEATURE_FLAGS.ENABLE_ART_SKILL_ICONS && optionSkillKey) {
+                const icon = this.assets?.getSkillIcon?.(optionSkillKey);
                 hasArtIcon = this.drawArtImage(ctx, icon, x + boxWidth / 2, iconY, iconSize);
             }
 
@@ -8146,13 +8204,7 @@ class GameManager {
             this.fillTextWrapped(ctx, option.desc, descX, descY, maxWidth, 20, 'center');
 
             // 如果是被动技能，显示当前局内等级
-            let skillKey = null;
-            if (option.type === 'passive') {
-                skillKey = option.skillKey;
-            } else {
-                // 从映射表查找
-                skillKey = skillNameToKey[option.title.split(' ')[0]];
-            }
+            const skillKey = optionSkillKey;
             if (option.type === 'passive' && skillKey !== undefined) {
                 const currentLevel = this.player.inGameSkills[skillKey];
                 ctx.fillStyle = '#b8860b';
