@@ -19,7 +19,8 @@
     "ENABLE_WEAPON_COOLDOWN_HUD": false,
     "ENABLE_AUDIO_MANAGER": false,
     "ENABLE_DESTRUCTIBLE_PROPS": false,
-    "ENABLE_LARGE_MAP_CAMERA": true
+    "ENABLE_LARGE_MAP_CAMERA": true,
+    "ENABLE_SCROLLING_BACKGROUND": true
   },
   "equal": true,
   "snapshotCountA": 7201,

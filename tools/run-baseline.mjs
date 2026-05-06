@@ -181,6 +181,7 @@ async function main() {
     ENABLE_AUDIO_MANAGER: Boolean(args['audio-manager']),
     ENABLE_DESTRUCTIBLE_PROPS: Boolean(args['destructible-props']),
     ENABLE_LARGE_MAP_CAMERA: Boolean(args['large-map-camera']),
+    ENABLE_SCROLLING_BACKGROUND: Boolean(args['scrolling-background']),
   };
   await fs.mkdir(path.join(rootDir, 'reports'), { recursive: true });
   const { server, baseUrl } = await createServer();

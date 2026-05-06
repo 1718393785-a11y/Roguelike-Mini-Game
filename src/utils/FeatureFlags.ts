@@ -14,6 +14,7 @@ export const FEATURE_FLAGS = {
   ENABLE_AUDIO_MANAGER: false,
   ENABLE_DESTRUCTIBLE_PROPS: false,
   ENABLE_LARGE_MAP_CAMERA: false,
+  ENABLE_SCROLLING_BACKGROUND: false,
 } as const;
 
 export type FeatureFlagName = keyof typeof FEATURE_FLAGS;

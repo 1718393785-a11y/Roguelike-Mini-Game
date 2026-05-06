@@ -56,6 +56,8 @@
             WIDTH: 6000,
             HEIGHT: 6000,
             CAMERA_SMOOTHNESS: 0.12,
+            BACKGROUND_TILE_SIZE: 160,
+            BACKGROUND_MINOR_GRID: 40,
         },
     };
 

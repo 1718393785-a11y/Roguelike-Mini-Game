@@ -23,6 +23,7 @@ const FEATURE_FLAGS = {
     ENABLE_AUDIO_MANAGER: false,
     ENABLE_DESTRUCTIBLE_PROPS: false,
     ENABLE_LARGE_MAP_CAMERA: false,
+    ENABLE_SCROLLING_BACKGROUND: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -7524,6 +7525,51 @@ class GameManager {
         ctx.restore();
     }
 
+    renderScrollingBackground(ctx, baseColor) {
+        ctx.fillStyle = baseColor;
+        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        if (!FEATURE_FLAGS.ENABLE_SCROLLING_BACKGROUND) return;
+
+        const cameraX = FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA ? this.camera.x : 0;
+        const cameraY = FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA ? this.camera.y : 0;
+        const tileSize = getNumericGameSetting('MAP.BACKGROUND_TILE_SIZE', 160);
+        const minorGrid = getNumericGameSetting('MAP.BACKGROUND_MINOR_GRID', 40);
+        const tileOffsetX = -((cameraX % tileSize) + tileSize) % tileSize;
+        const tileOffsetY = -((cameraY % tileSize) + tileSize) % tileSize;
+        const minorOffsetX = -((cameraX % minorGrid) + minorGrid) % minorGrid;
+        const minorOffsetY = -((cameraY % minorGrid) + minorGrid) % minorGrid;
+
+        ctx.save();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+        for (let x = minorOffsetX; x < this.canvas.width; x += minorGrid) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, this.canvas.height);
+            ctx.stroke();
+        }
+        for (let y = minorOffsetY; y < this.canvas.height; y += minorGrid) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(this.canvas.width, y);
+            ctx.stroke();
+        }
+        ctx.strokeStyle = 'rgba(255, 215, 120, 0.08)';
+        for (let x = tileOffsetX; x < this.canvas.width; x += tileSize) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, this.canvas.height);
+            ctx.stroke();
+        }
+        for (let y = tileOffsetY; y < this.canvas.height; y += tileSize) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(this.canvas.width, y);
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
     renderPlaying() {
         const ctx = this.ctx;
 
@@ -7542,8 +7588,7 @@ class GameManager {
         ];
 
         // 清空背景，按关卡动态着色
-        ctx.fillStyle = STAGE_COLORS[this.currentStage] || '#1a1a1a';
-        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.renderScrollingBackground(ctx, STAGE_COLORS[this.currentStage] || '#1a1a1a');
 
         // 屏幕震动：保存画布状态，准备随机偏移
         if (this.shakeTimer > 0) {
