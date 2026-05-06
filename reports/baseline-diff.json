@@ -10,8 +10,9 @@
     "ENABLE_GENERIC_WEAPON": false,
     "ENABLE_PIXI_RENDERER": false,
     "ENABLE_HOT_RELOAD": false,
-    "ENABLE_PLAYER_IFRAME": true,
-    "ENABLE_HIT_KNOCKBACK": true
+    "ENABLE_PLAYER_IFRAME": false,
+    "ENABLE_HIT_KNOCKBACK": false,
+    "ENABLE_LOW_HP_WARNING": true
   },
   "equal": true,
   "snapshotCountA": 7201,

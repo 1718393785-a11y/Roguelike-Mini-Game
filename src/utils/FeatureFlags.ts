@@ -6,6 +6,7 @@ export const FEATURE_FLAGS = {
   ENABLE_HOT_RELOAD: false,
   ENABLE_PLAYER_IFRAME: false,
   ENABLE_HIT_KNOCKBACK: false,
+  ENABLE_LOW_HP_WARNING: false,
 } as const;
 
 export type FeatureFlagName = keyof typeof FEATURE_FLAGS;

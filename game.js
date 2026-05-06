@@ -15,6 +15,7 @@ const FEATURE_FLAGS = {
     ENABLE_HOT_RELOAD: false,
     ENABLE_PLAYER_IFRAME: false,
     ENABLE_HIT_KNOCKBACK: false,
+    ENABLE_LOW_HP_WARNING: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -7297,6 +7298,15 @@ class GameManager {
             ctx.globalAlpha = 1.0;
             this.damageFlashTimer -= 1/60; // 逐帧递减
             if (this.damageFlashTimer < 0) this.damageFlashTimer = 0;
+        }
+
+        if (FEATURE_FLAGS.ENABLE_LOW_HP_WARNING && this.player.hp > 0 && this.player.hp / this.player.maxHp < 0.3) {
+            const pulse = Math.sin(GameRuntime.frame * 0.08) * 0.5 + 0.5;
+            ctx.fillStyle = `rgba(255, 0, 0, ${0.05 + pulse * 0.05})`;
+            ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            ctx.strokeStyle = `rgba(255, 0, 0, ${0.2 + pulse * 0.3})`;
+            ctx.lineWidth = 8 + pulse * 4;
+            ctx.strokeRect(0, 0, this.canvas.width, this.canvas.height);
         }
 
         // ========== 玩家血条（左上角） ==========

@@ -173,6 +173,7 @@ async function main() {
     ENABLE_HOT_RELOAD: Boolean(args['hot-reload']),
     ENABLE_PLAYER_IFRAME: Boolean(args['player-iframe']),
     ENABLE_HIT_KNOCKBACK: Boolean(args['hit-knockback']),
+    ENABLE_LOW_HP_WARNING: Boolean(args['low-hp-warning']),
   };
   await fs.mkdir(path.join(rootDir, 'reports'), { recursive: true });
   const { server, baseUrl } = await createServer();
