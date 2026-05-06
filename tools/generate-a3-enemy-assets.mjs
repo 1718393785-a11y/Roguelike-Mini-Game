@@ -58,11 +58,11 @@ const ENEMIES = [
     id: 'elite',
     file: 'asset_enemy_elite.png',
     folder: 'enemies',
-    match: ['虎卫', '攻击状态'],
+    match: ['基础长戈兵', '正常状态'],
     canvas: 256,
-    maxWidth: 226,
-    maxHeight: 214,
-    anchorY: 236,
+    maxWidth: 204,
+    maxHeight: 240,
+    anchorY: 240,
   },
   {
     id: 'wooden_ox',
@@ -193,6 +193,232 @@ function normalizeSprite(source, spec) {
   return output;
 }
 
+const PROMPT_STYLES = {
+  soldier: {
+    shadow: '#4b1018',
+    mid: '#a8242b',
+    high: '#f0a35a',
+    accent: '#ffd06a',
+    tint: 0.7,
+    lift: 28,
+    contrast: 1.1,
+  },
+  spearman: {
+    shadow: '#481018',
+    mid: '#9f2630',
+    high: '#f6b45d',
+    accent: '#76dfff',
+    tint: 0.6,
+    lift: 22,
+    contrast: 1.12,
+  },
+  cavalry: {
+    shadow: '#5a2610',
+    mid: '#c77824',
+    high: '#ffdc72',
+    accent: '#58e8ff',
+    tint: 0.5,
+    lift: 24,
+    contrast: 1.08,
+  },
+  archer: {
+    shadow: '#3d2116',
+    mid: '#8a5630',
+    high: '#e3ad68',
+    accent: '#82f0d6',
+    tint: 0.66,
+    lift: 30,
+    contrast: 1.08,
+  },
+  elite: {
+    shadow: '#66320c',
+    mid: '#d17a1f',
+    high: '#ffe276',
+    accent: '#fff4a8',
+    tint: 0.62,
+    lift: 34,
+    contrast: 1.1,
+  },
+  wooden_ox: {
+    shadow: '#4a2a14',
+    mid: '#9a632e',
+    high: '#e5b86a',
+    accent: '#54e7ff',
+    tint: 0.58,
+    lift: 24,
+    contrast: 1.04,
+  },
+  tiger_guard: {
+    shadow: '#5c3a12',
+    mid: '#d08a25',
+    high: '#ffe17b',
+    accent: '#fff2a0',
+    tint: 0.68,
+    lift: 30,
+    contrast: 1.1,
+  },
+  prop: {
+    shadow: '#4b2514',
+    mid: '#9b5a2a',
+    high: '#e7b169',
+    accent: '#f6df91',
+    tint: 0.42,
+    lift: 12,
+    contrast: 1.02,
+  },
+};
+
+function hexToRgb(hex) {
+  const value = hex.replace('#', '');
+  return {
+    r: Number.parseInt(value.slice(0, 2), 16),
+    g: Number.parseInt(value.slice(2, 4), 16),
+    b: Number.parseInt(value.slice(4, 6), 16),
+  };
+}
+
+function clampByte(value) {
+  return Math.max(0, Math.min(255, Math.round(value)));
+}
+
+function mixChannel(a, b, amount) {
+  return a + (b - a) * amount;
+}
+
+function mixRgb(a, b, amount) {
+  return {
+    r: mixChannel(a.r, b.r, amount),
+    g: mixChannel(a.g, b.g, amount),
+    b: mixChannel(a.b, b.b, amount),
+  };
+}
+
+function paletteAt(style, lum) {
+  const shadow = hexToRgb(style.shadow);
+  const mid = hexToRgb(style.mid);
+  const high = hexToRgb(style.high);
+  const t = Math.max(0, Math.min(1, lum / 255));
+  return t < 0.55
+    ? mixRgb(shadow, mid, t / 0.55)
+    : mixRgb(mid, high, (t - 0.55) / 0.45);
+}
+
+function blendPixel(png, x, y, color, alpha = 1) {
+  x = Math.round(x);
+  y = Math.round(y);
+  if (x < 0 || y < 0 || x >= png.width || y >= png.height || alpha <= 0) return;
+  const index = (png.width * y + x) << 2;
+  const srcA = Math.max(0, Math.min(255, alpha * 255));
+  const dstA = png.data[index + 3];
+  const outA = srcA + dstA * (1 - srcA / 255);
+  if (outA <= 0) return;
+  png.data[index] = clampByte((color.r * srcA + png.data[index] * dstA * (1 - srcA / 255)) / outA);
+  png.data[index + 1] = clampByte((color.g * srcA + png.data[index + 1] * dstA * (1 - srcA / 255)) / outA);
+  png.data[index + 2] = clampByte((color.b * srcA + png.data[index + 2] * dstA * (1 - srcA / 255)) / outA);
+  png.data[index + 3] = clampByte(outA);
+}
+
+function drawLine(png, x1, y1, x2, y2, width, hex, alpha = 1) {
+  const color = hexToRgb(hex);
+  const minX = Math.floor(Math.min(x1, x2) - width);
+  const maxX = Math.ceil(Math.max(x1, x2) + width);
+  const minY = Math.floor(Math.min(y1, y2) - width);
+  const maxY = Math.ceil(Math.max(y1, y2) + width);
+  const vx = x2 - x1;
+  const vy = y2 - y1;
+  const lenSq = vx * vx + vy * vy || 1;
+  for (let y = minY; y <= maxY; y++) {
+    for (let x = minX; x <= maxX; x++) {
+      const t = Math.max(0, Math.min(1, ((x - x1) * vx + (y - y1) * vy) / lenSq));
+      const px = x1 + vx * t;
+      const py = y1 + vy * t;
+      const distance = Math.hypot(x - px, y - py);
+      if (distance <= width) blendPixel(png, x, y, color, alpha * Math.min(1, width - distance + 0.5));
+    }
+  }
+}
+
+function drawEllipse(png, cx, cy, rx, ry, hex, alpha = 1) {
+  const color = hexToRgb(hex);
+  for (let y = Math.floor(cy - ry); y <= Math.ceil(cy + ry); y++) {
+    for (let x = Math.floor(cx - rx); x <= Math.ceil(cx + rx); x++) {
+      const d = ((x - cx) * (x - cx)) / (rx * rx) + ((y - cy) * (y - cy)) / (ry * ry);
+      if (d <= 1) blendPixel(png, x, y, color, alpha * Math.min(1, (1 - d) * 3));
+    }
+  }
+}
+
+function brightenAndTint(png, id) {
+  const style = PROMPT_STYLES[id];
+  if (!style) return png;
+  for (let y = 0; y < png.height; y++) {
+    for (let x = 0; x < png.width; x++) {
+      const index = (png.width * y + x) << 2;
+      const alpha = png.data[index + 3];
+      if (alpha <= 3) continue;
+      const r = png.data[index];
+      const g = png.data[index + 1];
+      const b = png.data[index + 2];
+      const lum = r * 0.299 + g * 0.587 + b * 0.114;
+      const target = paletteAt(style, lum);
+      const outline = lum < 34;
+      const tint = outline ? 0.12 : style.tint;
+      const contrastPivot = 116;
+      png.data[index] = clampByte((mixChannel(r, target.r, tint) - contrastPivot) * style.contrast + contrastPivot + style.lift);
+      png.data[index + 1] = clampByte((mixChannel(g, target.g, tint) - contrastPivot) * style.contrast + contrastPivot + style.lift);
+      png.data[index + 2] = clampByte((mixChannel(b, target.b, tint) - contrastPivot) * style.contrast + contrastPivot + style.lift);
+    }
+  }
+  return png;
+}
+
+function addPromptDetails(png, id) {
+  const style = PROMPT_STYLES[id] || PROMPT_STYLES.soldier;
+  const accent = style.accent;
+  if (id === 'soldier') {
+    drawLine(png, 104, 104, 148, 148, 4, accent, 0.52);
+    drawLine(png, 154, 116, 178, 92, 3, '#f4e7c0', 0.78);
+    drawEllipse(png, 128, 64, 16, 8, '#ffca70', 0.35);
+  } else if (id === 'spearman') {
+    drawLine(png, 68, 150, 206, 104, 4, '#f3dfb0', 0.82);
+    drawLine(png, 194, 102, 224, 92, 5, '#85edff', 0.8);
+    drawLine(png, 86, 118, 128, 150, 5, '#c83438', 0.55);
+  } else if (id === 'cavalry') {
+    drawLine(png, 42, 146, 212, 130, 3, '#76f4ff', 0.42);
+    drawLine(png, 54, 174, 190, 166, 3, '#ffe06b', 0.55);
+    drawEllipse(png, 82, 204, 42, 9, '#77eaff', 0.18);
+  } else if (id === 'archer') {
+    drawLine(png, 84, 160, 176, 138, 3, '#e8b66d', 0.48);
+    drawLine(png, 92, 176, 188, 146, 2, '#22140e', 0.56);
+    drawEllipse(png, 134, 82, 14, 8, '#7cf5dc', 0.35);
+  } else if (id === 'elite') {
+    drawLine(png, 96, 96, 158, 158, 5, '#fff09b', 0.62);
+    drawEllipse(png, 128, 62, 26, 12, '#ffe27a', 0.36);
+    drawLine(png, 94, 126, 80, 212, 8, '#d63c2f', 0.42);
+    drawLine(png, 164, 118, 188, 88, 4, '#fff2b4', 0.76);
+  } else if (id === 'wooden_ox') {
+    drawEllipse(png, 128, 88, 24, 18, '#63ecff', 0.34);
+    drawLine(png, 76, 150, 182, 150, 4, '#f1c16f', 0.65);
+    drawLine(png, 104, 106, 154, 106, 4, '#f1c16f', 0.5);
+  } else if (id === 'tiger_guard') {
+    drawEllipse(png, 130, 70, 24, 16, '#ffd65a', 0.55);
+    drawLine(png, 104, 82, 154, 82, 4, '#2d1608', 0.72);
+    drawLine(png, 112, 128, 170, 106, 4, '#ffdf75', 0.52);
+    drawLine(png, 116, 68, 122, 88, 3, '#2d1608', 0.68);
+    drawLine(png, 142, 68, 134, 88, 3, '#2d1608', 0.68);
+  } else if (id === 'prop') {
+    drawLine(png, 20, 58, 108, 56, 4, '#f0c276', 0.58);
+    drawLine(png, 34, 30, 90, 88, 3, '#f0c276', 0.34);
+    drawEllipse(png, 66, 62, 16, 10, '#f6df91', 0.32);
+  }
+}
+
+function stylizeSprite(png, id) {
+  brightenAndTint(png, id);
+  addPromptDetails(png, id);
+  return png;
+}
+
 function blit(dst, src, dx, dy, targetSize) {
   for (let y = 0; y < targetSize; y++) {
     for (let x = 0; x < targetSize; x++) {
@@ -212,7 +438,7 @@ const generated = [];
 for (const spec of ENEMIES) {
   const sourceFile = findAtlasPng(spec.folder, spec.match);
   const source = PNG.sync.read(fs.readFileSync(sourceFile));
-  const normalized = normalizeSprite(source, spec);
+  const normalized = stylizeSprite(normalizeSprite(source, spec), spec.id);
   fs.writeFileSync(path.join(enemyDir, spec.file), PNG.sync.write(normalized));
   generated.push({ id: spec.id, output: path.join('assets', 'enemies', spec.file), source: sourceFile });
 }
