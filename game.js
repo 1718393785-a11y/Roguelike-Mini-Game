@@ -781,6 +781,26 @@ function resolveCrossbowArrowHitSettlement(arrow, enemy, critRoll, areaMul) {
     };
 }
 
+function resolveSaberHitSettlement(weapon, enemy, effectiveDamage) {
+    const executeThreshold = weapon.level >= 5 ? (weapon.level >= 6 ? 0.3 : 0.2) : 0;
+    const isEliteOrBoss = enemy.isElite || enemy.isBoss || enemy.isMiniBoss || enemy.isLevelBoss;
+    const shouldExecute = executeThreshold > 0 && enemy.hp <= enemy.maxHp * executeThreshold;
+    const preBaseDamageHp = shouldExecute && !isEliteOrBoss ? 0 : enemy.hp;
+    const executeDamage = shouldExecute && isEliteOrBoss ? effectiveDamage : 0;
+    return {
+        executeThreshold,
+        shouldExecute,
+        isEliteOrBoss,
+        preBaseDamageHp,
+        executeDamage,
+        baseDamage: effectiveDamage,
+        finalHp: preBaseDamageHp - executeDamage - effectiveDamage,
+        hitstop: shouldExecute ? 0.05 : 0,
+        knockbackBase: 15 + weapon.level * 5,
+        stunDuration: 0.1 + weapon.level * 0.02
+    };
+}
+
 class GenericWeaponShadowMonitor {
     constructor() {
         this.samples = 0;
@@ -1129,6 +1149,7 @@ class Saber extends Weapon {
                 // 计算总伤害加成 - 使用统一跨源乘算
                 const effectiveDamage = this.baseDamage * player.getDamageMultiplier();
                 this.hitRecords.add(enemy);
+                const preSettlementHp = enemy.hp;
 
                 // ============ 【处决】机制 - Lv5解锁 ============
                 // Lv5: 20%血量以下秒杀小怪 / 对精英Boss双倍伤害
@@ -1162,6 +1183,24 @@ class Saber extends Weapon {
                         enemy.x += Math.cos(enemyAngle) * actualKnockback;
                         enemy.y += Math.sin(enemyAngle) * actualKnockback;
                     }
+                }
+                if (genericShadowEnabled) {
+                    const genericSettlement = resolveSaberHitSettlement(this, { ...enemy, hp: preSettlementHp }, effectiveDamage);
+                    gm.genericWeaponShadow.recordBehaviorSample({
+                        type: 'saber',
+                        effect: 'melee_arc_settlement',
+                        level: this.level,
+                        genericHits: [getDebugEntityId(enemy)],
+                        legacyHits: [getDebugEntityId(enemy)],
+                        genericState: genericSettlement,
+                        legacyState: {
+                            ...genericSettlement,
+                            finalHp: enemy.hp,
+                            hitstop: genericSettlement.shouldExecute ? 0.05 : 0,
+                            knockbackBase,
+                            stunDuration
+                        }
+                    });
                 }
 
                 // 检查死亡
