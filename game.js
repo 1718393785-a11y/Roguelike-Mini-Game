@@ -22,6 +22,7 @@ const FEATURE_FLAGS = {
     ENABLE_WEAPON_COOLDOWN_HUD: false,
     ENABLE_AUDIO_MANAGER: false,
     ENABLE_DESTRUCTIBLE_PROPS: false,
+    ENABLE_LARGE_MAP_CAMERA: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -1809,8 +1810,8 @@ class Spear extends Weapon {
 
                 // 边界裁剪：防止被击退出地图，留出半身边距
                 const halfSize = enemy.size / 2 + 5;
-                const cw = gameManager.canvas.width;
-                const ch = gameManager.canvas.height;
+                const cw = gameManager.getWorldWidth();
+                const ch = gameManager.getWorldHeight();
                 enemy.x = Math.max(halfSize, Math.min(cw - halfSize, enemy.x));
                 enemy.y = Math.max(halfSize, Math.min(ch - halfSize, enemy.y));
                 // 检查死亡
@@ -4421,15 +4422,17 @@ class DestructibleProp extends Enemy {
 class Boss extends Enemy {
     constructor(stageData, stageIndex = STAGES.indexOf(stageData), options = {}) {
         const margin = 20;
-        const canvas = gameManager.canvas;
+        const gm = gameManager;
+        const viewLeft = gm.getViewportLeft();
+        const viewTop = gm.getViewportTop();
         // Boss从屏幕边缘随机生成
         let x, y;
         if (GameRuntime.random() < 0.5) {
-            x = GameRuntime.random() < 0.5 ? -margin : canvas.width + margin;
-            y = GameRuntime.random() * canvas.height;
+            x = GameRuntime.random() < 0.5 ? viewLeft - margin : viewLeft + gm.canvas.width + margin;
+            y = viewTop + GameRuntime.random() * gm.canvas.height;
         } else {
-            x = GameRuntime.random() * canvas.width;
-            y = GameRuntime.random() < 0.5 ? -margin : canvas.height + margin;
+            x = viewLeft + GameRuntime.random() * gm.canvas.width;
+            y = GameRuntime.random() < 0.5 ? viewTop - margin : viewTop + gm.canvas.height + margin;
         }
         super(x, y, stageData.bossHp, stageData.bossSpeed / 80);
         this.size = stageData.name === '黄河渡口' ? 80 : 60;
@@ -5277,8 +5280,11 @@ class LegacyPixiOverlayRenderer {
         if (!entity || typeof entity.x !== 'number' || typeof entity.y !== 'number') return;
         const sprite = this.acquireSprite();
         const size = entity.size || fallbackSize;
-        sprite.x = entity.x;
-        sprite.y = entity.y;
+        const camera = FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA && window.gameManager?.camera
+            ? window.gameManager.camera
+            : { x: 0, y: 0 };
+        sprite.x = entity.x - camera.x;
+        sprite.y = entity.y - camera.y;
         sprite.width = size;
         sprite.height = size;
         sprite.tint = tint;
@@ -5313,6 +5319,9 @@ class GameManager {
         this.spatialGridOverflow = [];
         this.gridCols = 0;
         this.gridRows = 0;
+        this.mapWidth = FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA ? getNumericGameSetting('MAP.WIDTH', 6000) : 0;
+        this.mapHeight = FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA ? getNumericGameSetting('MAP.HEIGHT', 6000) : 0;
+        this.camera = { x: 0, y: 0, smoothness: getNumericGameSetting('MAP.CAMERA_SMOOTHNESS', 0.12) };
 
         // 占满窗口
         this.resize();
@@ -5378,8 +5387,51 @@ class GameManager {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
         // 重新计算空间网格尺寸
-        this.gridCols = Math.ceil(this.canvas.width / this.gridCellSize);
-        this.gridRows = Math.ceil(this.canvas.height / this.gridCellSize);
+        this.gridCols = Math.ceil(this.getWorldWidth() / this.gridCellSize);
+        this.gridRows = Math.ceil(this.getWorldHeight() / this.gridCellSize);
+    }
+
+    getWorldWidth() {
+        return FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA ? this.mapWidth : this.canvas.width;
+    }
+
+    getWorldHeight() {
+        return FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA ? this.mapHeight : this.canvas.height;
+    }
+
+    getViewportLeft() {
+        return FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA ? this.camera.x : 0;
+    }
+
+    getViewportTop() {
+        return FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA ? this.camera.y : 0;
+    }
+
+    getViewportCenterX() {
+        return this.getViewportLeft() + this.canvas.width / 2;
+    }
+
+    getViewportCenterY() {
+        return this.getViewportTop() + this.canvas.height / 2;
+    }
+
+    updateCamera() {
+        if (!FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA || !this.player) return;
+        const maxX = Math.max(0, this.getWorldWidth() - this.canvas.width);
+        const maxY = Math.max(0, this.getWorldHeight() - this.canvas.height);
+        const targetX = Math.max(0, Math.min(maxX, this.player.x - this.canvas.width / 2));
+        const targetY = Math.max(0, Math.min(maxY, this.player.y - this.canvas.height / 2));
+        const smoothness = this.camera.smoothness;
+        this.camera.x += (targetX - this.camera.x) * smoothness;
+        this.camera.y += (targetY - this.camera.y) * smoothness;
+    }
+
+    snapCameraToPlayer() {
+        if (!FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA || !this.player) return;
+        const maxX = Math.max(0, this.getWorldWidth() - this.canvas.width);
+        const maxY = Math.max(0, this.getWorldHeight() - this.canvas.height);
+        this.camera.x = Math.max(0, Math.min(maxX, this.player.x - this.canvas.width / 2));
+        this.camera.y = Math.max(0, Math.min(maxY, this.player.y - this.canvas.height / 2));
     }
 
     // ==================== 空间网格API ====================
@@ -5616,7 +5668,8 @@ class GameManager {
     startNewGame() {
         this.gameState = GAME_STATE.PLAYING;
         GameRuntime.resetRunStats();
-        this.player = new Player(this.canvas.width, this.canvas.height, this.perks, this.perkLevels);
+        this.player = new Player(this.getWorldWidth(), this.getWorldHeight(), this.perks, this.perkLevels);
+        this.snapCameraToPlayer();
         this.activeWeapons = this.player.weapons; // 全局武器管理数组，引用同步player武器
         this.enemies = [];
         this.projectiles = [];
@@ -5793,13 +5846,15 @@ class GameManager {
         // 在屏幕外围边缘随机生成敌人
         let x, y;
         const margin = 20;
+        const viewLeft = this.getViewportLeft();
+        const viewTop = this.getViewportTop();
 
         if (GameRuntime.random() < 0.5) {
-            x = GameRuntime.random() < 0.5 ? -margin : this.canvas.width + margin;
-            y = GameRuntime.random() * this.canvas.height;
+            x = GameRuntime.random() < 0.5 ? viewLeft - margin : viewLeft + this.canvas.width + margin;
+            y = viewTop + GameRuntime.random() * this.canvas.height;
         } else {
-            x = GameRuntime.random() * this.canvas.width;
-            y = GameRuntime.random() < 0.5 ? -margin : this.canvas.height + margin;
+            x = viewLeft + GameRuntime.random() * this.canvas.width;
+            y = GameRuntime.random() < 0.5 ? viewTop - margin : viewTop + this.canvas.height + margin;
         }
 
         // 动态难度: 每过 60 秒，血量 +10%，频率 +20%
@@ -5834,11 +5889,11 @@ class GameManager {
                 // 木牛特殊生成：在屏幕内 100px 边缘生成，保证它需要跑一段才能出去，给玩家时间击杀
                 const innerMargin = 100;
                 if (GameRuntime.random() < 0.5) {
-                    x = GameRuntime.random() < 0.5 ? innerMargin : this.canvas.width - innerMargin;
-                    y = GameRuntime.random() * (this.canvas.height - innerMargin * 2) + innerMargin;
+                    x = viewLeft + (GameRuntime.random() < 0.5 ? innerMargin : this.canvas.width - innerMargin);
+                    y = viewTop + GameRuntime.random() * (this.canvas.height - innerMargin * 2) + innerMargin;
                 } else {
-                    y = GameRuntime.random() < 0.5 ? innerMargin : this.canvas.height - innerMargin;
-                    x = GameRuntime.random() * (this.canvas.width - innerMargin * 2) + innerMargin;
+                    y = viewTop + (GameRuntime.random() < 0.5 ? innerMargin : this.canvas.height - innerMargin);
+                    x = viewLeft + GameRuntime.random() * (this.canvas.width - innerMargin * 2) + innerMargin;
                 }
                 enemy = new WoodenOxEnemy(x, y, baseHealth);
                 enemy.resonanceDrop = 5; // 击杀掉 5 个残响
@@ -5861,8 +5916,8 @@ class GameManager {
         const hp = Math.floor(baseHp * hpMultiplier);
 
         const miniBoss = new EliteEnemy(
-            this.canvas.width / 2 + (GameRuntime.random() > 0.5 ? 200 : -200),
-            this.canvas.height / 2 + (GameRuntime.random() > 0.5 ? 200 : -200),
+            this.getViewportCenterX() + (GameRuntime.random() > 0.5 ? 200 : -200),
+            this.getViewportCenterY() + (GameRuntime.random() > 0.5 ? 200 : -200),
             hp,
             1.2
         );
@@ -5953,8 +6008,8 @@ class GameManager {
         const hpMultiplier = 1 + (this.player.level * 0.15);
         const dynamicHp = Math.floor(stageData.bossHp * hpMultiplier);
 
-        boss.x = this.canvas.width / 2;
-        boss.y = this.canvas.height / 2;
+        boss.x = this.getViewportCenterX();
+        boss.y = this.getViewportCenterY();
         boss.maxHp = dynamicHp; // 强行覆盖基础配置
         boss.hp = dynamicHp;    // 强行覆盖基础配置
 
@@ -6101,7 +6156,9 @@ class GameManager {
             spearmanCount: 0,
             cavalryCount: 0,
             w: w,
-            h: h
+            h: h,
+            viewLeft: this.getViewportLeft(),
+            viewTop: this.getViewportTop()
         };
     }
 
@@ -6123,15 +6180,15 @@ class GameManager {
 
             if (ps.edge === 0) { // 上
                 x = this.player.x + orthoOffset;
-                y = -depthOffset;
+                y = ps.viewTop - depthOffset;
             } else if (ps.edge === 1) { // 右
-                x = ps.w + depthOffset;
+                x = ps.viewLeft + ps.w + depthOffset;
                 y = this.player.y + orthoOffset;
             } else if (ps.edge === 2) { // 下
                 x = this.player.x + orthoOffset;
-                y = ps.h + depthOffset;
+                y = ps.viewTop + ps.h + depthOffset;
             } else { // 左
-                x = -depthOffset;
+                x = ps.viewLeft - depthOffset;
                 y = this.player.y + orthoOffset;
             }
 
@@ -6591,7 +6648,7 @@ class GameManager {
             const movementDeltaTime = FEATURE_FLAGS.ENABLE_BOSS_AFFIXES
                 ? deltaTime * (this.player.environmentSlowMultiplier || 1)
                 : deltaTime;
-            this.player.move(dx, dy, movementDeltaTime, this.canvas.width, this.canvas.height);
+        this.player.move(dx, dy, movementDeltaTime, this.getWorldWidth(), this.getWorldHeight());
         }
     }
 
@@ -6667,8 +6724,8 @@ class GameManager {
             const spawnChance = getNumericGameSetting('PROPS.DESTRUCTIBLE.SPAWN_CHANCE_PER_FRAME', 0.001);
             if (!hasFinalBoss && propCount < maxProps && GameRuntime.random() < spawnChance) {
                 const margin = getNumericGameSetting('PROPS.DESTRUCTIBLE.SPAWN_MARGIN', 50); // 不生成在边缘
-                const x = margin + GameRuntime.random() * (this.canvas.width - margin * 2);
-                const y = margin + GameRuntime.random() * (this.canvas.height - margin * 2);
+                const x = this.getViewportLeft() + margin + GameRuntime.random() * (this.canvas.width - margin * 2);
+                const y = this.getViewportTop() + margin + GameRuntime.random() * (this.canvas.height - margin * 2);
                 this.enemies.push(new DestructibleProp(x, y));
             }
         }
@@ -6677,7 +6734,7 @@ class GameManager {
     updateMovementSystem(deltaTime) {
         // 更新所有敌人
         for (let i = this.enemies.length - 1; i >= 0; i--) {
-            const alive = this.enemies[i].update(deltaTime, this.canvas.width, this.canvas.height);
+            const alive = this.enemies[i].update(deltaTime, this.getWorldWidth(), this.getWorldHeight());
             // 收到 false（飞出屏幕极远），静默清理掉，不再浪费性能
             if (alive === false) {
                 this.enemies.splice(i, 1);
@@ -6685,6 +6742,7 @@ class GameManager {
         }
 
         // 重建空间网格：将所有敌人按坐标分配到网格，用于优化碰撞检测
+        this.updateCamera();
         this.rebuildSpatialGrid();
     }
 
@@ -6777,7 +6835,7 @@ class GameManager {
         // 更新所有子弹
         for (let i = this.projectiles.length - 1; i >= 0; i--) {
             const projectile = this.projectiles[i];
-            const alive = projectile.update(deltaTime, this.canvas.width, this.canvas.height);
+            const alive = projectile.update(deltaTime, this.getWorldWidth(), this.getWorldHeight());
             if (!alive) {
                 this.projectiles.splice(i, 1);
                 continue;
@@ -7115,7 +7173,7 @@ class GameManager {
 
         // 更新所有武器，每个武器自己处理攻击计时和逻辑（全局数组管理）
         for (const weapon of this.activeWeapons) {
-            weapon.update(deltaTime, this.player, this.enemies, this.projectiles, this.specialAreas, this.canvas.width, this.canvas.height);
+            weapon.update(deltaTime, this.player, this.enemies, this.projectiles, this.specialAreas, this.getWorldWidth(), this.getWorldHeight());
         }
     }
 
@@ -7131,7 +7189,8 @@ class GameManager {
     restartGame() {
         this.gameState = GAME_STATE.PLAYING;
         GameRuntime.resetRunStats();
-        this.player = new Player(this.canvas.width, this.canvas.height, this.perks, this.perkLevels);
+        this.player = new Player(this.getWorldWidth(), this.getWorldHeight(), this.perks, this.perkLevels);
+        this.snapCameraToPlayer();
         this.activeWeapons = this.player.weapons; // 全局武器管理数组
         this.enemies = [];
         this.projectiles = [];
@@ -7169,8 +7228,8 @@ class GameManager {
     spawnDestructibleProps(count) {
         const margin = getNumericGameSetting('PROPS.DESTRUCTIBLE.SPAWN_MARGIN', 50);
         for (let i = 0; i < count; i++) {
-            const x = margin + GameRuntime.random() * (this.canvas.width - margin * 2);
-            const y = margin + GameRuntime.random() * (this.canvas.height - margin * 2);
+            const x = this.getViewportLeft() + margin + GameRuntime.random() * (this.canvas.width - margin * 2);
+            const y = this.getViewportTop() + margin + GameRuntime.random() * (this.canvas.height - margin * 2);
             this.enemies.push(new DestructibleProp(x, y));
         }
     }
@@ -7494,6 +7553,12 @@ class GameManager {
             ctx.translate(shakeX, shakeY);
         }
 
+        const useCamera = FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA;
+        if (useCamera) {
+            ctx.save();
+            ctx.translate(-this.camera.x, -this.camera.y);
+        }
+
         // 渲染火焰区域（半透明橙色）- 王植Boss技能
         for (const fire of this.fireAreas) {
             ctx.fillStyle = 'rgba(255, 100, 0, 0.4)';
@@ -7544,6 +7609,10 @@ class GameManager {
         // 渲染浮动文字（暴击跳字等）
         for (const text of this.floatingTexts) {
             text.render(ctx);
+        }
+
+        if (useCamera) {
+            ctx.restore();
         }
 
         this.pixiRenderer?.render(this);

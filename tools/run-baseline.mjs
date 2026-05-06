@@ -180,6 +180,7 @@ async function main() {
     ENABLE_WEAPON_COOLDOWN_HUD: Boolean(args['weapon-cooldown-hud']),
     ENABLE_AUDIO_MANAGER: Boolean(args['audio-manager']),
     ENABLE_DESTRUCTIBLE_PROPS: Boolean(args['destructible-props']),
+    ENABLE_LARGE_MAP_CAMERA: Boolean(args['large-map-camera']),
   };
   await fs.mkdir(path.join(rootDir, 'reports'), { recursive: true });
   const { server, baseUrl } = await createServer();

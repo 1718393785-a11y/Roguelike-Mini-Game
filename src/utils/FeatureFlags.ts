@@ -13,6 +13,7 @@ export const FEATURE_FLAGS = {
   ENABLE_WEAPON_COOLDOWN_HUD: false,
   ENABLE_AUDIO_MANAGER: false,
   ENABLE_DESTRUCTIBLE_PROPS: false,
+  ENABLE_LARGE_MAP_CAMERA: false,
 } as const;
 
 export type FeatureFlagName = keyof typeof FEATURE_FLAGS;

@@ -52,6 +52,11 @@
                 SPAWN_MARGIN: 50,
             },
         },
+        MAP: {
+            WIDTH: 6000,
+            HEIGHT: 6000,
+            CAMERA_SMOOTHNESS: 0.12,
+        },
     };
 
     function clone(value) {
