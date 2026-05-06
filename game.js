@@ -1872,29 +1872,36 @@ class CrossbowArrow {
             ));
         }
 
+        // 判断命中类型
+        const isLastHit = this.remainingPierce <= 1 || enemy.isBoss;
+        // 获取玩家范围加成
+        const areaMul = 1 + (gameManager.player.modifiers.areaMulti || 0);
+        const genericSettlementEnabled = !!gameManager.genericWeaponShadow;
+        const genericSettlement = genericSettlementEnabled
+            ? resolveCrossbowArrowHitSettlement(this, enemy, critRoll, areaMul)
+            : null;
+        const resolvedDamage = genericSettlementEnabled ? genericSettlement.damage : damage;
+        const resolvedKnockbackBase = genericSettlementEnabled ? genericSettlement.knockbackBase : knockbackBase;
+        const resolvedStunDuration = genericSettlementEnabled ? genericSettlement.stunDuration : stunDuration;
+        const resolvedIsLastHit = genericSettlementEnabled ? genericSettlement.isLastHit : isLastHit;
+        const resolvedLightningRadius = genericSettlementEnabled ? genericSettlement.lightningRadius : 0;
+
         // 造成伤害
-        enemy.hp -= damage;
+        enemy.hp -= resolvedDamage;
 
         // ============ 弓箭击退与硬直（暴击强化） ============
         // Boss/木牛完全免疫硬直和击退
         if (enemy.knockbackResist < 1.0) {
-            enemy.stunTimer = Math.max(enemy.stunTimer, stunDuration);
+            enemy.stunTimer = Math.max(enemy.stunTimer, resolvedStunDuration);
             // 破韧击退：只有不在硬直中才会被推开，避免高频击退无限推远
-            if (enemy.stunTimer <= stunDuration && enemy.stunTimer <= 0) {
-                const actualKnockback = knockbackBase * (1 - enemy.knockbackResist);
+            if (enemy.stunTimer <= resolvedStunDuration && enemy.stunTimer <= 0) {
+                const actualKnockback = resolvedKnockbackBase * (1 - enemy.knockbackResist);
                 const flyAngle = Math.atan2(this.vy, this.vx);
                 enemy.x += Math.cos(flyAngle) * actualKnockback;
                 enemy.y += Math.sin(flyAngle) * actualKnockback;
             }
         }
 
-        // 判断命中类型
-        const isLastHit = this.remainingPierce <= 1 || enemy.isBoss;
-        // 获取玩家范围加成
-        const areaMul = 1 + (gameManager.player.modifiers.areaMulti || 0);
-        const genericSettlement = gameManager.genericWeaponShadow
-            ? resolveCrossbowArrowHitSettlement(this, enemy, critRoll, areaMul)
-            : null;
         if (genericSettlement) {
             gameManager.genericWeaponShadow.recordBehaviorSample({
                 type: 'crossbow',
@@ -1918,15 +1925,15 @@ class CrossbowArrow {
         }
 
         // 触发闪电特效
-        if (this.hasLightningColumn && isLastHit) {
+        if (this.hasLightningColumn && resolvedIsLastHit) {
             // Lv6 终极：毁灭雷柱
-            const effectiveRadius = 120 * areaMul;
+            const effectiveRadius = resolvedLightningRadius || 120 * areaMul;
             gameManager.lightningEffects.push(new LightningColumnEffect(enemy.x, enemy.y, effectiveRadius, 3.0));
             // 全屏眩晕所有敌人在半径内
             gameManager.stunEnemiesInRadius(enemy.x, enemy.y, effectiveRadius, 1.0);
         } else if (this.hasLightningAOE) {
             // Lv5 普通：小范围AOE 50%伤害
-            const effectiveRadius = 60 * areaMul;
+            const effectiveRadius = resolvedLightningRadius || 60 * areaMul;
             gameManager.lightningEffects.push(new LightningAOEEffect(enemy.x, enemy.y, effectiveRadius, 0.5));
             gameManager.damageEnemiesInRadius(enemy.x, enemy.y, effectiveRadius, this.damage * 0.5, this.hitRecords);
         }
