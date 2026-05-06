@@ -53,6 +53,11 @@ if (FEATURE_FLAG_PARAMS.get('artPreview') === '1') {
     FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS = true;
     FEATURE_FLAGS.ENABLE_ART_DEBUG_PREVIEW = true;
 }
+if (FEATURE_FLAG_PARAMS.get('artHud') === '1') {
+    FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
+    FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS = true;
+    FEATURE_FLAGS.ENABLE_WEAPON_COOLDOWN_HUD = true;
+}
 if (FEATURE_FLAG_PARAMS.get('artSkillIcons') === '1') {
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
     FEATURE_FLAGS.ENABLE_ART_SKILL_ICONS = true;
@@ -7648,6 +7653,25 @@ class GameManager {
             ctx.strokeStyle = remaining <= 0 ? '#7cff6b' : colors[i % colors.length];
             ctx.lineWidth = lineWidth;
             ctx.stroke();
+        }
+        if (FEATURE_FLAGS.ENABLE_ART_ASSETS && FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS && this.assets) {
+            const iconSize = 20;
+            const iconGap = 4;
+            const iconCount = Math.min(weapons.length, 6);
+            const totalWidth = iconCount * iconSize + (iconCount - 1) * iconGap;
+            let iconX = this.player.x - totalWidth / 2 + iconSize / 2;
+            const iconY = this.player.y + baseRadius + Math.max(0, weapons.length - 1) * ringSpacing + 22;
+            for (let i = 0; i < iconCount; i++) {
+                const weapon = weapons[i];
+                const icon = this.assets.getWeaponIcon(weapon.type, weapon.level || 1);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(iconX - iconSize / 2 - 2, iconY - iconSize / 2 - 2, iconSize + 4, iconSize + 4);
+                ctx.strokeStyle = colors[i % colors.length];
+                ctx.lineWidth = 1;
+                ctx.strokeRect(iconX - iconSize / 2 - 2, iconY - iconSize / 2 - 2, iconSize + 4, iconSize + 4);
+                this.drawArtImage(ctx, icon, iconX, iconY, iconSize);
+                iconX += iconSize + iconGap;
+            }
         }
         ctx.restore();
     }

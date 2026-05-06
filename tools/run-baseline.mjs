@@ -193,6 +193,11 @@ async function main() {
     ENABLE_ART_PIXI_TEXTURES: Boolean(args['art-pixi-textures']),
     ENABLE_ART_DEBUG_PREVIEW: Boolean(args['art-preview']),
   };
+  if (args['art-hud']) {
+    defaultFlags.ENABLE_ART_ASSETS = true;
+    defaultFlags.ENABLE_ART_WEAPON_ICONS = true;
+    defaultFlags.ENABLE_WEAPON_COOLDOWN_HUD = true;
+  }
   if (Object.entries(defaultFlags).some(([name, enabled]) => name.startsWith('ENABLE_ART_') && name !== 'ENABLE_ART_ASSETS' && enabled)) {
     defaultFlags.ENABLE_ART_ASSETS = true;
   }
