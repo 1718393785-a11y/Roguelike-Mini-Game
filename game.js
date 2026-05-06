@@ -7994,11 +7994,23 @@ class GameManager {
             'fist': '因果律偏转臂铠',
             'taiping': '太平要术·风火残页'
         };
+        const hasArtWeaponIcons = FEATURE_FLAGS.ENABLE_ART_ASSETS && FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS && this.assets;
         for (const weapon of this.player.weapons) {
             const name = weaponNames[weapon.type] || weapon.type;
+            let textX = statusX + 8;
+            if (hasArtWeaponIcons) {
+                const icon = this.assets.getWeaponIcon(weapon.type, weapon.level || 1);
+                const iconX = statusX + 9;
+                const iconY = currentY - 5;
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+                ctx.fillRect(iconX - 8, iconY - 8, 16, 16);
+                if (this.drawArtImage(ctx, icon, iconX, iconY, 16)) {
+                    textX = statusX + 22;
+                }
+            }
             ctx.fillStyle = '#ffffff';
             ctx.font = '14px Arial';
-            ctx.fillText(`${name}  Lv.${weapon.level}`, statusX + 8, currentY);
+            ctx.fillText(`${name}  Lv.${weapon.level}`, textX, currentY);
             currentY += itemHeight;
         }
 
