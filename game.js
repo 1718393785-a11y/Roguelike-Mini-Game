@@ -21,6 +21,7 @@ const FEATURE_FLAGS = {
     ENABLE_GAME_SETTINGS: false,
     ENABLE_WEAPON_COOLDOWN_HUD: false,
     ENABLE_AUDIO_MANAGER: false,
+    ENABLE_DESTRUCTIBLE_PROPS: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -4383,9 +4384,9 @@ class ArcherEnemy extends Enemy {
 // 继承 Enemy 基类，复用全部碰撞检测伤害逻辑
 class DestructibleProp extends Enemy {
     constructor(x, y) {
-        super(x, y, 30, 0); // 固定血量30，移速倍数0 → 移速锁定为0
+        super(x, y, getNumericGameSetting('PROPS.DESTRUCTIBLE.HP', 30), 0); // 移速倍数0 → 移速锁定为0
         this.type = 'prop';
-        this.size = 32;
+        this.size = getNumericGameSetting('PROPS.DESTRUCTIBLE.SIZE', 32);
         this.color = '#8b4513'; // 棕色木箱
         this.knockbackResist = 1.0; // 完全免疫击退，无法被推动
         this.isProp = true; // 标记为可破坏物，用于掉落拦截
@@ -6603,8 +6604,10 @@ class GameManager {
         if (currentMinute > 0 && currentMinute <= 10 && !this.spawnedMinutes.has(currentMinute)) {
             this.spawnedMinutes.add(currentMinute);
 
-            // 每整分钟同步刷新1个木箱
-            this.spawnDestructibleProps(1);
+            // 每整分钟同步刷新木箱
+            if (FEATURE_FLAGS.ENABLE_DESTRUCTIBLE_PROPS) {
+                this.spawnDestructibleProps(getNumericGameSetting('PROPS.DESTRUCTIBLE.MINUTE_COUNT', 1));
+            }
 
             if (currentMinute % 2 !== 0) {
                 // 1, 3, 5, 7, 9 分钟：刷新精英小 Boss（高压掉落）
@@ -6658,14 +6661,16 @@ class GameManager {
         }
 
         // ========== 可破坏物（木箱）低概率生成 ==========
-        // 每帧 0.1% 概率尝试生成，保持场上最多 3 个，不生成在边缘
-        const maxProps = 3;
-        const propCount = this.enemies.filter(e => e.isProp).length;
-        if (!hasFinalBoss && propCount < maxProps && GameRuntime.random() < 0.001) {
-            const margin = 50; // 不生成在边缘 50px 内
-            const x = margin + GameRuntime.random() * (this.canvas.width - margin * 2);
-            const y = margin + GameRuntime.random() * (this.canvas.height - margin * 2);
-            this.enemies.push(new DestructibleProp(x, y));
+        if (FEATURE_FLAGS.ENABLE_DESTRUCTIBLE_PROPS) {
+            const maxProps = getNumericGameSetting('PROPS.DESTRUCTIBLE.MAX_COUNT', 3);
+            const propCount = this.enemies.filter(e => e.isProp).length;
+            const spawnChance = getNumericGameSetting('PROPS.DESTRUCTIBLE.SPAWN_CHANCE_PER_FRAME', 0.001);
+            if (!hasFinalBoss && propCount < maxProps && GameRuntime.random() < spawnChance) {
+                const margin = getNumericGameSetting('PROPS.DESTRUCTIBLE.SPAWN_MARGIN', 50); // 不生成在边缘
+                const x = margin + GameRuntime.random() * (this.canvas.width - margin * 2);
+                const y = margin + GameRuntime.random() * (this.canvas.height - margin * 2);
+                this.enemies.push(new DestructibleProp(x, y));
+            }
         }
     }
 
@@ -7154,13 +7159,15 @@ class GameManager {
         // 受伤弹开怪物冷却
         this.pushbackCooldown = 0;
 
-        // 开局固定刷新2个木箱
-        this.spawnDestructibleProps(2);
+        // 开局固定刷新木箱
+        if (FEATURE_FLAGS.ENABLE_DESTRUCTIBLE_PROPS) {
+            this.spawnDestructibleProps(getNumericGameSetting('PROPS.DESTRUCTIBLE.INITIAL_COUNT', 2));
+        }
     }
 
     // ========== 生成可破坏物（木箱） ==========
     spawnDestructibleProps(count) {
-        const margin = 50;
+        const margin = getNumericGameSetting('PROPS.DESTRUCTIBLE.SPAWN_MARGIN', 50);
         for (let i = 0; i < count; i++) {
             const x = margin + GameRuntime.random() * (this.canvas.width - margin * 2);
             const y = margin + GameRuntime.random() * (this.canvas.height - margin * 2);

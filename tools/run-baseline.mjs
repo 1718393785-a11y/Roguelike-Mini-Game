@@ -179,6 +179,7 @@ async function main() {
     ENABLE_GAME_SETTINGS: Boolean(args['game-settings']),
     ENABLE_WEAPON_COOLDOWN_HUD: Boolean(args['weapon-cooldown-hud']),
     ENABLE_AUDIO_MANAGER: Boolean(args['audio-manager']),
+    ENABLE_DESTRUCTIBLE_PROPS: Boolean(args['destructible-props']),
   };
   await fs.mkdir(path.join(rootDir, 'reports'), { recursive: true });
   const { server, baseUrl } = await createServer();

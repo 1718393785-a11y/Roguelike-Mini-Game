@@ -41,6 +41,17 @@
                 LINE_WIDTH: 3,
             },
         },
+        PROPS: {
+            DESTRUCTIBLE: {
+                HP: 30,
+                SIZE: 32,
+                INITIAL_COUNT: 2,
+                MINUTE_COUNT: 1,
+                MAX_COUNT: 3,
+                SPAWN_CHANCE_PER_FRAME: 0.001,
+                SPAWN_MARGIN: 50,
+            },
+        },
     };
 
     function clone(value) {
