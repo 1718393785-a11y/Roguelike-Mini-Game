@@ -109,7 +109,7 @@
     },
     "enemy_sprite_atlas": {
       "src": "style-proofs/enemy-sprite-atlas.png",
-      "sourceSize": [640, 320],
+      "sourceSize": [768, 384],
       "derived": [
         "enemies/asset_enemy_soldier.png",
         "enemies/asset_enemy_spearman.png",

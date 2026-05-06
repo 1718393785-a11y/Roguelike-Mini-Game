@@ -4102,10 +4102,14 @@ class Enemy {
     }
 
     getArtRenderSize() {
-        if (this.isProp) return this.size * 1.55;
-        if (this.type === 'tiger_guard') return this.size * 1.65;
-        if (this.type === 'wooden_ox') return this.size * 2.05;
-        return this.size * 1.9;
+        if (this.isProp) return this.size * 2.0;
+        if (this.type === 'cavalry') return this.size * 3.2;
+        if (this.type === 'spearman') return this.size * 3.1;
+        if (this.type === 'archer') return this.size * 2.8;
+        if (this.type === 'wooden_ox') return this.size * 2.8;
+        if (this.type === 'tiger_guard') return this.size * 2.4;
+        if (this.isElite) return this.size * 2.6;
+        return this.size * 2.7;
     }
 
     tryRenderArtEnemy(ctx, assets, rotation = 0) {
@@ -4123,7 +4127,8 @@ class Enemy {
     }
 
     render(ctx, assets = null) {
-        if (this.tryRenderArtEnemy(ctx, assets)) {
+        const usedArtEnemy = this.tryRenderArtEnemy(ctx, assets);
+        if (usedArtEnemy) {
             // Sprite branch only replaces body rendering. Health bars remain unchanged below.
         } else if (this.type === 'spearman') {
             const half = this.size / 2;
@@ -4185,7 +4190,8 @@ class Enemy {
             const barW = this.size;
             const barH = 6;
             const barX = this.x - barW / 2;
-            const barY = this.y - this.size / 2 - barH - 2;
+            const visualSize = usedArtEnemy ? this.getArtRenderSize() : this.size;
+            const barY = this.y - visualSize / 2 - barH - 2;
             ctx.fillStyle = '#aa0000';
             ctx.fillRect(barX, barY, barW, barH);
             const hpPercent = this.hp / this.maxHp;
@@ -4296,7 +4302,8 @@ class TigerGuardEnemy extends Enemy {
         }
 
         const half = this.size / 2;
-        if (!this.tryRenderArtEnemy(ctx, assets, rotation)) {
+        const usedArtEnemy = this.tryRenderArtEnemy(ctx, assets, rotation);
+        if (!usedArtEnemy) {
             ctx.save();
             ctx.translate(this.x, this.y);
             ctx.rotate(rotation);
@@ -4319,7 +4326,8 @@ class TigerGuardEnemy extends Enemy {
             const barW = this.size;
             const barH = 6;
             const barX = this.x - barW / 2;
-            const barY = this.y - half - barH - 2;
+            const visualSize = usedArtEnemy ? this.getArtRenderSize() : this.size;
+            const barY = this.y - visualSize / 2 - barH - 2;
             ctx.fillStyle = '#aa0000';
             ctx.fillRect(barX, barY, barW, barH);
             ctx.fillStyle = '#00aa00';
