@@ -16,6 +16,7 @@ const FEATURE_FLAGS = {
     ENABLE_PLAYER_IFRAME: false,
     ENABLE_HIT_KNOCKBACK: false,
     ENABLE_LOW_HP_WARNING: false,
+    ENABLE_ELITE_MUTATIONS: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -4089,6 +4090,13 @@ class EliteEnemy extends Enemy {
         this.expValue = Math.ceil(baseHealth * 3 / 2);
         this.resonanceDrop = 3; // 掉落3倍残响
         this.knockbackResist = 0.5; // 精英减免50%击退
+        if (FEATURE_FLAGS.ENABLE_ELITE_MUTATIONS) {
+            this.size = Math.round(this.size * 1.5);
+            this.speed *= 0.9;
+            this.contactDamageMultiplier = 1.3;
+            this.eliteExplosionRadius = 60;
+            this.eliteExplosionDamage = 15;
+        }
     }
 }
 
@@ -6101,6 +6109,9 @@ class GameManager {
         } else {
             this.trySpawnPickup(enemy);
         }
+        if (FEATURE_FLAGS.ENABLE_ELITE_MUTATIONS && enemy.isElite && !enemy.isBoss && !enemy.isMiniBoss && !enemy.isLevelBoss && !enemy.isProp) {
+            this.triggerEliteDeathExplosion(enemy);
+        }
         this.enemies.splice(index, 1);
 
         // 如果是 Boss，触发进度推进
@@ -6113,6 +6124,21 @@ class GameManager {
                 this.spawnTimer = 0;
             }
         }
+    }
+
+    triggerEliteDeathExplosion(enemy) {
+        const radius = enemy.eliteExplosionRadius || 60;
+        const damage = enemy.eliteExplosionDamage || 15;
+        const dx = this.player.x - enemy.x;
+        const dy = this.player.y - enemy.y;
+        const distSq = dx * dx + dy * dy;
+        if (distSq < radius * radius && this.player.canTakeDamage()) {
+            if (this.applyPlayerDamage(damage)) {
+                this.damageFlashTimer = 0.2;
+                this.shakeTimer = Math.max(this.shakeTimer, 0.2);
+            }
+        }
+        this.floatingTexts.push(new FloatingText(enemy.x, enemy.y - enemy.size / 2, '爆', 'rgb(255, 120, 0)', 24));
     }
 
     // 生成三个随机升级选项（本局升级）- 基于等级配置表自动生成
@@ -6784,8 +6810,9 @@ class GameManager {
                             damageReduction = damageReduction + shieldDR * (1 - damageReduction);
                         }
                     }
-                    const baseDamage = enemy.isBoss ? 20 : 10;
-                    const continuousDamage = enemy.isBoss ? 20 : 10;
+                    const contactDamageMultiplier = enemy.contactDamageMultiplier || 1;
+                    const baseDamage = (enemy.isBoss ? 20 : 10) * contactDamageMultiplier;
+                    const continuousDamage = (enemy.isBoss ? 20 : 10) * contactDamageMultiplier;
                     if (this.pushbackCooldown <= 0) {
                         // 弹开就绪：单次爆发固定扣除，普通怪10点 / Boss20点，计算伤害减免
                         this.applyPlayerDamage(baseDamage * (1 - damageReduction));

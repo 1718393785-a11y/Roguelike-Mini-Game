@@ -12,13 +12,14 @@
     "ENABLE_HOT_RELOAD": false,
     "ENABLE_PLAYER_IFRAME": false,
     "ENABLE_HIT_KNOCKBACK": false,
-    "ENABLE_LOW_HP_WARNING": true
+    "ENABLE_LOW_HP_WARNING": false,
+    "ENABLE_ELITE_MUTATIONS": true
   },
   "equal": true,
   "snapshotCountA": 7201,
   "snapshotCountB": 7201,
-  "bossFrameA": 2280,
-  "bossFrameB": 2280,
-  "bossFrameDelta": 0,
+  "bossFrameA": null,
+  "bossFrameB": null,
+  "bossFrameDelta": null,
   "firstDiffs": []
 }
