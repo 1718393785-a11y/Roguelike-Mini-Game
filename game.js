@@ -4112,17 +4112,77 @@ class Enemy {
         return this.size * 2.7;
     }
 
+    canUseCloseAttackVisual() {
+        if (this.isBoss || this.isLevelBoss || this.isProp) return false;
+        if (this.type === 'archer' || this.type === 'wooden_ox') return false;
+        return true;
+    }
+
+    getCloseAttackVisualState() {
+        const player = window.gameManager?.player;
+        if (!player || !this.canUseCloseAttackVisual()) return null;
+
+        const dx = player.x - this.x;
+        const dy = player.y - this.y;
+        const distSq = dx * dx + dy * dy;
+        const attackRange = Math.max(46, (this.size + player.size) * 1.15);
+        if (distSq > attackRange * attackRange) return null;
+
+        const dist = Math.sqrt(distSq) || 1;
+        const phase = ((GameRuntime.frame + this.id * 5) % 24) / 24;
+        const windup = phase < 0.45 ? phase / 0.45 : Math.max(0, 1 - (phase - 0.45) / 0.55);
+        const strike = Math.sin(phase * Math.PI);
+        return {
+            angle: Math.atan2(dy, dx),
+            dirX: dx / dist,
+            dirY: dy / dist,
+            lunge: windup * Math.min(10, this.size * 0.45),
+            scale: 1 + strike * 0.08,
+            slashAlpha: phase > 0.28 && phase < 0.62 ? 0.62 : 0,
+            slashSize: Math.max(16, this.size * 0.9),
+        };
+    }
+
+    drawCloseAttackSlash(ctx, state, size) {
+        if (!state || state.slashAlpha <= 0) return;
+        const reach = size * 0.34;
+        ctx.save();
+        ctx.rotate(state.angle);
+        ctx.globalAlpha = state.slashAlpha;
+        ctx.strokeStyle = 'rgba(255, 226, 120, 0.95)';
+        ctx.lineWidth = Math.max(3, this.size * 0.16);
+        ctx.beginPath();
+        ctx.arc(reach, 0, state.slashSize, -0.72, 0.72);
+        ctx.stroke();
+        ctx.strokeStyle = 'rgba(255, 255, 230, 0.75)';
+        ctx.lineWidth = Math.max(1.5, this.size * 0.07);
+        ctx.beginPath();
+        ctx.arc(reach, 0, state.slashSize * 0.74, -0.55, 0.55);
+        ctx.stroke();
+        ctx.restore();
+    }
+
     tryRenderArtEnemy(ctx, assets, rotation = 0) {
         if (!FEATURE_FLAGS.ENABLE_ART_ASSETS || !FEATURE_FLAGS.ENABLE_ART_ENEMY_SPRITES || !assets) return false;
         const enemyId = this.getArtEnemyId();
         const sprite = enemyId ? assets.getEnemySprite(enemyId) : null;
         if (!assets.canDraw(sprite)) return false;
         const size = this.getArtRenderSize();
+        const attackState = this.getCloseAttackVisualState();
         ctx.save();
-        ctx.translate(this.x, this.y);
+        const renderX = this.x + (attackState ? attackState.dirX * attackState.lunge : 0);
+        const renderY = this.y + (attackState ? attackState.dirY * attackState.lunge : 0);
+        ctx.translate(renderX, renderY);
         if (rotation) ctx.rotate(rotation);
+        if (attackState) ctx.scale(attackState.scale, attackState.scale);
         ctx.drawImage(sprite, -size / 2, -size / 2, size, size);
         ctx.restore();
+        if (attackState) {
+            ctx.save();
+            ctx.translate(renderX, renderY);
+            this.drawCloseAttackSlash(ctx, attackState, size);
+            ctx.restore();
+        }
         return true;
     }
 
