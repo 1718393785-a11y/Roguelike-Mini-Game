@@ -2,12 +2,23 @@ import { RawConfigSchema, type RawConfig, type ValidationIssue, type WeaponConfi
 import { LastKnownGood } from './LastKnownGood';
 
 export type LoadResult =
-  | { ok: true; config: RawConfig }
+  | { ok: true; config: RawConfig; poisonPill: number }
   | { ok: false; errors: ValidationIssue[]; rolledBack: boolean };
+
+export type ConfigTeardownReason = 'config_commit' | 'rollback';
+
+export interface ConfigTeardownContext {
+  readonly reason: ConfigTeardownReason;
+  readonly poisonPill: number;
+}
+
+export type ConfigTeardownHook = (context: ConfigTeardownContext) => void;
 
 export class ConfigManager {
   private currentConfig: RawConfig | null = null;
   private lastErrors: ValidationIssue[] = [];
+  private poisonPill = 0;
+  private readonly teardownHooks = new Set<ConfigTeardownHook>();
 
   constructor(private readonly lastKnownGood = new LastKnownGood()) {}
 
@@ -21,7 +32,7 @@ export class ConfigManager {
     try {
       this.stageConfig(parsed.data);
       this.commitConfig(parsed.data);
-      return { ok: true, config: parsed.data };
+      return { ok: true, config: parsed.data, poisonPill: this.poisonPill };
     } catch {
       return { ok: false, errors: this.lastErrors, rolledBack: this.rollback() };
     }
@@ -38,6 +49,7 @@ export class ConfigManager {
   rollback(): boolean {
     const previous = this.lastKnownGood.load();
     if (!previous) return false;
+    this.teardownAllConfigDerivedInstances('rollback');
     this.currentConfig = previous;
     return true;
   }
@@ -46,8 +58,27 @@ export class ConfigManager {
     return this.lastErrors;
   }
 
-  teardownAllConfigDerivedInstances(): void {
-    // Stage 1 defines the poison-pill boundary. Runtime teardown hooks are wired in Stage 5.
+  registerTeardownHook(hook: ConfigTeardownHook): () => void {
+    this.teardownHooks.add(hook);
+    return () => this.teardownHooks.delete(hook);
+  }
+
+  getPoisonPill(): number {
+    return this.poisonPill;
+  }
+
+  assertFresh(poisonPill: number): void {
+    if (poisonPill !== this.poisonPill) {
+      throw new Error(`Stale config-derived instance: ${poisonPill} !== ${this.poisonPill}`);
+    }
+  }
+
+  teardownAllConfigDerivedInstances(reason: ConfigTeardownReason = 'config_commit'): void {
+    this.poisonPill++;
+    const context = { reason, poisonPill: this.poisonPill };
+    for (const hook of this.teardownHooks) {
+      hook(context);
+    }
   }
 
   getConfig(): RawConfig | null {
@@ -61,7 +92,7 @@ export class ConfigManager {
   }
 
   private commitConfig(config: RawConfig): void {
-    this.teardownAllConfigDerivedInstances();
+    this.teardownAllConfigDerivedInstances('config_commit');
     this.currentConfig = structuredClone(config);
     this.lastKnownGood.save(config);
     this.lastErrors = [];
