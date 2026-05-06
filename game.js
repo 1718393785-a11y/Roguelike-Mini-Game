@@ -861,6 +861,21 @@ function resolveShieldPulseHitSettlement(weapon, enemy, player, knockbackScale, 
     };
 }
 
+function resolveShieldFireRingHitSettlement(fireRing, enemy, dx, dy, dist) {
+    const damage = fireRing.damagePerSecond * fireRing.burnTick;
+    const angle = Math.atan2(dy, dx);
+    const pull = dist > 0 ? 10 * (1 - enemy.knockbackResist) : 0;
+    return {
+        damage,
+        finalHp: enemy.hp - damage,
+        angle,
+        pull,
+        finalX: enemy.x - Math.cos(angle) * pull,
+        finalY: enemy.y - Math.sin(angle) * pull,
+        willKill: enemy.hp - damage <= 0
+    };
+}
+
 class GenericWeaponShadowMonitor {
     constructor() {
         this.samples = 0;
@@ -2908,20 +2923,56 @@ class FireRing {
                 }
                 const shouldHit = genericShadowEnabled ? genericHitIdSet.has(getDebugEntityId(enemy)) : legacyShouldHit;
                 if (shouldHit) {
+                    const preSettlement = {
+                        x: enemy.x,
+                        y: enemy.y,
+                        hp: enemy.hp
+                    };
+                    const genericSettlement = genericShadowEnabled
+                        ? resolveShieldFireRingHitSettlement(this, enemy, dx, dy, dist)
+                        : null;
                     // 灼烧伤害
-                    enemy.hp -= this.damagePerSecond * this.burnTick;
+                    if (genericSettlement) {
+                        enemy.hp = genericSettlement.finalHp;
+                    } else {
+                        enemy.hp -= this.damagePerSecond * this.burnTick;
+                    }
 
                     // 强制向内弹回 10 像素，跟随火墙收缩向内压 - 增加抗性计算
                     if (dist > 0) {
                         const angle = Math.atan2(dy, dx);
                         const pull = 10 * (1 - enemy.knockbackResist);
-                        enemy.x -= Math.cos(angle) * pull;
-                        enemy.y -= Math.sin(angle) * pull;
+                        if (genericSettlement) {
+                            enemy.x = genericSettlement.finalX;
+                            enemy.y = genericSettlement.finalY;
+                        } else {
+                            enemy.x -= Math.cos(angle) * pull;
+                            enemy.y -= Math.sin(angle) * pull;
+                        }
                     }
 
                     // 检查死亡
                     if (enemy.hp <= 0) {
                         gameManager.handleEnemyDeath(enemy, i);
+                    }
+                    if (genericSettlement) {
+                        gm.genericWeaponShadow.recordBehaviorSample({
+                            type: 'shield',
+                            effect: 'fire_ring_settlement',
+                            level: 6,
+                            genericHits: [getDebugEntityId(enemy)],
+                            legacyHits: [getDebugEntityId(enemy)],
+                            genericState: genericSettlement,
+                            legacyState: {
+                                damage: this.damagePerSecond * this.burnTick,
+                                finalHp: preSettlement.hp - this.damagePerSecond * this.burnTick,
+                                angle: Math.atan2(dy, dx),
+                                pull: dist > 0 ? 10 * (1 - enemy.knockbackResist) : 0,
+                                finalX: preSettlement.x - Math.cos(Math.atan2(dy, dx)) * (dist > 0 ? 10 * (1 - enemy.knockbackResist) : 0),
+                                finalY: preSettlement.y - Math.sin(Math.atan2(dy, dx)) * (dist > 0 ? 10 * (1 - enemy.knockbackResist) : 0),
+                                willKill: preSettlement.hp - this.damagePerSecond * this.burnTick <= 0
+                            }
+                        });
                     }
                 }
             }
