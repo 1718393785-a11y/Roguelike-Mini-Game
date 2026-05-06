@@ -801,6 +801,28 @@ function resolveSaberHitSettlement(weapon, enemy, effectiveDamage) {
     };
 }
 
+function resolveSpearHitSettlement(weapon, enemy, effectiveDamage) {
+    const armorPenPercent = weapon.level >= 5 ? (weapon.level >= 6 ? 0.05 : 0.03) : 0;
+    const isBoss = enemy.isBoss || enemy.isMiniBoss || enemy.isLevelBoss;
+    const trueDamage = armorPenPercent > 0 && !isBoss ? enemy.maxHp * armorPenPercent : 0;
+    const stunDuration = 0.15 + weapon.level * 0.03;
+    const canApplyControl = enemy.knockbackResist < 1.0;
+    const finalStunTimer = canApplyControl ? Math.max(enemy.stunTimer, stunDuration) : enemy.stunTimer;
+    const legacyKnockbackCondition = canApplyControl && finalStunTimer <= stunDuration && finalStunTimer <= 0;
+    const actualKnockback = legacyKnockbackCondition ? weapon.knockbackDist * (1 - enemy.knockbackResist) : 0;
+    return {
+        armorPenPercent,
+        isBoss,
+        trueDamage,
+        baseDamage: effectiveDamage,
+        finalHp: enemy.hp - effectiveDamage - trueDamage,
+        stunDuration,
+        finalStunTimer,
+        knockbackDist: weapon.knockbackDist,
+        actualKnockback
+    };
+}
+
 class GenericWeaponShadowMonitor {
     constructor() {
         this.samples = 0;
@@ -1517,34 +1539,64 @@ class Spear extends Weapon {
             }
             const shouldHit = genericShadowEnabled ? genericHitIdSet.has(getDebugEntityId(enemy)) : legacyShouldHit;
             if (shouldHit) {
-                enemy.hp -= effectiveDamage;
+                const preSettlementHp = enemy.hp;
+                const preSettlementStunTimer = enemy.stunTimer;
+                const genericSettlement = genericShadowEnabled
+                    ? resolveSpearHitSettlement(this, enemy, effectiveDamage)
+                    : null;
                 stab.hitRecords.add(enemy);
 
                 // ============ 【破甲】机制 - Lv5解锁 ============
                 // Lv5: 附加目标最大生命 3% 真伤，对Boss无效
                 // Lv6: 真实伤害提升至 5%
                 const armorPenPercent = this.level >= 5 ? (this.level >= 6 ? 0.05 : 0.03) : 0;
-                if (armorPenPercent > 0) {
-                    const isBoss = enemy.isBoss || enemy.isMiniBoss || enemy.isLevelBoss;
-                    if (!isBoss) {
+                const isBoss = enemy.isBoss || enemy.isMiniBoss || enemy.isLevelBoss;
+                const trueDamage = armorPenPercent > 0 && !isBoss ? enemy.maxHp * armorPenPercent : 0;
+                if (genericSettlement) {
+                    enemy.hp = genericSettlement.finalHp;
+                } else {
+                    enemy.hp -= effectiveDamage;
+                    if (trueDamage > 0) {
                         // 对非Boss附加真伤
-                        const trueDamage = enemy.maxHp * armorPenPercent;
                         enemy.hp -= trueDamage;
                     }
                 }
 
                 // ============ 新增：枪的强力穿透硬直 ============
                 const stunDuration = 0.15 + this.level * 0.03; // 基础0.18s，满级0.33s
+                const resolvedStunDuration = genericSettlement ? genericSettlement.stunDuration : stunDuration;
+                const resolvedKnockbackDist = genericSettlement ? genericSettlement.knockbackDist : this.knockbackDist;
                 // Boss/木牛完全免疫硬直和击退
                 if (enemy.knockbackResist < 1.0) {
-                    enemy.stunTimer = Math.max(enemy.stunTimer, stunDuration);
+                    enemy.stunTimer = genericSettlement ? genericSettlement.finalStunTimer : Math.max(enemy.stunTimer, stunDuration);
                     // 破韧击退：只有不在硬直中才会被推开，避免高频击退无限推远
-                    if (enemy.stunTimer <= stunDuration && enemy.stunTimer <= 0) {
+                    if (enemy.stunTimer <= resolvedStunDuration && enemy.stunTimer <= 0) {
                         // 击退效果：沿枪方向推开，计算抗性
-                        const actualKnockback = this.knockbackDist * (1 - enemy.knockbackResist);
+                        const actualKnockback = genericSettlement ? genericSettlement.actualKnockback : resolvedKnockbackDist * (1 - enemy.knockbackResist);
                         enemy.x += dirX * actualKnockback;
                         enemy.y += dirY * actualKnockback;
                     }
+                }
+                if (genericSettlement) {
+                    gm.genericWeaponShadow.recordBehaviorSample({
+                        type: 'spear',
+                        effect: 'line_rect_settlement',
+                        level: this.level,
+                        genericHits: [getDebugEntityId(enemy)],
+                        legacyHits: [getDebugEntityId(enemy)],
+                        genericState: genericSettlement,
+                        legacyState: {
+                            armorPenPercent,
+                            isBoss,
+                            trueDamage,
+                            baseDamage: effectiveDamage,
+                            finalHp: preSettlementHp - effectiveDamage - trueDamage,
+                            stunDuration,
+                            finalStunTimer: enemy.knockbackResist < 1.0 ? Math.max(preSettlementStunTimer, stunDuration) : preSettlementStunTimer,
+                            knockbackDist: this.knockbackDist,
+                            actualKnockback: 0
+                        }
+                    });
                 }
 
                 // 边界裁剪：防止被击退出地图，留出半身边距
