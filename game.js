@@ -33,6 +33,7 @@ const FEATURE_FLAGS = {
     ENABLE_ART_EFFECTS: false,
     ENABLE_ART_UI_SKIN: false,
     ENABLE_ART_PIXI_TEXTURES: false,
+    ENABLE_ART_DEBUG_PREVIEW: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -46,6 +47,11 @@ if (FEATURE_FLAG_PARAMS.get('artAssets') === '1') FEATURE_FLAGS.ENABLE_ART_ASSET
 if (FEATURE_FLAG_PARAMS.get('artWeaponIcons') === '1') {
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
     FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS = true;
+}
+if (FEATURE_FLAG_PARAMS.get('artPreview') === '1') {
+    FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
+    FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS = true;
+    FEATURE_FLAGS.ENABLE_ART_DEBUG_PREVIEW = true;
 }
 if (FEATURE_FLAG_PARAMS.get('artSkillIcons') === '1') {
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
@@ -7355,11 +7361,13 @@ class GameManager {
         ctx.fillStyle = '#cccccc';
         ctx.font = '20px Arial';
         ctx.fillText('穿越时空只为找到你~', centerX, centerY - 120);
+        this.renderArtWeaponPreview(ctx, centerX, Math.max(120, centerY - 55));
 
         // 按钮
-        this.drawButton(centerX - 150, 400, 300, 70, '#2a4d2a', '#ffffff', '开始新游戏');
-        this.drawButton(centerX - 150, 490, 300, 70, '#2a3a4d', '#ffffff', '局外升级');
-        this.drawButton(centerX - 150, 580, 300, 70, '#4d2a2a', '#ffffff', '退出');
+        const buttonStartY = FEATURE_FLAGS.ENABLE_ART_DEBUG_PREVIEW ? Math.max(430, centerY + 35) : 400;
+        this.drawButton(centerX - 150, buttonStartY, 300, 70, '#2a4d2a', '#ffffff', '开始新游戏');
+        this.drawButton(centerX - 150, buttonStartY + 90, 300, 70, '#2a3a4d', '#ffffff', '局外升级');
+        this.drawButton(centerX - 150, buttonStartY + 180, 300, 70, '#4d2a2a', '#ffffff', '退出');
 
         ctx.textAlign = 'left';
     }
@@ -7387,6 +7395,27 @@ class GameManager {
         ctx.drawImage(image, centerX - size / 2, centerY - size / 2, size, size);
         ctx.restore();
         return true;
+    }
+
+    renderArtWeaponPreview(ctx, centerX, y) {
+        if (!FEATURE_FLAGS.ENABLE_ART_DEBUG_PREVIEW || !this.assets) return;
+        const weaponIds = ['saber', 'spear', 'crossbow', 'qinggang', 'shield', 'taiping'];
+        const size = 54;
+        const gap = 14;
+        const totalWidth = weaponIds.length * size + (weaponIds.length - 1) * gap;
+        let x = centerX - totalWidth / 2 + size / 2;
+        ctx.save();
+        for (const weaponId of weaponIds) {
+            const icon = this.assets.getWeaponIcon(weaponId, 1);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+            ctx.fillRect(x - size / 2 - 4, y - size / 2 - 4, size + 8, size + 8);
+            ctx.strokeStyle = 'rgba(184, 134, 11, 0.75)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x - size / 2 - 4, y - size / 2 - 4, size + 8, size + 8);
+            this.drawArtImage(ctx, icon, x, y, size);
+            x += size + gap;
+        }
+        ctx.restore();
     }
 
     // 颜色变亮用于悬停

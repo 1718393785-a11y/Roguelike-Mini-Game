@@ -191,6 +191,7 @@ async function main() {
     ENABLE_ART_EFFECTS: Boolean(args['art-effects']),
     ENABLE_ART_UI_SKIN: Boolean(args['art-ui-skin']),
     ENABLE_ART_PIXI_TEXTURES: Boolean(args['art-pixi-textures']),
+    ENABLE_ART_DEBUG_PREVIEW: Boolean(args['art-preview']),
   };
   if (Object.entries(defaultFlags).some(([name, enabled]) => name.startsWith('ENABLE_ART_') && name !== 'ENABLE_ART_ASSETS' && enabled)) {
     defaultFlags.ENABLE_ART_ASSETS = true;
