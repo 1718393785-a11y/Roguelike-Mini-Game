@@ -17,6 +17,7 @@ const FEATURE_FLAGS = {
     ENABLE_HIT_KNOCKBACK: false,
     ENABLE_LOW_HP_WARNING: false,
     ENABLE_ELITE_MUTATIONS: false,
+    ENABLE_BOSS_AFFIXES: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -171,6 +172,10 @@ const GameRuntime = (() => {
             projectiles: { count: (game.projectiles || []).length },
             pickups: { count: (game.pickups || []).length },
             bossSpawned: enemies.some(enemy => enemy.isBoss || enemy.isMiniBoss || enemy.isLevelBoss || enemy.isFinalBoss),
+            bossAffixes: enemies
+                .filter(enemy => enemy.isBoss && enemy.affixes && enemy.affixes.length > 0)
+                .map(enemy => enemy.affixes.join('+'))
+                .sort(),
             killCount: session.killCount,
             dps: round(session.damageTotal / Math.max(1, game.gameTime || 0)),
         });
@@ -4388,7 +4393,7 @@ class DestructibleProp extends Enemy {
 
 // 5分钟最终Boss
 class Boss extends Enemy {
-    constructor(stageData) {
+    constructor(stageData, stageIndex = STAGES.indexOf(stageData), options = {}) {
         const margin = 20;
         const canvas = gameManager.canvas;
         // Boss从屏幕边缘随机生成
@@ -4404,6 +4409,7 @@ class Boss extends Enemy {
         this.size = stageData.name === '黄河渡口' ? 80 : 60;
         this.color = '#ff4500'; // 大 Boss 改为橘红色
         this.stageData = stageData;
+        this.stageIndex = stageIndex < 0 ? 0 : stageIndex;
         this.ability = stageData.bossAbility;
         this.isBoss = true;
         this.abilityTimer = 0;
@@ -4411,10 +4417,19 @@ class Boss extends Enemy {
         this.halfHealthTriggered = false;
         this.invulnerableOnce = false;
         this.knockbackResist = 1.0; // Boss完全免疫击退
+        this.affixes = [];
+        this.affixTimers = {};
+        this.chargeTimer = 0;
+        this.chargeVx = 0;
+        this.chargeVy = 0;
+        if (FEATURE_FLAGS.ENABLE_BOSS_AFFIXES && options.enableAffixes !== false) {
+            this.initializeAffixes();
+        }
     }
 
     update(deltaTime) {
         super.update(deltaTime);
+        this.updateAffixCharge(deltaTime);
 
         // Boss特殊能力
         this.abilityTimer += deltaTime;
@@ -4422,11 +4437,140 @@ class Boss extends Enemy {
             this.abilityTimer -= this.abilityCooldown;
             this.useAbility();
         }
+        this.updateAffixes(deltaTime);
 
         // 检测秦琪的半血召唤
         if (this.ability === 'summonPhantoms' && !this.halfHealthTriggered && this.hp < this.maxHp / 2) {
             this.halfHealthTriggered = true;
             this.summonPhantoms();
+        }
+    }
+
+    initializeAffixes() {
+        if (this.stageIndex < 2) return;
+        const available = ['fearless', 'strongbow', 'scorched', 'callToArms'];
+        const count = this.stageIndex >= 3 ? 2 : 1;
+        for (let i = 0; i < count && available.length > 0; i++) {
+            const index = Math.floor(GameRuntime.random() * available.length);
+            const affix = available.splice(index, 1)[0];
+            this.affixes.push(affix);
+            this.affixTimers[affix] = 3 + GameRuntime.random() * 2;
+        }
+    }
+
+    updateAffixes(deltaTime) {
+        if (!FEATURE_FLAGS.ENABLE_BOSS_AFFIXES || this.affixes.length === 0) return;
+        for (const affix of this.affixes) {
+            this.affixTimers[affix] -= deltaTime;
+            if (this.affixTimers[affix] <= 0) {
+                this.triggerAffix(affix);
+                this.affixTimers[affix] += this.getAffixCooldown(affix);
+            }
+        }
+    }
+
+    updateAffixCharge(deltaTime) {
+        if (!FEATURE_FLAGS.ENABLE_BOSS_AFFIXES || this.chargeTimer <= 0) return;
+        const step = Math.min(deltaTime, this.chargeTimer);
+        this.x += this.chargeVx * step;
+        this.y += this.chargeVy * step;
+        this.chargeTimer -= step;
+    }
+
+    getAffixCooldown(affix) {
+        switch (affix) {
+            case 'fearless': return 5;
+            case 'strongbow': return 6;
+            case 'scorched': return 7;
+            case 'callToArms': return 8;
+            default: return 6;
+        }
+    }
+
+    triggerAffix(affix) {
+        switch (affix) {
+            case 'fearless':
+                this.startAffixCharge();
+                break;
+            case 'strongbow':
+                this.fireAffixArrowBurst();
+                break;
+            case 'scorched':
+                this.spawnAffixScorchedGround();
+                break;
+            case 'callToArms':
+                this.summonAffixMinions();
+                break;
+        }
+    }
+
+    startAffixCharge() {
+        const gm = gameManager;
+        const dx = gm.player.x - this.x;
+        const dy = gm.player.y - this.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist <= 0) return;
+        const speed = 360;
+        this.chargeVx = (dx / dist) * speed;
+        this.chargeVy = (dy / dist) * speed;
+        this.chargeTimer = 0.45;
+    }
+
+    fireAffixArrowBurst() {
+        const gm = gameManager;
+        const damage = 12 * (1 + gm.player.level * 0.08);
+        for (let i = 0; i < 8; i++) {
+            const angle = (Math.PI * 2 * i) / 8;
+            const projectile = new Projectile(this.x, this.y, Math.cos(angle), Math.sin(angle), damage);
+            projectile.isEnemyProjectile = true;
+            projectile.speed = 220;
+            projectile.size = 9;
+            projectile.color = '#6e1b1b';
+            gm.projectiles.push(projectile);
+        }
+    }
+
+    spawnAffixScorchedGround() {
+        const gm = gameManager;
+        const offsetX = (GameRuntime.random() - 0.5) * 200;
+        const offsetY = (GameRuntime.random() - 0.5) * 200;
+        gm.fireAreas.push({
+            x: gm.player.x + offsetX,
+            y: gm.player.y + offsetY,
+            radius: 80,
+            damagePerSecond: 10,
+            lifetime: 8,
+            slowMultiplier: 0.75,
+            isBossAffix: true,
+        });
+    }
+
+    summonAffixMinions() {
+        const gm = gameManager;
+        const wave = Math.floor(gm.gameTime / 60);
+        const hpMultiplier = Math.pow(1.10, wave) * (1 + gm.player.level * 0.12);
+        const baseHp = Math.floor((10 + wave * 5 + gm.currentStage * 5) * hpMultiplier);
+        for (let i = 0; i < 8; i++) {
+            const angle = (Math.PI * 2 * i) / 8;
+            const dist = 150;
+            const minion = new Enemy(
+                gm.player.x + Math.cos(angle) * dist,
+                gm.player.y + Math.sin(angle) * dist,
+                baseHp,
+                1.1
+            );
+            minion.color = '#8b0000';
+            gm.enemies.push(minion);
+        }
+    }
+
+    getAffixName(affix) {
+        switch (affix) {
+            case 'fearless': return '【无畏】';
+            case 'strongbow': return '【强弓】';
+            case 'scorched': return '【焦土】';
+            case 'callToArms': return '【号令】';
+            default: return '';
         }
     }
 
@@ -4509,7 +4653,7 @@ class Boss extends Enemy {
             const dist = 80;
             const x = this.x + Math.cos(angle) * dist;
             const y = this.y + Math.sin(angle) * dist;
-            const phantom = new Boss(STAGES[i]);
+            const phantom = new Boss(STAGES[i], i, { enableAffixes: false });
             const dynamicHp = Math.floor((STAGES[i].bossHp / 3) * hpMultiplier);
             phantom.hp = dynamicHp;
             phantom.maxHp = dynamicHp;
@@ -4552,6 +4696,12 @@ class Boss extends Enemy {
             const hpPercent = this.hp / this.maxHp;
             ctx.fillStyle = '#00aa00';
             ctx.fillRect(barX + 1, barY + 1, (barW - 2) * hpPercent, barH - 2);
+        }
+        if (FEATURE_FLAGS.ENABLE_BOSS_AFFIXES && this.affixes.length > 0) {
+            ctx.fillStyle = '#ffff00';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(this.affixes.map(affix => this.getAffixName(affix)).join(' '), this.x, this.y - this.size / 2 - 18);
         }
     }
 }
@@ -5764,7 +5914,7 @@ class GameManager {
     spawnTimelineBoss(bossIndex) {
         const stageData = STAGES[bossIndex];
 
-        const boss = new Boss(stageData);
+        const boss = new Boss(stageData, bossIndex);
 
         // 新增：动态等级缩放，玩家每升1级，Boss总血量额外增加 15%
         const hpMultiplier = 1 + (this.player.level * 0.15);
@@ -5786,7 +5936,7 @@ class GameManager {
             }
 
             for (let i = 0; i < 4; i++) {
-                const phantom = new Boss(STAGES[i]);
+                const phantom = new Boss(STAGES[i], i, { enableAffixes: false });
                 const angle = (Math.PI * 2 * i) / 4;
                 const dist = 150;
                 phantom.x = boss.x + Math.cos(angle) * dist;
@@ -6403,7 +6553,10 @@ class GameManager {
         }
 
         if (dx !== 0 || dy !== 0) {
-            this.player.move(dx, dy, deltaTime, this.canvas.width, this.canvas.height);
+            const movementDeltaTime = FEATURE_FLAGS.ENABLE_BOSS_AFFIXES
+                ? deltaTime * (this.player.environmentSlowMultiplier || 1)
+                : deltaTime;
+            this.player.move(dx, dy, movementDeltaTime, this.canvas.width, this.canvas.height);
         }
     }
 
@@ -6498,6 +6651,9 @@ class GameManager {
 
     updateDamageSystem(deltaTime) {
         this.player.update(deltaTime);
+        if (FEATURE_FLAGS.ENABLE_BOSS_AFFIXES) {
+            this.player.environmentSlowMultiplier = 1;
+        }
 
         // 更新火焰区域（王植）
         for (let i = this.fireAreas.length - 1; i >= 0; i--) {
@@ -6507,8 +6663,13 @@ class GameManager {
             const dx = this.player.x - fire.x;
             const dy = this.player.y - fire.y;
             const distSq = dx * dx + dy * dy;
-            if (distSq <= fire.radius * fire.radius && this.player.canTakeDamage()) {
-                this.applyPlayerDamage(fire.damagePerSecond * deltaTime);
+            if (distSq <= fire.radius * fire.radius) {
+                if (this.player.canTakeDamage()) {
+                    this.applyPlayerDamage(fire.damagePerSecond * deltaTime);
+                }
+                if (FEATURE_FLAGS.ENABLE_BOSS_AFFIXES && fire.slowMultiplier) {
+                    this.player.environmentSlowMultiplier = Math.min(this.player.environmentSlowMultiplier, fire.slowMultiplier);
+                }
             }
             if (fire.lifetime <= 0) {
                 this.fireAreas.splice(i, 1);
