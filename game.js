@@ -753,6 +753,34 @@ function doesProjectileCollideWithEnemyShadow(projectile, enemy) {
     return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
 }
 
+function resolveCrossbowArrowHitSettlement(arrow, enemy, critRoll, areaMul) {
+    const critChance = 0.1 + (arrow.weaponLevel - 1) * 0.05;
+    const isCrit = critRoll < critChance;
+    const damage = arrow.damage * (isCrit ? 2 : 1);
+    const critMultiplier = isCrit ? 1.5 : 1;
+    const isLastHit = arrow.remainingPierce <= 1 || enemy.isBoss;
+    let lightningType = 'none';
+    let lightningRadius = 0;
+    if (arrow.hasLightningColumn && isLastHit) {
+        lightningType = 'column';
+        lightningRadius = 120 * areaMul;
+    } else if (arrow.hasLightningAOE) {
+        lightningType = 'aoe';
+        lightningRadius = 60 * areaMul;
+    }
+    return {
+        critChance,
+        isCrit,
+        damage,
+        knockbackBase: (5 + arrow.weaponLevel * 1.5) * critMultiplier,
+        stunDuration: (0.05 + arrow.weaponLevel * 0.01) * critMultiplier,
+        isLastHit,
+        lightningType,
+        lightningRadius,
+        shouldDestroy: arrow.remainingPierce - 1 <= 0
+    };
+}
+
 class GenericWeaponShadowMonitor {
     constructor() {
         this.samples = 0;
@@ -811,7 +839,9 @@ class GenericWeaponShadowMonitor {
         const hitsMatch = JSON.stringify(sample.legacyHits) === JSON.stringify(sample.genericHits);
         const hasValueCheck = typeof sample.legacyValue === 'number' && typeof sample.genericValue === 'number';
         const valueMatch = !hasValueCheck || Math.abs(sample.legacyValue - sample.genericValue) <= (sample.epsilon ?? 1e-9);
-        const matches = hitsMatch && valueMatch;
+        const hasStateCheck = sample.legacyState !== undefined || sample.genericState !== undefined;
+        const stateMatch = !hasStateCheck || JSON.stringify(sample.legacyState) === JSON.stringify(sample.genericState);
+        const matches = hitsMatch && valueMatch && stateMatch;
         if (!matches) {
             this.behaviorMismatches++;
             this.lastBehaviorMismatches.push(sample);
@@ -1819,7 +1849,8 @@ class CrossbowArrow {
         // ============ 新增：暴击判定 ============
         // 基础10%暴击率，每级+5%，满级40%
         const critChance = 0.1 + (this.weaponLevel - 1) * 0.05;
-        const isCrit = GameRuntime.random() < critChance;
+        const critRoll = GameRuntime.random();
+        const isCrit = critRoll < critChance;
         let damage = this.damage;
         let knockbackBase = 5 + this.weaponLevel * 1.5; // 满级推14
         let stunDuration = 0.05 + this.weaponLevel * 0.01; // 极短硬直打断施法
@@ -1861,6 +1892,30 @@ class CrossbowArrow {
         const isLastHit = this.remainingPierce <= 1 || enemy.isBoss;
         // 获取玩家范围加成
         const areaMul = 1 + (gameManager.player.modifiers.areaMulti || 0);
+        const genericSettlement = gameManager.genericWeaponShadow
+            ? resolveCrossbowArrowHitSettlement(this, enemy, critRoll, areaMul)
+            : null;
+        if (genericSettlement) {
+            gameManager.genericWeaponShadow.recordBehaviorSample({
+                type: 'crossbow',
+                effect: 'projectile_settlement',
+                level: this.weaponLevel,
+                genericHits: [getDebugEntityId(enemy)],
+                legacyHits: [getDebugEntityId(enemy)],
+                genericState: genericSettlement,
+                legacyState: {
+                    critChance,
+                    isCrit,
+                    damage,
+                    knockbackBase,
+                    stunDuration,
+                    isLastHit,
+                    lightningType: this.hasLightningColumn && isLastHit ? 'column' : (this.hasLightningAOE ? 'aoe' : 'none'),
+                    lightningRadius: this.hasLightningColumn && isLastHit ? 120 * areaMul : (this.hasLightningAOE ? 60 * areaMul : 0),
+                    shouldDestroy: this.remainingPierce - 1 <= 0
+                }
+            });
+        }
 
         // 触发闪电特效
         if (this.hasLightningColumn && isLastHit) {
