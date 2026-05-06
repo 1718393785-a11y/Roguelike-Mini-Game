@@ -823,6 +823,26 @@ function resolveSpearHitSettlement(weapon, enemy, effectiveDamage) {
     };
 }
 
+function resolveQinggangHitSettlement(weapon, enemy, player, effectiveDamage) {
+    const stunDuration = 0.1 + weapon.level * 0.02;
+    const canApplyControl = enemy.knockbackResist < 1.0;
+    const finalHp = enemy.hp - effectiveDamage;
+    const willKill = finalHp <= 0;
+    const shouldHeal = willKill && weapon.lifesteal > 0 && weapon.healCooldown <= 0;
+    return {
+        damage: effectiveDamage,
+        finalHp,
+        stunDuration,
+        finalStunTimer: canApplyControl ? Math.max(enemy.stunTimer, stunDuration) : enemy.stunTimer,
+        lifesteal: weapon.lifesteal,
+        healCooldownBefore: weapon.healCooldown,
+        shouldHeal,
+        healAmount: shouldHeal ? weapon.lifesteal : 0,
+        finalPlayerHp: shouldHeal ? Math.min(player.maxHp, player.hp + weapon.lifesteal) : player.hp,
+        finalHealCooldown: shouldHeal ? 0.25 : weapon.healCooldown
+    };
+}
+
 class GenericWeaponShadowMonitor {
     constructor() {
         this.samples = 0;
@@ -2341,14 +2361,26 @@ class QinggangSword extends Weapon {
                         if (now - lastHitTime > tickInterval) {
                             // 计算总伤害加成 - 使用统一跨源乘算
                             const effectiveDamage = this.baseDamage * player.getDamageMultiplier();
-                            enemy.hp -= effectiveDamage;
+                            const preSettlementHp = enemy.hp;
+                            const preSettlementStunTimer = enemy.stunTimer;
+                            const prePlayerHp = player.hp;
+                            const preHealCooldown = this.healCooldown;
+                            const genericSettlement = genericShadowEnabled
+                                ? resolveQinggangHitSettlement(this, enemy, player, effectiveDamage)
+                                : null;
+                            if (genericSettlement) {
+                                enemy.hp = genericSettlement.finalHp;
+                            } else {
+                                enemy.hp -= effectiveDamage;
+                            }
                             this.hitRecords.set(enemy, now);
 
                             // ============ 新增：剑的纯硬直效果（无击退，随等级成长） ============
                             const stunDuration = 0.1 + this.level * 0.02; // 纯控制，最高 0.22s
+                            const resolvedStunDuration = genericSettlement ? genericSettlement.stunDuration : stunDuration;
                             // Boss/木牛完全免疫硬直和击退
                             if (enemy.knockbackResist < 1.0) {
-                                enemy.stunTimer = Math.max(enemy.stunTimer, stunDuration);
+                                enemy.stunTimer = genericSettlement ? genericSettlement.finalStunTimer : Math.max(enemy.stunTimer, resolvedStunDuration);
                             }
 
                             // 检查死亡，处理吸血
@@ -2361,10 +2393,37 @@ class QinggangSword extends Weapon {
                                 this.hitRecords.delete(enemy);
 
                                 // 修改：增加内置CD判定
-                                if (this.lifesteal > 0 && this.healCooldown <= 0) {
+                                if (genericSettlement) {
+                                    if (genericSettlement.shouldHeal) {
+                                        player.hp = genericSettlement.finalPlayerHp;
+                                        this.healCooldown = genericSettlement.finalHealCooldown; // 触发后锁定 0.25 秒，限制最高 4HP/s
+                                    }
+                                } else if (this.lifesteal > 0 && this.healCooldown <= 0) {
                                     player.hp = Math.min(player.maxHp, player.hp + this.lifesteal);
                                     this.healCooldown = 0.25; // 触发后锁定 0.25 秒，限制最高 4HP/s
                                 }
+                            }
+                            if (genericSettlement) {
+                                gm.genericWeaponShadow.recordBehaviorSample({
+                                    type: 'qinggang',
+                                    effect: 'orbit_entity_settlement',
+                                    level: this.level,
+                                    genericHits: [getDebugEntityId(enemy)],
+                                    legacyHits: [getDebugEntityId(enemy)],
+                                    genericState: genericSettlement,
+                                    legacyState: {
+                                        damage: effectiveDamage,
+                                        finalHp: preSettlementHp - effectiveDamage,
+                                        stunDuration,
+                                        finalStunTimer: enemy.knockbackResist < 1.0 ? Math.max(preSettlementStunTimer, stunDuration) : preSettlementStunTimer,
+                                        lifesteal: this.lifesteal,
+                                        healCooldownBefore: preHealCooldown,
+                                        shouldHeal: preSettlementHp - effectiveDamage <= 0 && this.lifesteal > 0 && preHealCooldown <= 0,
+                                        healAmount: preSettlementHp - effectiveDamage <= 0 && this.lifesteal > 0 && preHealCooldown <= 0 ? this.lifesteal : 0,
+                                        finalPlayerHp: preSettlementHp - effectiveDamage <= 0 && this.lifesteal > 0 && preHealCooldown <= 0 ? Math.min(player.maxHp, prePlayerHp + this.lifesteal) : prePlayerHp,
+                                        finalHealCooldown: preSettlementHp - effectiveDamage <= 0 && this.lifesteal > 0 && preHealCooldown <= 0 ? 0.25 : preHealCooldown
+                                    }
+                                });
                             }
                         }
                     }
