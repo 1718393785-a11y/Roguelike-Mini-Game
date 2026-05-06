@@ -179,6 +179,7 @@ const GameRuntime = (() => {
         random: () => rng(),
         useFixedDelta: () => Boolean(autoplayPath || snapshotEnabled || frameLimit),
         fixedDelta: () => fixedDelta,
+        getFrame: () => session.frame,
         ready: () => session.playbackLoaded && session.configLoaded,
         markConfigLoaded(error) {
             if (error) {
@@ -471,6 +472,8 @@ const WEAPON_UPGRADES = {
 };
 
 let LEGACY_JSON_WEAPON_CONFIG = null;
+let LEGACY_JSON_WEAPON_CONFIG_HASH = '';
+let LEGACY_JSON_CONFIG_POISON_PILL = 0;
 
 function getWeaponJsonParam(weaponId, key, fallback) {
     if (!FEATURE_FLAGS.ENABLE_JSON_CONFIG || !LEGACY_JSON_WEAPON_CONFIG) return fallback;
@@ -485,8 +488,23 @@ function getWeaponJsonAttackInterval(weaponId, fallback) {
     return typeof value === 'number' ? value : fallback;
 }
 
-function applyWeaponJsonConfig(weaponSpec) {
+function hashJsonConfig(config) {
+    const text = JSON.stringify(config || {});
+    let hash = 2166136261 >>> 0;
+    for (let i = 0; i < text.length; i++) {
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619) >>> 0;
+    }
+    return hash.toString(16).padStart(8, '0');
+}
+
+function applyWeaponJsonConfig(weaponSpec, options = {}) {
+    const nextHash = hashJsonConfig(weaponSpec);
+    if (options.skipIfUnchanged && nextHash === LEGACY_JSON_WEAPON_CONFIG_HASH) {
+        return false;
+    }
     LEGACY_JSON_WEAPON_CONFIG = weaponSpec || {};
+    LEGACY_JSON_WEAPON_CONFIG_HASH = nextHash;
     for (const [weaponId, config] of Object.entries(weaponSpec || {})) {
         const legacyConfig = WEAPON_UPGRADES[weaponId];
         if (!legacyConfig) continue;
@@ -495,6 +513,47 @@ function applyWeaponJsonConfig(weaponSpec) {
         }
         // Stage 2 only mirrors data into the legacy table. Behavior and action functions stay legacy-owned.
     }
+    return true;
+}
+
+function teardownConfigDerivedRuntimeInstances(game) {
+    if (!game) return;
+    game.projectiles = [];
+    game.specialAreas = [];
+    game.fireTornados = [];
+    game.lightningEffects = [];
+    for (const weapon of game.activeWeapons || []) {
+        if (weapon.hitRecords?.clear) weapon.hitRecords.clear();
+        if (Array.isArray(weapon.activeStabs)) weapon.activeStabs = [];
+        if (Array.isArray(weapon.spawnQueue)) weapon.spawnQueue = [];
+        if (weapon.type === 'shield') {
+            weapon.active = false;
+            weapon.phase = 'none';
+            weapon.currentRadius = 0;
+        }
+    }
+}
+
+function refreshActiveWeaponsFromJsonConfig(game) {
+    if (!game?.activeWeapons) return;
+    for (const weapon of game.activeWeapons) {
+        applyGenericWeaponScalarMigration(weapon);
+        if (game.player && typeof weapon.onStatsUpdated === 'function') {
+            weapon.onStatsUpdated(game.player.modifiers);
+        }
+    }
+}
+
+function commitHotReloadedWeaponConfig(config) {
+    LEGACY_JSON_CONFIG_POISON_PILL++;
+    teardownConfigDerivedRuntimeInstances(window.gameManager);
+    applyWeaponJsonConfig(config);
+    refreshActiveWeaponsFromJsonConfig(window.gameManager);
+    window.__HOT_RELOAD_STATUS__ = {
+        poisonPill: LEGACY_JSON_CONFIG_POISON_PILL,
+        weaponConfigHash: LEGACY_JSON_WEAPON_CONFIG_HASH,
+        updatedAtFrame: GameRuntime.getFrame(),
+    };
 }
 
 function resolveWeaponSpecNumber(config, level, key, fallback) {
@@ -990,16 +1049,53 @@ class GenericWeaponShadowMonitor {
     }
 }
 
-if (FEATURE_FLAGS.ENABLE_JSON_CONFIG) {
-    fetch('src/spec/weapons.json')
+function fetchWeaponJsonConfig(cacheBust = false) {
+    const suffix = cacheBust ? `?t=${Date.now()}` : '';
+    return fetch(`src/spec/weapons.json${suffix}`, cacheBust ? { cache: 'no-store' } : undefined)
         .then(response => {
             if (!response.ok) throw new Error('Failed to load src/spec/weapons.json');
             return response.json();
-        })
+        });
+}
+
+function startWeaponConfigHotReload() {
+    if (!FEATURE_FLAGS.ENABLE_JSON_CONFIG || !FEATURE_FLAGS.ENABLE_HOT_RELOAD) return;
+    if (window.__WEAPON_CONFIG_HOT_RELOAD_STARTED__) return;
+    window.__WEAPON_CONFIG_HOT_RELOAD_STARTED__ = true;
+    let inFlight = false;
+    window.__HOT_RELOAD_STATUS__ = {
+        poisonPill: LEGACY_JSON_CONFIG_POISON_PILL,
+        weaponConfigHash: LEGACY_JSON_WEAPON_CONFIG_HASH,
+        updatedAtFrame: GameRuntime.getFrame(),
+    };
+    setInterval(() => {
+        if (inFlight) return;
+        inFlight = true;
+        fetchWeaponJsonConfig(true)
+            .then(config => {
+                if (hashJsonConfig(config) === LEGACY_JSON_WEAPON_CONFIG_HASH) return;
+                commitHotReloadedWeaponConfig(config);
+            })
+            .catch(error => {
+                window.__HOT_RELOAD_STATUS__ = {
+                    ...(window.__HOT_RELOAD_STATUS__ || {}),
+                    error: error.message || String(error),
+                    failedAtFrame: GameRuntime.getFrame(),
+                };
+            })
+            .finally(() => {
+                inFlight = false;
+            });
+    }, 1000);
+}
+
+if (FEATURE_FLAGS.ENABLE_JSON_CONFIG) {
+    fetchWeaponJsonConfig(false)
         .then(config => {
             applyWeaponJsonConfig(config);
             window.__JSON_CONFIG_LOADED__ = { weapons: Object.keys(config).length };
             GameRuntime.markConfigLoaded();
+            startWeaponConfigHotReload();
         })
         .catch(error => {
             console.error(error);
