@@ -1585,11 +1585,11 @@ class Spear extends Weapon {
     }
 
     doAttack(player, enemies, canvasWidth, canvasHeight) {
-        // 半自动辅助瞄准：在玩家面朝方向 ±45度（90度扇形）范围内找最近敌人
+        // 半自动辅助瞄准：在玩家面朝方向 ±60度（120度扇形）范围内找最近敌人
         const playerAngle = Math.atan2(player.facingDirY, player.facingDirX);
         let closestInAngle = null;
         let minDistSq = Infinity;
-        const maxAngleDiff = Math.PI / 4; // ±45度 = 总共90度扇形
+        const maxAngleDiff = Math.PI / 3; // ±60度 = 总共120度扇形
         const gm = window.gameManager;
         const genericShadowEnabled = !!gm.genericWeaponShadow;
         const genericTarget = genericShadowEnabled ? selectForwardConeTarget(player, enemies, maxAngleDiff) : null;
@@ -1984,11 +1984,11 @@ class Crossbow extends Weapon {
     }
 
     fireNextArrow(player, enemies, projectiles) {
-        // 半自动辅助瞄准：在玩家面朝方向 ±45度（90度扇形）范围内找最近敌人
+        // 半自动辅助瞄准：在玩家面朝方向 ±60度（120度扇形）范围内找最近敌人
         const playerAngle = Math.atan2(player.facingDirY, player.facingDirX);
         let closestInAngle = null;
         let minDistSq = Infinity;
-        const maxAngleDiff = Math.PI / 4; // ±45度 = 总共90度扇形
+        const maxAngleDiff = Math.PI / 3; // ±60度 = 总共120度扇形
         const gm = window.gameManager;
         const genericShadowEnabled = !!gm.genericWeaponShadow;
         const genericTarget = genericShadowEnabled ? selectForwardConeTarget(player, enemies, maxAngleDiff) : null;

@@ -14,13 +14,13 @@
     "ENABLE_HIT_KNOCKBACK": false,
     "ENABLE_LOW_HP_WARNING": false,
     "ENABLE_ELITE_MUTATIONS": false,
-    "ENABLE_BOSS_AFFIXES": true,
-    "ENABLE_GAME_SETTINGS": true,
+    "ENABLE_BOSS_AFFIXES": false,
+    "ENABLE_GAME_SETTINGS": false,
     "ENABLE_WEAPON_COOLDOWN_HUD": false,
     "ENABLE_AUDIO_MANAGER": false,
     "ENABLE_DESTRUCTIBLE_PROPS": false,
-    "ENABLE_LARGE_MAP_CAMERA": true,
-    "ENABLE_SCROLLING_BACKGROUND": true
+    "ENABLE_LARGE_MAP_CAMERA": false,
+    "ENABLE_SCROLLING_BACKGROUND": false
   },
   "equal": true,
   "snapshotCountA": 7201,
