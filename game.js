@@ -843,6 +843,24 @@ function resolveQinggangHitSettlement(weapon, enemy, player, effectiveDamage) {
     };
 }
 
+function resolveShieldPulseHitSettlement(weapon, enemy, player, knockbackScale, dx, dy, effectiveDamage) {
+    const angle = Math.atan2(dy, dx);
+    const actualKnockback = weapon.baseKnockback * knockbackScale;
+    const shouldDamage = knockbackScale >= 0.9;
+    const damage = shouldDamage ? effectiveDamage : 0;
+    return {
+        angle,
+        actualKnockback,
+        finalX: enemy.x + Math.cos(angle) * actualKnockback,
+        finalY: enemy.y + Math.sin(angle) * actualKnockback,
+        shouldDamage,
+        damage,
+        finalHp: enemy.hp - damage,
+        shouldMarkHit: shouldDamage,
+        willKill: enemy.hp - damage <= 0
+    };
+}
+
 class GenericWeaponShadowMonitor {
     constructor() {
         this.samples = 0;
@@ -3083,17 +3101,34 @@ class Shield extends Weapon {
                 // 计算总伤害加成
                 // 计算总伤害加成 - 使用统一跨源乘算
                 const effectiveDamage = this.baseDamage * player.getDamageMultiplier();
+                const preSettlement = {
+                    x: enemy.x,
+                    y: enemy.y,
+                    hp: enemy.hp
+                };
+                const genericSettlement = genericShadowEnabled
+                    ? resolveShieldPulseHitSettlement(this, enemy, player, knockbackScale, dx, dy, effectiveDamage)
+                    : null;
 
                 // 放射性击退按比例（蓄力阶段也有击退）
                 const angle = Math.atan2(dy, dx);
                 const actualKnockback = this.baseKnockback * knockbackScale;
-                enemy.x += Math.cos(angle) * actualKnockback;
-                enemy.y += Math.sin(angle) * actualKnockback;
+                if (genericSettlement) {
+                    enemy.x = genericSettlement.finalX;
+                    enemy.y = genericSettlement.finalY;
+                } else {
+                    enemy.x += Math.cos(angle) * actualKnockback;
+                    enemy.y += Math.sin(angle) * actualKnockback;
+                }
 
                 // 只有 full scale 才造成全额伤害，并标记已击中防止重复伤害
                 let killed = false;
                 if (knockbackScale >= 0.9) {
-                    enemy.hp -= effectiveDamage;
+                    if (genericSettlement) {
+                        enemy.hp = genericSettlement.finalHp;
+                    } else {
+                        enemy.hp -= effectiveDamage;
+                    }
                     // 标记已击中（只有全额伤害才标记，蓄力阶段不标记）
                     this.hitRecords.add(enemy);
 
@@ -3104,6 +3139,27 @@ class Shield extends Weapon {
                         this.hitRecords.delete(enemy);
                         killed = true;
                     }
+                }
+                if (genericSettlement) {
+                    gm.genericWeaponShadow.recordBehaviorSample({
+                        type: 'shield',
+                        effect: 'area_pulse_settlement',
+                        level: this.level,
+                        genericHits: [getDebugEntityId(enemy)],
+                        legacyHits: [getDebugEntityId(enemy)],
+                        genericState: genericSettlement,
+                        legacyState: {
+                            angle,
+                            actualKnockback,
+                            finalX: preSettlement.x + Math.cos(angle) * actualKnockback,
+                            finalY: preSettlement.y + Math.sin(angle) * actualKnockback,
+                            shouldDamage: knockbackScale >= 0.9,
+                            damage: knockbackScale >= 0.9 ? effectiveDamage : 0,
+                            finalHp: preSettlement.hp - (knockbackScale >= 0.9 ? effectiveDamage : 0),
+                            shouldMarkHit: knockbackScale >= 0.9,
+                            willKill: preSettlement.hp - (knockbackScale >= 0.9 ? effectiveDamage : 0) <= 0
+                        }
+                    });
                 }
 
                 if (killed) continue;
