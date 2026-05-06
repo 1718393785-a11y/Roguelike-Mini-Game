@@ -1,0 +1,17 @@
+{
+  "type": "pixi-renderer-check",
+  "chromePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "status": {
+    "enabled": true,
+    "ready": true,
+    "failed": false,
+    "frames": 9,
+    "spritesCreated": 1,
+    "renderer": 1,
+    "activeSprites": 1,
+    "pooledSprites": 0
+  },
+  "screenshotPath": "D:\\Codex\\Codex game design\\zero_downtime_refactor\\reports\\pixi-overlay.png",
+  "visiblePixels": 900,
+  "ok": true
+}

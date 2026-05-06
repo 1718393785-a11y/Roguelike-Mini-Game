@@ -12,6 +12,7 @@
     "validate:config": "tsx src/config/validateSpec.ts",
     "validate:hot-reload": "tsx src/config/validateHotReload.ts",
     "validate:hot-reload:browser": "node tools/run-hot-reload-check.mjs",
+    "validate:pixi-renderer": "node tools/run-pixi-renderer-check.mjs",
     "validate:weapons": "tsx src/effects/validateGenericWeapons.ts",
     "validate:effects": "tsx src/effects/validateEffectGeometry.ts",
     "check:architecture": "node tools/check-architecture.mjs",
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@types/node": "^25.6.0",
     "playwright-core": "^1.56.1",
+    "pngjs": "^7.0.0",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3",
     "vite": "^8.0.10"

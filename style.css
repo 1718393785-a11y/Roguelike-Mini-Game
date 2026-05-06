@@ -19,3 +19,16 @@ canvas {
     height: 100vh;
     touch-action: none;
 }
+
+#gameCanvas {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+}
+
+#pixiOverlayCanvas {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+}

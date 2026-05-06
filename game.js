@@ -4935,12 +4935,150 @@ class LegacySystemPipeline {
     }
 }
 
+class LegacyPixiOverlayRenderer {
+    constructor() {
+        this.name = 'pixi-overlay';
+        this.ready = false;
+        this.failed = false;
+        this.frameCount = 0;
+        this.availableSprites = [];
+        this.activeSprites = [];
+        this.canvas = document.createElement('canvas');
+        this.canvas.id = 'pixiOverlayCanvas';
+        this.canvas.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(this.canvas);
+        window.__PIXI_RENDERER_STATUS__ = {
+            enabled: true,
+            ready: false,
+            failed: false,
+            frames: 0,
+            spritesCreated: 0,
+        };
+        this.init();
+    }
+
+    async init() {
+        this.loadPixi()
+            .then(() => {
+                const PIXI = window.PIXI;
+                if (!PIXI) throw new Error('PIXI global is not available after loading bundle.');
+                this.pixi = PIXI;
+                this.app = new PIXI.Application();
+                return this.app.init({
+                    canvas: this.canvas,
+                    resizeTo: window,
+                    backgroundAlpha: 0,
+                    antialias: false,
+                    autoDensity: true,
+                    resolution: window.devicePixelRatio || 1,
+                    autoStart: false,
+                    preference: 'webgl',
+                    preserveDrawingBuffer: true,
+                });
+            })
+            .then(() => {
+                this.texture = this.pixi.Texture.WHITE;
+                this.ready = true;
+                window.__PIXI_RENDERER_STATUS__ = {
+                    ...window.__PIXI_RENDERER_STATUS__,
+                    ready: true,
+                    renderer: this.app.renderer?.type || 'unknown',
+                };
+            })
+            .catch(error => {
+                this.failed = true;
+                window.__PIXI_RENDERER_STATUS__ = {
+                    ...window.__PIXI_RENDERER_STATUS__,
+                    failed: true,
+                    error: error.message || String(error),
+                };
+                console.error(error);
+            });
+    }
+
+    loadPixi() {
+        if (window.PIXI) return Promise.resolve();
+        if (window.__PIXI_BUNDLE_PROMISE__) return window.__PIXI_BUNDLE_PROMISE__;
+        window.__PIXI_BUNDLE_PROMISE__ = new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'node_modules/pixi.js/dist/pixi.min.js';
+            script.onload = resolve;
+            script.onerror = () => reject(new Error('Failed to load local PixiJS bundle.'));
+            document.head.appendChild(script);
+        });
+        return window.__PIXI_BUNDLE_PROMISE__;
+    }
+
+    acquireSprite() {
+        const sprite = this.availableSprites.pop() || this.createSprite();
+        sprite.visible = true;
+        this.activeSprites.push(sprite);
+        return sprite;
+    }
+
+    createSprite() {
+        const sprite = new this.pixi.Sprite(this.texture);
+        sprite.anchor.set(0.5);
+        sprite.visible = false;
+        this.app.stage.addChild(sprite);
+        window.__PIXI_RENDERER_STATUS__.spritesCreated++;
+        return sprite;
+    }
+
+    releaseAllSprites() {
+        for (const sprite of this.activeSprites) {
+            sprite.visible = false;
+            this.availableSprites.push(sprite);
+        }
+        this.activeSprites.length = 0;
+    }
+
+    render(game) {
+        if (!this.ready || this.failed) return;
+        this.releaseAllSprites();
+        this.drawEntity(game.player, 0xb8860b, game.player?.size || 30);
+        for (const enemy of game.enemies || []) {
+            this.drawEntity(enemy, enemy.isBoss ? 0x7b2cff : (enemy.isElite ? 0xffa500 : 0x8b0000), enemy.size || 18);
+        }
+        for (const projectile of game.projectiles || []) {
+            this.drawEntity(projectile, projectile.isEnemyProjectile ? 0xff4444 : 0xe8e8e8, projectile.size || 8);
+        }
+        this.app.render();
+        this.frameCount++;
+        window.__PIXI_RENDERER_STATUS__ = {
+            ...window.__PIXI_RENDERER_STATUS__,
+            frames: this.frameCount,
+            activeSprites: this.activeSprites.length,
+            pooledSprites: this.availableSprites.length,
+        };
+    }
+
+    drawEntity(entity, tint, fallbackSize) {
+        if (!entity || typeof entity.x !== 'number' || typeof entity.y !== 'number') return;
+        const sprite = this.acquireSprite();
+        const size = entity.size || fallbackSize;
+        sprite.x = entity.x;
+        sprite.y = entity.y;
+        sprite.width = size;
+        sprite.height = size;
+        sprite.tint = tint;
+        sprite.alpha = 0.85;
+    }
+
+    destroy() {
+        this.releaseAllSprites();
+        this.app?.destroy(false);
+        this.canvas.remove();
+    }
+}
+
 class GameManager {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.legacySystemPipeline = FEATURE_FLAGS.ENABLE_SYSTEM_SPLIT ? new LegacySystemPipeline() : null;
         this.genericWeaponShadow = FEATURE_FLAGS.ENABLE_GENERIC_WEAPON ? new GenericWeaponShadowMonitor() : null;
+        this.pixiRenderer = FEATURE_FLAGS.ENABLE_PIXI_RENDERER ? new LegacyPixiOverlayRenderer() : null;
 
         // 加载局外升级（从localStorage）
         this.loadPersistentData();
@@ -7071,6 +7209,8 @@ class GameManager {
         for (const text of this.floatingTexts) {
             text.render(ctx);
         }
+
+        this.pixiRenderer?.render(this);
 
         // 屏幕震动：恢复画布，UI不震动
         if (this.shakeTimer > 0) {
