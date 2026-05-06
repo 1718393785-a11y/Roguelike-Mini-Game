@@ -1,6 +1,8 @@
+import type { Texture } from 'pixi.js';
+
 export interface BakedTexture {
   readonly id: string;
-  readonly source: unknown;
+  readonly source: Texture;
 }
 
 export class TextureBaker {
