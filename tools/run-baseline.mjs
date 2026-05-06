@@ -171,6 +171,7 @@ async function main() {
     ENABLE_GENERIC_WEAPON: Boolean(args['generic-weapon']),
     ENABLE_PIXI_RENDERER: Boolean(args['pixi-renderer']),
     ENABLE_HOT_RELOAD: Boolean(args['hot-reload']),
+    ENABLE_PLAYER_IFRAME: Boolean(args['player-iframe']),
   };
   await fs.mkdir(path.join(rootDir, 'reports'), { recursive: true });
   const { server, baseUrl } = await createServer();

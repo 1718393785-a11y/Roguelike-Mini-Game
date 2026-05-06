@@ -1,16 +1,20 @@
 {
   "type": "snapshot-diff",
   "seed": "12345",
-  "seconds": 60,
-  "record": "tests/recordings/smoke.json",
+  "seconds": 120,
+  "record": "records\\smoke.json",
   "chromePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
   "flags": {
     "ENABLE_JSON_CONFIG": false,
-    "ENABLE_SYSTEM_SPLIT": false
+    "ENABLE_SYSTEM_SPLIT": false,
+    "ENABLE_GENERIC_WEAPON": false,
+    "ENABLE_PIXI_RENDERER": false,
+    "ENABLE_HOT_RELOAD": false,
+    "ENABLE_PLAYER_IFRAME": true
   },
   "equal": true,
-  "snapshotCountA": 3601,
-  "snapshotCountB": 3601,
+  "snapshotCountA": 7201,
+  "snapshotCountB": 7201,
   "bossFrameA": 2280,
   "bossFrameB": 2280,
   "bossFrameDelta": 0,

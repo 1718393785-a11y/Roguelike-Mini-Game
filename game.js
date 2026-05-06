@@ -13,6 +13,7 @@ const FEATURE_FLAGS = {
     ENABLE_GENERIC_WEAPON: false,
     ENABLE_PIXI_RENDERER: false,
     ENABLE_HOT_RELOAD: false,
+    ENABLE_PLAYER_IFRAME: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -3483,6 +3484,8 @@ class Player {
         this.x = canvasWidth / 2;
         this.y = canvasHeight / 2;
         this.isInvincible = false; // 无敌帧标记，用于龙胆枪冲刺
+        this.invincibleTimer = 0;
+        this.invincibleFlashSpeed = 10;
 
         // 保存初始局外升级配置
         this.initialPerks = perks;
@@ -3737,6 +3740,25 @@ class Player {
         return (1 + (this.inGameModifiers.damageMulti || 0)) * (1 + (this.metaModifiers.damageMulti || 0));
     }
 
+    update(deltaTime) {
+        if (FEATURE_FLAGS.ENABLE_PLAYER_IFRAME && this.invincibleTimer > 0) {
+            this.invincibleTimer = Math.max(0, this.invincibleTimer - deltaTime);
+        }
+    }
+
+    canTakeDamage() {
+        return !this.isInvincible && (!FEATURE_FLAGS.ENABLE_PLAYER_IFRAME || this.invincibleTimer <= 0);
+    }
+
+    takeDamage(amount) {
+        if (!this.canTakeDamage()) return false;
+        this.hp -= amount;
+        if (FEATURE_FLAGS.ENABLE_PLAYER_IFRAME) {
+            this.invincibleTimer = 0.5;
+        }
+        return true;
+    }
+
     move(dx, dy, deltaTime, canvasWidth, canvasHeight) {
         const moveDist = this.speed * deltaTime;
         let newX = this.x + dx * moveDist;
@@ -3828,6 +3850,13 @@ class Player {
     }
 
     render(ctx) {
+        const previousAlpha = ctx.globalAlpha;
+        if (FEATURE_FLAGS.ENABLE_PLAYER_IFRAME && this.invincibleTimer > 0) {
+            const flash = Math.floor(this.invincibleTimer * this.invincibleFlashSpeed) % 2;
+            if (flash === 1) {
+                ctx.globalAlpha = 0.5;
+            }
+        }
         ctx.fillStyle = this.color;
         ctx.fillRect(
             this.x - this.size / 2,
@@ -3835,6 +3864,7 @@ class Player {
             this.size,
             this.size
         );
+        ctx.globalAlpha = previousAlpha;
     }
 }
 
@@ -6439,6 +6469,8 @@ class GameManager {
     }
 
     updateDamageSystem(deltaTime) {
+        this.player.update(deltaTime);
+
         // 更新火焰区域（王植）
         for (let i = this.fireAreas.length - 1; i >= 0; i--) {
             const fire = this.fireAreas[i];
@@ -6447,8 +6479,8 @@ class GameManager {
             const dx = this.player.x - fire.x;
             const dy = this.player.y - fire.y;
             const distSq = dx * dx + dy * dy;
-            if (distSq <= fire.radius * fire.radius && !this.player.isInvincible) {
-                this.player.hp -= fire.damagePerSecond * deltaTime;
+            if (distSq <= fire.radius * fire.radius && this.player.canTakeDamage()) {
+                this.applyPlayerDamage(fire.damagePerSecond * deltaTime);
             }
             if (fire.lifetime <= 0) {
                 this.fireAreas.splice(i, 1);
@@ -6474,6 +6506,21 @@ class GameManager {
         }
     }
 
+    applyPlayerDamage(amount) {
+        const applied = FEATURE_FLAGS.ENABLE_PLAYER_IFRAME
+            ? this.player.takeDamage(amount)
+            : (() => {
+                if (this.player.isInvincible) return false;
+                this.player.hp -= amount;
+                return true;
+            })();
+        if (applied && this.player.hp <= 0) {
+            this.gameOver();
+            return false;
+        }
+        return applied;
+    }
+
     updateProjectileSystem(deltaTime) {
         // 更新所有子弹
         for (let i = this.projectiles.length - 1; i >= 0; i--) {
@@ -6491,10 +6538,11 @@ class GameManager {
                     projectile.x - projectile.size/2, projectile.y - projectile.size/2, projectile.size, projectile.size,
                     this.player.x - this.player.size/2, this.player.y - this.player.size/2, this.player.size, this.player.size
                 );
-                if (collided && !this.player.isInvincible) {
-                    this.player.hp -= projectile.damage;
-                    this.damageFlashTimer = 0.2; // 红屏闪烁反馈
-                    this.projectiles.splice(i, 1);
+                if (collided && this.player.canTakeDamage()) {
+                    if (this.applyPlayerDamage(projectile.damage)) {
+                        this.damageFlashTimer = 0.2; // 红屏闪烁反馈
+                        this.projectiles.splice(i, 1);
+                    }
                 }
                 continue;
             }
@@ -6655,7 +6703,7 @@ class GameManager {
                 );
             }
 
-            if (collided && !this.player.isInvincible) {
+            if (collided && this.player.canTakeDamage()) {
                 // 特殊处理：木牛、弓箭手、木箱碰撞不造成伤害，只推开
                 // 盾甲兵：正常扣血，但弹开方向是玩家面向反方向
                 const isNoDamageEnemy =
@@ -6717,7 +6765,7 @@ class GameManager {
                     const continuousDamage = enemy.isBoss ? 20 : 10;
                     if (this.pushbackCooldown <= 0) {
                         // 弹开就绪：单次爆发固定扣除，普通怪10点 / Boss20点，计算伤害减免
-                        this.player.hp -= baseDamage * (1 - damageReduction);
+                        this.applyPlayerDamage(baseDamage * (1 - damageReduction));
                         // 触发屏幕震动 + 红屏闪烁
                         this.shakeTimer = 0.3;
                         this.damageFlashTimer = 0.2;
@@ -6740,7 +6788,7 @@ class GameManager {
                         this.pushbackCooldown = 2.0;
                     } else {
                         // 弹开冷却中：保持持续伤害，普通怪10点/秒 / Boss20点/秒，计算伤害减免
-                        this.player.hp -= continuousDamage * deltaTime * (1 - damageReduction);
+                        this.applyPlayerDamage(continuousDamage * deltaTime * (1 - damageReduction));
                     }
                     // 检查死亡
                     if (this.player.hp <= 0) {

@@ -4,6 +4,7 @@ export const FEATURE_FLAGS = {
   ENABLE_GENERIC_WEAPON: false,
   ENABLE_PIXI_RENDERER: false,
   ENABLE_HOT_RELOAD: false,
+  ENABLE_PLAYER_IFRAME: false,
 } as const;
 
 export type FeatureFlagName = keyof typeof FEATURE_FLAGS;
