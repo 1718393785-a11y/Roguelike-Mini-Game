@@ -176,6 +176,7 @@ async function main() {
     ENABLE_LOW_HP_WARNING: Boolean(args['low-hp-warning']),
     ENABLE_ELITE_MUTATIONS: Boolean(args['elite-mutations']),
     ENABLE_BOSS_AFFIXES: Boolean(args['boss-affixes']),
+    ENABLE_GAME_SETTINGS: Boolean(args['game-settings']),
   };
   await fs.mkdir(path.join(rootDir, 'reports'), { recursive: true });
   const { server, baseUrl } = await createServer();

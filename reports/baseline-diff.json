@@ -14,7 +14,8 @@
     "ENABLE_HIT_KNOCKBACK": false,
     "ENABLE_LOW_HP_WARNING": false,
     "ENABLE_ELITE_MUTATIONS": false,
-    "ENABLE_BOSS_AFFIXES": true
+    "ENABLE_BOSS_AFFIXES": true,
+    "ENABLE_GAME_SETTINGS": true
   },
   "equal": true,
   "snapshotCountA": 22201,

@@ -18,6 +18,7 @@ const FEATURE_FLAGS = {
     ENABLE_LOW_HP_WARNING: false,
     ENABLE_ELITE_MUTATIONS: false,
     ENABLE_BOSS_AFFIXES: false,
+    ENABLE_GAME_SETTINGS: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -26,6 +27,21 @@ for (const flagName of Object.keys(FEATURE_FLAGS)) {
         const value = FEATURE_FLAG_PARAMS.get(flagName);
         FEATURE_FLAGS[flagName] = value === '1' || value === 'true' || value === 'on';
     }
+}
+
+function getGameSetting(path, fallback) {
+    if (!FEATURE_FLAGS.ENABLE_GAME_SETTINGS) return fallback;
+    let cursor = window.GAME_SETTINGS;
+    for (const key of path.split('.')) {
+        if (cursor == null || typeof cursor !== 'object' || !(key in cursor)) return fallback;
+        cursor = cursor[key];
+    }
+    return cursor;
+}
+
+function getNumericGameSetting(path, fallback) {
+    const value = getGameSetting(path, fallback);
+    return Number.isFinite(value) ? value : fallback;
 }
 
 const GameRuntime = (() => {
@@ -3762,7 +3778,7 @@ class Player {
         if (!this.canTakeDamage()) return false;
         this.hp -= amount;
         if (FEATURE_FLAGS.ENABLE_PLAYER_IFRAME) {
-            this.invincibleTimer = 0.5;
+            this.invincibleTimer = getNumericGameSetting('PLAYER.INVINCIBLE_TIME', 0.5);
         }
         return true;
     }
@@ -4096,11 +4112,11 @@ class EliteEnemy extends Enemy {
         this.resonanceDrop = 3; // 掉落3倍残响
         this.knockbackResist = 0.5; // 精英减免50%击退
         if (FEATURE_FLAGS.ENABLE_ELITE_MUTATIONS) {
-            this.size = Math.round(this.size * 1.5);
-            this.speed *= 0.9;
-            this.contactDamageMultiplier = 1.3;
-            this.eliteExplosionRadius = 60;
-            this.eliteExplosionDamage = 15;
+            this.size = Math.round(this.size * getNumericGameSetting('ENEMIES.ELITE.SIZE_MULTIPLIER', 1.5));
+            this.speed *= getNumericGameSetting('ENEMIES.ELITE.SPEED_MULTIPLIER', 0.9);
+            this.contactDamageMultiplier = getNumericGameSetting('ENEMIES.ELITE.CONTACT_DAMAGE_MULTIPLIER', 1.3);
+            this.eliteExplosionRadius = getNumericGameSetting('ENEMIES.ELITE.EXPLOSION_RADIUS', 60);
+            this.eliteExplosionDamage = getNumericGameSetting('ENEMIES.ELITE.EXPLOSION_DAMAGE', 15);
         }
     }
 }
@@ -4454,7 +4470,8 @@ class Boss extends Enemy {
             const index = Math.floor(GameRuntime.random() * available.length);
             const affix = available.splice(index, 1)[0];
             this.affixes.push(affix);
-            this.affixTimers[affix] = 3 + GameRuntime.random() * 2;
+            this.affixTimers[affix] = getNumericGameSetting('BOSS_AFFIXES.INITIAL_DELAY_MIN', 3)
+                + GameRuntime.random() * getNumericGameSetting('BOSS_AFFIXES.INITIAL_DELAY_RANGE', 2);
         }
     }
 
@@ -4479,10 +4496,10 @@ class Boss extends Enemy {
 
     getAffixCooldown(affix) {
         switch (affix) {
-            case 'fearless': return 5;
-            case 'strongbow': return 6;
-            case 'scorched': return 7;
-            case 'callToArms': return 8;
+            case 'fearless': return getNumericGameSetting('BOSS_AFFIXES.FEARLESS_COOLDOWN', 5);
+            case 'strongbow': return getNumericGameSetting('BOSS_AFFIXES.STRONGBOW_COOLDOWN', 6);
+            case 'scorched': return getNumericGameSetting('BOSS_AFFIXES.SCORCHED_COOLDOWN', 7);
+            case 'callToArms': return getNumericGameSetting('BOSS_AFFIXES.CALL_TO_ARMS_COOLDOWN', 8);
             default: return 6;
         }
     }
@@ -4510,20 +4527,21 @@ class Boss extends Enemy {
         const dy = gm.player.y - this.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist <= 0) return;
-        const speed = 360;
+        const speed = getNumericGameSetting('BOSS_AFFIXES.CHARGE_SPEED', 360);
         this.chargeVx = (dx / dist) * speed;
         this.chargeVy = (dy / dist) * speed;
-        this.chargeTimer = 0.45;
+        this.chargeTimer = getNumericGameSetting('BOSS_AFFIXES.CHARGE_DURATION', 0.45);
     }
 
     fireAffixArrowBurst() {
         const gm = gameManager;
-        const damage = 12 * (1 + gm.player.level * 0.08);
-        for (let i = 0; i < 8; i++) {
-            const angle = (Math.PI * 2 * i) / 8;
+        const damage = getNumericGameSetting('BOSS_AFFIXES.ARROW_DAMAGE', 12) * (1 + gm.player.level * 0.08);
+        const count = getNumericGameSetting('BOSS_AFFIXES.ARROW_COUNT', 8);
+        for (let i = 0; i < count; i++) {
+            const angle = (Math.PI * 2 * i) / count;
             const projectile = new Projectile(this.x, this.y, Math.cos(angle), Math.sin(angle), damage);
             projectile.isEnemyProjectile = true;
-            projectile.speed = 220;
+            projectile.speed = getNumericGameSetting('BOSS_AFFIXES.ARROW_SPEED', 220);
             projectile.size = 9;
             projectile.color = '#6e1b1b';
             gm.projectiles.push(projectile);
@@ -4532,15 +4550,16 @@ class Boss extends Enemy {
 
     spawnAffixScorchedGround() {
         const gm = gameManager;
-        const offsetX = (GameRuntime.random() - 0.5) * 200;
-        const offsetY = (GameRuntime.random() - 0.5) * 200;
+        const offsetRange = getNumericGameSetting('BOSS_AFFIXES.SCORCHED_OFFSET_RANGE', 200);
+        const offsetX = (GameRuntime.random() - 0.5) * offsetRange;
+        const offsetY = (GameRuntime.random() - 0.5) * offsetRange;
         gm.fireAreas.push({
             x: gm.player.x + offsetX,
             y: gm.player.y + offsetY,
-            radius: 80,
-            damagePerSecond: 10,
-            lifetime: 8,
-            slowMultiplier: 0.75,
+            radius: getNumericGameSetting('BOSS_AFFIXES.SCORCHED_RADIUS', 80),
+            damagePerSecond: getNumericGameSetting('BOSS_AFFIXES.SCORCHED_DAMAGE_PER_SECOND', 10),
+            lifetime: getNumericGameSetting('BOSS_AFFIXES.SCORCHED_LIFETIME', 8),
+            slowMultiplier: getNumericGameSetting('BOSS_AFFIXES.SCORCHED_SLOW_MULTIPLIER', 0.75),
             isBossAffix: true,
         });
     }
@@ -4550,9 +4569,10 @@ class Boss extends Enemy {
         const wave = Math.floor(gm.gameTime / 60);
         const hpMultiplier = Math.pow(1.10, wave) * (1 + gm.player.level * 0.12);
         const baseHp = Math.floor((10 + wave * 5 + gm.currentStage * 5) * hpMultiplier);
-        for (let i = 0; i < 8; i++) {
-            const angle = (Math.PI * 2 * i) / 8;
-            const dist = 150;
+        const count = getNumericGameSetting('BOSS_AFFIXES.CALL_TO_ARMS_COUNT', 8);
+        const dist = getNumericGameSetting('BOSS_AFFIXES.CALL_TO_ARMS_DISTANCE', 150);
+        for (let i = 0; i < count; i++) {
+            const angle = (Math.PI * 2 * i) / count;
             const minion = new Enemy(
                 gm.player.x + Math.cos(angle) * dist,
                 gm.player.y + Math.sin(angle) * dist,
@@ -6277,8 +6297,8 @@ class GameManager {
     }
 
     triggerEliteDeathExplosion(enemy) {
-        const radius = enemy.eliteExplosionRadius || 60;
-        const damage = enemy.eliteExplosionDamage || 15;
+        const radius = enemy.eliteExplosionRadius || getNumericGameSetting('ENEMIES.ELITE.EXPLOSION_RADIUS', 60);
+        const damage = enemy.eliteExplosionDamage || getNumericGameSetting('ENEMIES.ELITE.EXPLOSION_DAMAGE', 15);
         const dx = this.player.x - enemy.x;
         const dy = this.player.y - enemy.y;
         const distSq = dx * dx + dy * dy;
@@ -7488,7 +7508,7 @@ class GameManager {
             if (this.damageFlashTimer < 0) this.damageFlashTimer = 0;
         }
 
-        if (FEATURE_FLAGS.ENABLE_LOW_HP_WARNING && this.player.hp > 0 && this.player.hp / this.player.maxHp < 0.3) {
+        if (FEATURE_FLAGS.ENABLE_LOW_HP_WARNING && this.player.hp > 0 && this.player.hp / this.player.maxHp < getNumericGameSetting('PLAYER.LOW_HP_THRESHOLD', 0.3)) {
             const pulse = Math.sin(GameRuntime.frame * 0.08) * 0.5 + 0.5;
             ctx.fillStyle = `rgba(255, 0, 0, ${0.05 + pulse * 0.05})`;
             ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
