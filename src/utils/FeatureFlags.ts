@@ -10,6 +10,7 @@ export const FEATURE_FLAGS = {
   ENABLE_ELITE_MUTATIONS: false,
   ENABLE_BOSS_AFFIXES: false,
   ENABLE_GAME_SETTINGS: false,
+  ENABLE_WEAPON_COOLDOWN_HUD: false,
 } as const;
 
 export type FeatureFlagName = keyof typeof FEATURE_FLAGS;

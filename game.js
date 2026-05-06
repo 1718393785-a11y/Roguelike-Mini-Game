@@ -19,6 +19,7 @@ const FEATURE_FLAGS = {
     ENABLE_ELITE_MUTATIONS: false,
     ENABLE_BOSS_AFFIXES: false,
     ENABLE_GAME_SETTINGS: false,
+    ENABLE_WEAPON_COOLDOWN_HUD: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -395,6 +396,7 @@ class Weapon {
         this.baseDamage = baseDamage;
         this.baseAttackInterval = attackInterval;
         this.timer = 0;
+        this.lastCooldown = attackInterval;
         this.type = 'base';
         this.level = 1; // 默认初始等级 1，每升一级 +1
     }
@@ -413,6 +415,7 @@ class Weapon {
             // 开火后瞬间重置CD：即时计算当前总减免
             const globalCDR = player.modifiers.cooldownMulti || 0;
             const actualCD = Math.max(0.1, this.baseAttackInterval * (1 - globalCDR));
+            this.lastCooldown = actualCD;
             this.timer += actualCD;
         }
     }
@@ -7409,6 +7412,36 @@ class GameManager {
         ctx.textAlign = 'left';
     }
 
+    renderWeaponCooldownHUD(ctx) {
+        if (!FEATURE_FLAGS.ENABLE_WEAPON_COOLDOWN_HUD) return;
+        const weapons = this.activeWeapons || [];
+        if (weapons.length === 0) return;
+        const colors = ['#00ff99', '#4da3ff', '#ffd34d', '#ff6b6b', '#c77dff', '#ff9f43'];
+        const baseRadius = getNumericGameSetting('HUD.WEAPON_COOLDOWN.BASE_RADIUS', 28);
+        const ringSpacing = getNumericGameSetting('HUD.WEAPON_COOLDOWN.RING_SPACING', 5);
+        const lineWidth = getNumericGameSetting('HUD.WEAPON_COOLDOWN.LINE_WIDTH', 3);
+        ctx.save();
+        ctx.lineCap = 'round';
+        for (let i = 0; i < weapons.length; i++) {
+            const weapon = weapons[i];
+            const cooldown = Math.max(0.1, weapon.lastCooldown || weapon.baseAttackInterval || 1);
+            const remaining = Math.max(0, Math.min(cooldown, weapon.timer || 0));
+            const readyRatio = 1 - remaining / cooldown;
+            const radius = baseRadius + i * ringSpacing;
+            ctx.beginPath();
+            ctx.arc(this.player.x, this.player.y, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(60, 60, 60, 0.55)';
+            ctx.lineWidth = lineWidth;
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(this.player.x, this.player.y, radius, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * readyRatio);
+            ctx.strokeStyle = remaining <= 0 ? '#7cff6b' : colors[i % colors.length];
+            ctx.lineWidth = lineWidth;
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
     renderPlaying() {
         const ctx = this.ctx;
 
@@ -7468,6 +7501,7 @@ class GameManager {
 
         // 玩家
         this.player.render(ctx);
+        this.renderWeaponCooldownHUD(ctx);
 
         // 敌人
         for (const enemy of this.enemies) {

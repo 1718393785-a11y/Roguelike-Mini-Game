@@ -1,7 +1,7 @@
 {
   "type": "snapshot-diff",
   "seed": "12345",
-  "seconds": 370,
+  "seconds": 120,
   "record": "records\\smoke.json",
   "chromePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
   "flags": {
@@ -14,12 +14,13 @@
     "ENABLE_HIT_KNOCKBACK": false,
     "ENABLE_LOW_HP_WARNING": false,
     "ENABLE_ELITE_MUTATIONS": false,
-    "ENABLE_BOSS_AFFIXES": true,
-    "ENABLE_GAME_SETTINGS": true
+    "ENABLE_BOSS_AFFIXES": false,
+    "ENABLE_GAME_SETTINGS": true,
+    "ENABLE_WEAPON_COOLDOWN_HUD": true
   },
   "equal": true,
-  "snapshotCountA": 22201,
-  "snapshotCountB": 22201,
+  "snapshotCountA": 7201,
+  "snapshotCountB": 7201,
   "bossFrameA": 2280,
   "bossFrameB": 2280,
   "bossFrameDelta": 0,

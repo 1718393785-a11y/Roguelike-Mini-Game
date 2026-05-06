@@ -34,6 +34,13 @@
             CALL_TO_ARMS_COUNT: 8,
             CALL_TO_ARMS_DISTANCE: 150,
         },
+        HUD: {
+            WEAPON_COOLDOWN: {
+                BASE_RADIUS: 28,
+                RING_SPACING: 5,
+                LINE_WIDTH: 3,
+            },
+        },
     };
 
     function clone(value) {
