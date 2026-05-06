@@ -1,0 +1,197 @@
+{
+  "project": "零停机重构 - 千里走单骑",
+  "mapping_version": "1.0",
+  "last_updated": "2024-01-01",
+  "base_path": "assets/",
+
+  "weapons": {
+    "saber": {
+      "name": "百炼环首刀",
+      "1": "weapons/saber_level_1.png",
+      "2": "weapons/saber_level_2.png",
+      "3": "weapons/saber_level_3.png",
+      "4": "weapons/saber_level_4.png",
+      "5": "weapons/saber_level_5.png",
+      "6": "weapons/saber_level_6_ultimate.png"
+    },
+    "spear": {
+      "name": "透阵龙胆枪",
+      "1": "weapons/spear_level_1.png",
+      "2": "weapons/spear_level_2.png",
+      "3": "weapons/spear_level_3.png",
+      "4": "weapons/spear_level_4.png",
+      "5": "weapons/spear_level_5.png",
+      "6": "weapons/spear_level_6_ultimate.png"
+    },
+    "crossbow": {
+      "name": "霹雳惊弦弩",
+      "1": "weapons/crossbow_level_1.png",
+      "2": "weapons/crossbow_level_2.png",
+      "3": "weapons/crossbow_level_3.png",
+      "4": "weapons/crossbow_level_4.png",
+      "5": "weapons/crossbow_level_5.png",
+      "6": "weapons/crossbow_level_6_ultimate.png"
+    },
+    "qinggang": {
+      "name": "青釭游龙剑",
+      "1": "weapons/qinggang_level_1.png",
+      "2": "weapons/qinggang_level_2.png",
+      "3": "weapons/qinggang_level_3.png",
+      "4": "weapons/qinggang_level_4.png",
+      "5": "weapons/qinggang_level_5.png",
+      "6": "weapons/qinggang_level_6_ultimate.png"
+    },
+    "shield": {
+      "name": "八门金锁盾",
+      "1": "weapons/shield_level_1.png",
+      "2": "weapons/shield_level_2.png",
+      "3": "weapons/shield_level_3.png",
+      "4": "weapons/shield_level_4.png",
+      "5": "weapons/shield_level_5.png",
+      "6": "weapons/shield_level_6_ultimate.png"
+    },
+    "taiping": {
+      "name": "太平要术·风火",
+      "1": "weapons/taiping_level_1.png",
+      "2": "weapons/taiping_level_2.png",
+      "3": "weapons/taiping_level_3.png",
+      "4": "weapons/taiping_level_4.png",
+      "5": "weapons/taiping_level_5.png",
+      "6": "weapons/taiping_level_6_ultimate.png"
+    }
+  },
+
+  "enemies": {
+    "soldier": {
+      "name": "魏兵",
+      "path": "enemies/soldier.png",
+      "size": 20
+    },
+    "elite": {
+      "name": "精英魏兵",
+      "path": "enemies/elite.png",
+      "size": 28
+    },
+    "archer": {
+      "name": "魏军弓弩手",
+      "path": "enemies/archer.png",
+      "size": 18
+    },
+    "wooden_ox": {
+      "name": "机关木牛",
+      "path": "enemies/wooden_ox.png",
+      "size": 25
+    },
+    "tiger_guard": {
+      "name": "虎卫",
+      "path": "enemies/tiger_guard.png",
+      "size": 35
+    },
+    "destructible_prop": {
+      "name": "木箱",
+      "path": "enemies/prop_box.png",
+      "size": 32
+    }
+  },
+
+  "bosses": {
+    "kongxiu": {
+      "name": "东岭关·孔秀",
+      "stage": 1,
+      "path": "bosses/kongxiu.png",
+      "size": 60
+    },
+    "hanfu": {
+      "name": "洛阳城·韩福",
+      "stage": 2,
+      "path": "bosses/hanfu.png",
+      "size": 60
+    },
+    "bianxi": {
+      "name": "汜水关·卞喜",
+      "stage": 3,
+      "path": "bosses/bianxi.png",
+      "size": 60
+    },
+    "wangzhi": {
+      "name": "荥阳·王植",
+      "stage": 4,
+      "path": "bosses/wangzhi.png",
+      "size": 60
+    },
+    "qinqi": {
+      "name": "黄河渡口·秦琪",
+      "stage": 5,
+      "path": "bosses/qinqi.png",
+      "size": 60
+    }
+  },
+
+  "skills": {
+    "DAMAGE": {
+      "name": "陷阵杀气",
+      "path": "skills/damage.png",
+      "effect": "伤害提升"
+    },
+    "SPEED": {
+      "name": "绝影无痕",
+      "path": "skills/speed.png",
+      "effect": "移速提升"
+    },
+    "COOLDOWN": {
+      "name": "迅雷风烈",
+      "path": "skills/cooldown.png",
+      "effect": "冷却缩减"
+    },
+    "MAGNET": {
+      "name": "摸金秘术",
+      "path": "skills/magnet.png",
+      "effect": "拾取范围"
+    },
+    "MAXHP": {
+      "name": "虎卫霸体",
+      "path": "skills/maxhp.png",
+      "effect": "最大生命"
+    },
+    "AREA": {
+      "name": "气吞山河",
+      "path": "skills/area.png",
+      "effect": "攻击范围"
+    },
+    "REGEN": {
+      "name": "青囊秘卷",
+      "path": "skills/regen.png",
+      "effect": "生命回复"
+    },
+    "EXP": {
+      "name": "天命所归",
+      "path": "skills/exp.png",
+      "effect": "经验获取"
+    },
+    "RESONANCE": {
+      "name": "历史共鸣",
+      "path": "skills/resonance.png",
+      "effect": "残响掉落"
+    },
+    "ARMOR": {
+      "name": "不动如山",
+      "path": "skills/armor.png",
+      "effect": "伤害减免"
+    }
+  },
+
+  "ui": {
+    "hud_bar": "ui/hud_health_exp.png",
+    "upgrade_panel": "ui/upgrade_selection.png",
+    "wave_announcement": "ui/wave_boss_warning.png",
+    "start_menu": "ui/start_menu.png",
+    "game_over": "ui/game_over_stats.png"
+  },
+
+  "pickups": {
+    "exp_blue": "pickups/exp_orb.png",
+    "health_bun": "pickups/health_bun.png",
+    "resonance_orange": "pickups/resonance_orb.png",
+    "magnet": "pickups/magnet.png"
+  }
+}

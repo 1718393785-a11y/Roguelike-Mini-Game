@@ -1,0 +1,61 @@
+{
+  "category": "pickups",
+  "entries": [
+    {
+      "id": "exp_orb",
+      "category": "pickup",
+      "level": null,
+      "output": "assets/pickups/asset_pickup_exp.png",
+      "sourceSize": [
+        64,
+        64
+      ],
+      "prompt": "游戏拾取物图标，蓝色经验光球，发光能量球，圆形发光效果，游戏道具图标，透明背景，64x64，像素清晰",
+      "negativePrompt": "3D渲染, 卡通, 低分辨率, 模糊, 背景",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "health_bun",
+      "category": "pickup",
+      "level": null,
+      "output": "assets/pickups/asset_pickup_health.png",
+      "sourceSize": [
+        64,
+        64
+      ],
+      "prompt": "游戏拾取物图标，红色肉馅包子，中华传统肉包造型，回血管理道具，圆形发光效果，透明背景，64x64，像素清晰",
+      "negativePrompt": "3D渲染, 卡通, 低分辨率, 模糊, 背景",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "resonance_orb",
+      "category": "pickup",
+      "level": null,
+      "output": "assets/pickups/asset_pickup_resonance.png",
+      "sourceSize": [
+        64,
+        64
+      ],
+      "prompt": "游戏拾取物图标，橙色历史残响结晶，橙金色发光能量碎片，局外升级材料，圆形发光效果，透明背景，64x64，像素清晰",
+      "negativePrompt": "3D渲染, 卡通, 低分辨率, 模糊, 背景",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "magnet",
+      "category": "pickup",
+      "level": null,
+      "output": "assets/pickups/asset_pickup_magnet.png",
+      "sourceSize": [
+        64,
+        64
+      ],
+      "prompt": "游戏拾取物图标，紫色吸铁石，磁铁造型，吸引范围扩大效果，圆形发光效果，透明背景，64x64，像素清晰",
+      "negativePrompt": "3D渲染, 卡通, 低分辨率, 模糊, 背景",
+      "requiresTransparency": true,
+      "tags": []
+    }
+  ]
+}

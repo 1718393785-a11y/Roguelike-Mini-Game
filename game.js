@@ -24,6 +24,15 @@ const FEATURE_FLAGS = {
     ENABLE_DESTRUCTIBLE_PROPS: false,
     ENABLE_LARGE_MAP_CAMERA: false,
     ENABLE_SCROLLING_BACKGROUND: false,
+    ENABLE_ART_ASSETS: false,
+    ENABLE_ART_WEAPON_ICONS: false,
+    ENABLE_ART_SKILL_ICONS: false,
+    ENABLE_ART_PICKUPS: false,
+    ENABLE_ART_ENEMY_SPRITES: false,
+    ENABLE_ART_PLAYER_SPRITE: false,
+    ENABLE_ART_EFFECTS: false,
+    ENABLE_ART_UI_SKIN: false,
+    ENABLE_ART_PIXI_TEXTURES: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -32,6 +41,15 @@ for (const flagName of Object.keys(FEATURE_FLAGS)) {
         const value = FEATURE_FLAG_PARAMS.get(flagName);
         FEATURE_FLAGS[flagName] = value === '1' || value === 'true' || value === 'on';
     }
+}
+if (FEATURE_FLAG_PARAMS.get('artAssets') === '1') FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
+if (FEATURE_FLAG_PARAMS.get('artWeaponIcons') === '1') {
+    FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
+    FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS = true;
+}
+if (FEATURE_FLAG_PARAMS.get('artSkillIcons') === '1') {
+    FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
+    FEATURE_FLAGS.ENABLE_ART_SKILL_ICONS = true;
 }
 
 function getGameSetting(path, fallback) {
@@ -5320,6 +5338,8 @@ class GameManager {
         this.legacySystemPipeline = FEATURE_FLAGS.ENABLE_SYSTEM_SPLIT ? new LegacySystemPipeline() : null;
         this.genericWeaponShadow = FEATURE_FLAGS.ENABLE_GENERIC_WEAPON ? new GenericWeaponShadowMonitor() : null;
         this.pixiRenderer = FEATURE_FLAGS.ENABLE_PIXI_RENDERER ? new LegacyPixiOverlayRenderer() : null;
+        this.assets = FEATURE_FLAGS.ENABLE_ART_ASSETS ? window.assetRuntime : null;
+        this.assets?.initialize?.();
         if (FEATURE_FLAGS.ENABLE_AUDIO_MANAGER && window.audioManager) {
             window.audioManager.configure({ enabled: true });
         }
@@ -6464,6 +6484,8 @@ class GameManager {
                     type: 'weapon_upgrade',
                     weight: 3,
                     weapon: weapon,
+                    weaponType: weapon.type,
+                    weaponLevel: nextLevel,
                     config: config,
                     title: `${config.name} Lv.${nextLevel}`,
                     desc: `【${nextCfg.name}】${nextCfg.desc.replace(/。$/, '')}`,
@@ -6493,6 +6515,7 @@ class GameManager {
                     type: 'weapon_unlock',
                     weight: 1,
                     weaponType: weaponType,
+                    weaponLevel: firstLevel,
                     config: config,
                     title: `${config.name} Lv.${firstLevel}`,
                     desc: `【${firstCfg.name}】${firstCfg.desc.replace(/。$/, '')}`,
@@ -7357,6 +7380,15 @@ class GameManager {
         ctx.fillText(text, x + w/2, y + h/2 + 8);
     }
 
+    drawArtImage(ctx, image, centerX, centerY, size) {
+        if (!this.assets?.canDraw?.(image)) return false;
+        ctx.save();
+        ctx.imageSmoothingEnabled = true;
+        ctx.drawImage(image, centerX - size / 2, centerY - size / 2, size, size);
+        ctx.restore();
+        return true;
+    }
+
     // 颜色变亮用于悬停
     lightenColor(color, amount) {
         // 简单处理：hex 颜色增加亮度
@@ -8025,6 +8057,14 @@ class GameManager {
             ctx.lineWidth = isHover ? 4 : 2;
             ctx.strokeRect(x, y, boxWidth, boxHeight);
 
+            const iconY = y + 70;
+            const iconSize = 64;
+            let hasArtIcon = false;
+            if (FEATURE_FLAGS.ENABLE_ART_ASSETS && FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS && option.weaponType) {
+                const icon = this.assets?.getWeaponIcon?.(option.weaponType, option.weaponLevel || 1);
+                hasArtIcon = this.drawArtImage(ctx, icon, x + boxWidth / 2, iconY, iconSize);
+            }
+
             // 技能名称/标题
             ctx.fillStyle = isHover ? '#b8860b' : '#ffffff';
             ctx.font = 'bold 20px Arial';
@@ -8036,7 +8076,7 @@ class GameManager {
             ctx.font = '14px Arial';
             // 计算文字起始位置，使用自动换行
             const descX = x + boxWidth / 2;
-            const descY = y + 65;
+            const descY = hasArtIcon ? y + 115 : y + 65;
             const maxWidth = boxWidth - 20;
             this.fillTextWrapped(ctx, option.desc, descX, descY, maxWidth, 20, 'center');
 

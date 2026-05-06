@@ -182,7 +182,19 @@ async function main() {
     ENABLE_DESTRUCTIBLE_PROPS: Boolean(args['destructible-props']),
     ENABLE_LARGE_MAP_CAMERA: Boolean(args['large-map-camera']),
     ENABLE_SCROLLING_BACKGROUND: Boolean(args['scrolling-background']),
+    ENABLE_ART_ASSETS: Boolean(args['art-assets']),
+    ENABLE_ART_WEAPON_ICONS: Boolean(args['art-weapon-icons']),
+    ENABLE_ART_SKILL_ICONS: Boolean(args['art-skill-icons']),
+    ENABLE_ART_PICKUPS: Boolean(args['art-pickups']),
+    ENABLE_ART_ENEMY_SPRITES: Boolean(args['art-enemy-sprites']),
+    ENABLE_ART_PLAYER_SPRITE: Boolean(args['art-player-sprite']),
+    ENABLE_ART_EFFECTS: Boolean(args['art-effects']),
+    ENABLE_ART_UI_SKIN: Boolean(args['art-ui-skin']),
+    ENABLE_ART_PIXI_TEXTURES: Boolean(args['art-pixi-textures']),
   };
+  if (Object.entries(defaultFlags).some(([name, enabled]) => name.startsWith('ENABLE_ART_') && name !== 'ENABLE_ART_ASSETS' && enabled)) {
+    defaultFlags.ENABLE_ART_ASSETS = true;
+  }
   await fs.mkdir(path.join(rootDir, 'reports'), { recursive: true });
   const { server, baseUrl } = await createServer();
   const browser = await chromium.launch({ executablePath: chromePath, headless: true });

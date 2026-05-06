@@ -1,0 +1,145 @@
+{
+  "category": "skills",
+  "entries": [
+    {
+      "id": "DAMAGE",
+      "category": "skill",
+      "level": null,
+      "output": "assets/skills/asset_skill_DAMAGE.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "游戏技能图标，陷阵杀气，伤害提升被动，交叉双刀+红色杀气，血红色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negativePrompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "SPEED",
+      "category": "skill",
+      "level": null,
+      "output": "assets/skills/asset_skill_SPEED.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "游戏技能图标，绝影无痕，移动速度提升，奔马残影特效，白色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negativePrompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "COOLDOWN",
+      "category": "skill",
+      "level": null,
+      "output": "assets/skills/asset_skill_COOLDOWN.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "游戏技能图标，迅雷风烈，冷却缩减，闪电+时钟指针特效，紫色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negativePrompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "MAGNET",
+      "category": "skill",
+      "level": null,
+      "output": "assets/skills/asset_skill_MAGNET.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "游戏技能图标，摸金秘术，拾取范围提升，磁铁吸元宝特效，金色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negativePrompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "MAXHP",
+      "category": "skill",
+      "level": null,
+      "output": "assets/skills/asset_skill_MAXHP.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "游戏技能图标，虎卫霸体，最大生命提升，盾牌+霸体光环，蓝色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negativePrompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "AREA",
+      "category": "skill",
+      "level": null,
+      "output": "assets/skills/asset_skill_AREA.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "游戏技能图标，气吞山河，攻击范围提升，扩散波纹+山河剪影，绿色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negativePrompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "REGEN",
+      "category": "skill",
+      "level": null,
+      "output": "assets/skills/asset_skill_REGEN.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "游戏技能图标，青囊秘卷，生命回复，医书卷轴+灵芝仙草，青色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negativePrompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "EXP",
+      "category": "skill",
+      "level": null,
+      "output": "assets/skills/asset_skill_EXP.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "游戏技能图标，天命所归，经验获取提升，卷轴+星光环绕，金色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negativePrompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "RESONANCE",
+      "category": "skill",
+      "level": null,
+      "output": "assets/skills/asset_skill_RESONANCE.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "游戏技能图标，历史共鸣，残响掉落提升，回音波纹+历史碎片，橙色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negativePrompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "ARMOR",
+      "category": "skill",
+      "level": null,
+      "output": "assets/skills/asset_skill_ARMOR.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "游戏技能图标，不动如山，伤害减免，山岳+护甲特效，棕色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negativePrompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "requiresTransparency": true,
+      "tags": []
+    }
+  ]
+}

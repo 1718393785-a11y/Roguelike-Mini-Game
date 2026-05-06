@@ -1,0 +1,60 @@
+{
+  "version": "1.0.0",
+  "basePath": "assets/",
+  "fallback": "canvas",
+  "weapons": {
+    "saber": {
+      "levels": {
+        "1": { "src": "weapons/asset_weapon_saber_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
+      }
+    },
+    "spear": {
+      "levels": {
+        "1": { "src": "weapons/asset_weapon_spear_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
+      }
+    },
+    "crossbow": {
+      "levels": {
+        "1": { "src": "weapons/asset_weapon_crossbow_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
+      }
+    },
+    "qinggang": {
+      "levels": {
+        "1": { "src": "weapons/asset_weapon_qinggang_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
+      }
+    },
+    "shield": {
+      "levels": {
+        "1": { "src": "weapons/asset_weapon_shield_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
+      }
+    },
+    "taiping": {
+      "levels": {
+        "1": { "src": "weapons/asset_weapon_taiping_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
+      }
+    }
+  },
+  "player": {},
+  "enemies": {},
+  "bosses": {},
+  "skills": {},
+  "pickups": {},
+  "effects": {},
+  "ui": {},
+  "tiles": {},
+  "atlases": {},
+  "styleProofs": {
+    "weapon_icon_atlas": {
+      "src": "style-proofs/weapon-icon-atlas.png",
+      "sourceSize": [1536, 1024],
+      "derived": [
+        "weapons/asset_weapon_saber_lv1.png",
+        "weapons/asset_weapon_spear_lv1.png",
+        "weapons/asset_weapon_crossbow_lv1.png",
+        "weapons/asset_weapon_qinggang_lv1.png",
+        "weapons/asset_weapon_shield_lv1.png",
+        "weapons/asset_weapon_taiping_lv1.png"
+      ]
+    }
+  }
+}

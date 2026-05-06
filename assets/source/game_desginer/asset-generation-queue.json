@@ -1,0 +1,657 @@
+{
+  "project": "零停机重构 - 千里走单骑",
+  "version": "1.0",
+  "generated_at": "2024-01-01",
+  "total_assets": 67,
+  "queue": [
+    {
+      "category": "weapon",
+      "weapon_id": "saber",
+      "name_cn": "百炼环首刀",
+      "level": 1,
+      "filename": "asset_weapon_saber_1.png",
+      "prompt": "游戏道具图标，中式环首刀，古朴青铜质感，橙金色刀身，身前扇形斩击示意，俯视45度，透明背景，三国古风，精致UI图标，512x512，边缘锐利",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "saber",
+      "name_cn": "百炼环首刀",
+      "level": 2,
+      "filename": "asset_weapon_saber_2.png",
+      "prompt": "游戏道具图标，百炼环首刀 Lv.2，刀身加长30%，更亮的橙金色发光，斩击范围弧形示意更大，金属质感强烈，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "saber",
+      "name_cn": "百炼环首刀",
+      "level": 3,
+      "filename": "asset_weapon_saber_3.png",
+      "prompt": "游戏道具图标，百炼环首刀 Lv.3 断钢，刀身散发灼热红光，刀刃有熔化钢铁的视觉效果，伤害提升40%气场，橙金渐变发光，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "saber",
+      "name_cn": "百炼环首刀",
+      "level": 4,
+      "filename": "asset_weapon_saber_4.png",
+      "prompt": "游戏道具图标，百炼环首刀 Lv.4 满月，身前180度满月形斩击波环绕，刀身光芒更盛，金色气浪特效，俯视45度，透明背景，阵法感",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "saber",
+      "name_cn": "百炼环首刀",
+      "level": 5,
+      "filename": "asset_weapon_saber_5.png",
+      "prompt": "游戏道具图标，百炼环首刀 Lv.5 双斩，双刀残影交叉，正反两道斩击弧线，处决红光特效，一正一反两个弧形，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "saber",
+      "name_cn": "百炼环首刀",
+      "level": 6,
+      "is_ultimate": true,
+      "filename": "asset_weapon_saber_6_ultimate.png",
+      "prompt": "传奇武器图标，武帝·八荒斩，四把巨大环首刀虚影呈十字交叉狂斩，八方向金色斩击波爆发，史诗金边框，强烈的帝王气场，橙金红三色光芒，透明背景，512x512，终极形态",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "spear",
+      "name_cn": "透阵龙胆枪",
+      "level": 1,
+      "filename": "asset_weapon_spear_1.png",
+      "prompt": "游戏道具图标，中式龙胆亮银枪，银白色金属质感，枪尖寒芒闪烁，直线贯穿气劲示意，俯视45度，透明背景，三国古风，精致UI图标，512x512",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "spear",
+      "name_cn": "透阵龙胆枪",
+      "level": 2,
+      "filename": "asset_weapon_spear_2.png",
+      "prompt": "游戏道具图标，透阵龙胆枪 Lv.2 枪芒，枪身长30%，枪芒更盛，银白雷光环绕，长矩形攻击范围示意，金属质感更强，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "spear",
+      "name_cn": "透阵龙胆枪",
+      "level": 3,
+      "filename": "asset_weapon_spear_3.png",
+      "prompt": "游戏道具图标，透阵龙胆枪 Lv.3 破军，枪尖雷电爆裂特效，伤害提升气场，击退冲击波视觉，银紫雷光，霸气长枪，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "spear",
+      "name_cn": "透阵龙胆枪",
+      "level": 4,
+      "filename": "asset_weapon_spear_4.png",
+      "prompt": "游戏道具图标，透阵龙胆枪 Lv.4 无影，多重残影表现攻击加速，模糊拖影效果，快到看不见的速度感，银电环绕，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "spear",
+      "name_cn": "透阵龙胆枪",
+      "level": 5,
+      "filename": "asset_weapon_spear_5.png",
+      "prompt": "游戏道具图标，透阵龙胆枪 Lv.5 龙胆，破甲紫色雷光特效，跟随冲刺的拖影效果，无敌帧光晕，真实伤害破甲符号，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "spear",
+      "name_cn": "透阵龙胆枪",
+      "level": 6,
+      "is_ultimate": true,
+      "filename": "asset_weapon_spear_6_ultimate.png",
+      "prompt": "传奇武器图标，神威·绝尘裂地，五道扇形枪影向前刺出，地面裂地效果，大量尘埃碎石，超大范围雷光爆发，史诗金边框，银紫金三色雷电，透明背景，终极形态",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "crossbow",
+      "name_cn": "霹雳惊弦弩",
+      "level": 1,
+      "filename": "asset_weapon_crossbow_1.png",
+      "prompt": "游戏道具图标，中式机关连弩，暗紫色机械质感，弩弦紧绷，一支闪电箭矢待发，俯视45度，透明背景，三国古风，精致UI图标，512x512",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "crossbow",
+      "name_cn": "霹雳惊弦弩",
+      "level": 2,
+      "filename": "asset_weapon_crossbow_2.png",
+      "prompt": "游戏道具图标，霹雳惊弦弩 Lv.2 连弩，两支箭矢并排，连发机械结构，机关齿轮细节，暗紫金属发光，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "crossbow",
+      "name_cn": "霹雳惊弦弩",
+      "level": 3,
+      "filename": "asset_weapon_crossbow_3.png",
+      "prompt": "游戏道具图标，霹雳惊弦弩 Lv.3 透甲，箭矢带穿透特效，破甲箭头设计，+1穿透计数标识，紫电穿甲效果，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "crossbow",
+      "name_cn": "霹雳惊弦弩",
+      "level": 4,
+      "filename": "asset_weapon_crossbow_4.png",
+      "prompt": "游戏道具图标，霹雳惊弦弩 Lv.4 满弦，多重弦振动残影，高速箭矢拖影，攻击间隔减少的速度感，箭矢飞行拖尾，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "crossbow",
+      "name_cn": "霹雳惊弦弩",
+      "level": 5,
+      "filename": "asset_weapon_crossbow_5.png",
+      "prompt": "游戏道具图标，霹雳惊弦弩 Lv.5 奔雷，箭矢命中触发雷电AOE爆炸，圆形闪电范围示意，紫金色雷光爆炸效果，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "crossbow",
+      "name_cn": "霹雳惊弦弩",
+      "level": 6,
+      "is_ultimate": true,
+      "filename": "asset_weapon_crossbow_6_ultimate.png",
+      "prompt": "传奇武器图标，九霄天劫，巨大毁灭雷柱从天而降，穿透耗尽触发特效，闪电链式传导，紫电金雷交织，史诗金边框，天劫降临气场，透明背景，终极形态",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "qinggang",
+      "name_cn": "青釭游龙剑",
+      "level": 1,
+      "filename": "asset_weapon_qinggang_1.png",
+      "prompt": "游戏道具图标，青釭飞剑，青蓝色古剑悬浮，剑气环绕，单剑绕圆轨道，俯视45度，透明背景，三国古风，精致UI图标，512x512",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "qinggang",
+      "name_cn": "青釭游龙剑",
+      "level": 2,
+      "filename": "asset_weapon_qinggang_2.png",
+      "prompt": "游戏道具图标，青釭游龙剑 Lv.2 分影，两把飞剑环绕，双剑圆形轨道，青蓝剑气，分影特效，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "qinggang",
+      "name_cn": "青釭游龙剑",
+      "level": 3,
+      "filename": "asset_weapon_qinggang_3.png",
+      "prompt": "游戏道具图标，青釭游龙剑 Lv.3 极速，飞剑拖影速度线，公转加速残影，蓝色流光效果，运动模糊，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "qinggang",
+      "name_cn": "青釭游龙剑",
+      "level": 4,
+      "filename": "asset_weapon_qinggang_4.png",
+      "prompt": "游戏道具图标，青釭游龙剑 Lv.4 剑阵，四把飞剑环绕，更大轨道半径，剑阵气场，四面防御姿态，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "qinggang",
+      "name_cn": "青釭游龙剑",
+      "level": 5,
+      "filename": "asset_weapon_qinggang_5.png",
+      "prompt": "游戏道具图标，青釭游龙剑 Lv.5 饮血，飞剑带血色剑芒，击杀回血红光特效，血红色剑气缠绕，青蓝红三色，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "qinggang",
+      "name_cn": "青釭游龙剑",
+      "level": 6,
+      "is_ultimate": true,
+      "filename": "asset_weapon_qinggang_6_ultimate.png",
+      "prompt": "传奇武器图标，魏武·十面埋伏，八把飞剑双轨环绕，内外两层圆形轨道，动态收缩防御气场，密集剑阵，史诗金边框，青金光芒，透明背景，终极形态",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "shield",
+      "name_cn": "八门金锁盾",
+      "level": 1,
+      "filename": "asset_weapon_shield_1.png",
+      "prompt": "游戏道具图标，中式古代盾牌，金黄色铜质感，盾牌表面有八卦纹路，力场脉冲示意，俯视45度，透明背景，三国古风，精致UI图标，512x512",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "shield",
+      "name_cn": "八门金锁盾",
+      "level": 2,
+      "filename": "asset_weapon_shield_2.png",
+      "prompt": "游戏道具图标，八门金锁盾 Lv.2 阵扩，更大的盾牌，环形冲击波范围扩大30%，金色光晕更盛，盾面纹路发光，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "shield",
+      "name_cn": "八门金锁盾",
+      "level": 3,
+      "filename": "asset_weapon_shield_3.png",
+      "prompt": "游戏道具图标，八门金锁盾 Lv.3 连垒，多重脉冲波纹，快速触发的连续冲击波，三层环形波纹，金色力场，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "shield",
+      "name_cn": "八门金锁盾",
+      "level": 4,
+      "filename": "asset_weapon_shield_4.png",
+      "prompt": "游戏道具图标，八门金锁盾 Lv.4 反震，伤害翻倍气场，向外爆发的击退波，强烈反震光效，盾牌冲击力视觉，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "shield",
+      "name_cn": "八门金锁盾",
+      "level": 5,
+      "filename": "asset_weapon_shield_5.png",
+      "prompt": "游戏道具图标，八门金锁盾 Lv.5 绝对壁垒，盾牌展开防护罩，摧毁投射物的破碎特效，绝对防御屏障，透明防护罩，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "shield",
+      "name_cn": "八门金锁盾",
+      "level": 6,
+      "is_ultimate": true,
+      "filename": "asset_weapon_shield_6_ultimate.png",
+      "prompt": "传奇武器图标，玄武·铜雀天牢，最大半径留下环形火墙，金色火焰围成圆环牢笼，玄武神兽虚影，持续燃烧火墙，史诗金边框，金红火光，透明背景，终极形态",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "taiping",
+      "name_cn": "太平要术·风火",
+      "level": 1,
+      "filename": "asset_weapon_taiping_1.png",
+      "prompt": "游戏道具图标，太平要术古卷轴，赤红色火焰纹路，风火交融特效，一团火焰龙卷风示意，俯视45度，透明背景，三国古风，精致UI图标，512x512",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "taiping",
+      "name_cn": "太平要术·风火",
+      "level": 2,
+      "filename": "asset_weapon_taiping_2.png",
+      "prompt": "游戏道具图标，太平要术 Lv.2 风火增幅，龙卷半径扩大，持续时间延长的时钟符号，更大火旋风，红橙火焰，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "taiping",
+      "name_cn": "太平要术·风火",
+      "level": 3,
+      "filename": "asset_weapon_taiping_3.png",
+      "prompt": "游戏道具图标，太平要术 Lv.3 火势凶猛，Tick频率加快的旋涡线条，更密集的火焰旋转，凶猛燃烧感，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "taiping",
+      "name_cn": "太平要术·风火",
+      "level": 4,
+      "filename": "asset_weapon_taiping_4.png",
+      "prompt": "游戏道具图标，太平要术 Lv.4 燎原，两团龙卷火焰并存，双火旋风，燎原之势，更大覆盖范围，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "taiping",
+      "name_cn": "太平要术·风火",
+      "level": 5,
+      "filename": "asset_weapon_taiping_5.png",
+      "prompt": "游戏道具图标，太平要术 Lv.5 灵动，龙卷风带移动拖影，自动索敌箭头，风与火的流线，灵动飘逸感，俯视45度，透明背景",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "weapon",
+      "weapon_id": "taiping",
+      "name_cn": "太平要术·风火",
+      "level": 6,
+      "is_ultimate": true,
+      "filename": "asset_weapon_taiping_6_ultimate.png",
+      "prompt": "传奇武器图标，黄天·焚世烈火，四团火焰龙卷环绕，中心聚变超级龙卷风，焚世烈火覆盖全场，黄天当立气场，史诗金边框，赤金大火，透明背景，终极形态",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度, 手绘感太强",
+      "size": "512x512"
+    },
+    {
+      "category": "enemy",
+      "enemy_id": "soldier",
+      "name_cn": "魏兵",
+      "filename": "asset_enemy_soldier.png",
+      "prompt": "2D游戏敌人精灵，三国魏国普通士兵，暗红色军袍，手持环首刀，站立姿态，俯视45度，古代士兵铠甲，透明背景，256x256，像素清晰，边缘锐利",
+      "negative_prompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "size": "256x256"
+    },
+    {
+      "category": "enemy",
+      "enemy_id": "elite",
+      "name_cn": "精英魏兵",
+      "filename": "asset_enemy_elite.png",
+      "prompt": "2D游戏敌人精灵，三国魏国精英步兵，金色镶边铠甲，披风，更强壮体型，精英气场，手持长柄刀，军官装束，俯视45度，透明背景，256x256",
+      "negative_prompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "size": "256x256"
+    },
+    {
+      "category": "enemy",
+      "enemy_id": "archer",
+      "name_cn": "魏军弓弩手",
+      "filename": "asset_enemy_archer.png",
+      "prompt": "2D游戏敌人精灵，三国魏国弓弩手，暗棕色皮甲，手持机关弩，射击姿态，弓箭手姿势，远程单位，体型略小，俯视45度，透明背景，256x256",
+      "negative_prompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "size": "256x256"
+    },
+    {
+      "category": "enemy",
+      "enemy_id": "wooden_ox",
+      "name_cn": "机关木牛",
+      "filename": "asset_enemy_wooden_ox.png",
+      "prompt": "2D游戏敌人精灵，三国机关木牛流马，木质机械结构，外露齿轮机关，背上驮着宝箱，快速逃跑姿态，古风机关术，俯视45度，透明背景，256x256",
+      "negative_prompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "size": "256x256"
+    },
+    {
+      "category": "enemy",
+      "enemy_id": "tiger_guard",
+      "name_cn": "虎卫",
+      "filename": "asset_enemy_tiger_guard.png",
+      "prompt": "2D游戏敌人精灵，曹操虎卫军，金色虎头面具，左手持盾右手持矛，方阵护卫姿态，重甲精英，环形布阵单位，体型较大，俯视45度，透明背景，256x256",
+      "negative_prompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "size": "256x256"
+    },
+    {
+      "category": "enemy",
+      "enemy_id": "destructible_prop",
+      "name_cn": "木箱",
+      "filename": "asset_enemy_prop_box.png",
+      "prompt": "2D游戏道具精灵，古代军粮木箱，木质纹理，可破坏道具，方形木箱，封条贴纸，静止放置，俯视45度，透明背景，128x128，像素清晰",
+      "negative_prompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "size": "128x128"
+    },
+    {
+      "category": "boss",
+      "boss_id": "kongxiu",
+      "name_cn": "东岭关·孔秀",
+      "stage": 1,
+      "filename": "asset_boss_kongxiu.png",
+      "prompt": "Boss角色设计，东岭关守将孔秀，绿色系战甲，随机强化光环环绕，武将姿态，Boss气场，5个随机词缀符文漂浮，俯视45度，三国暗黑风，透明背景，512x512",
+      "negative_prompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "size": "512x512"
+    },
+    {
+      "category": "boss",
+      "boss_id": "hanfu",
+      "name_cn": "洛阳城·韩福",
+      "stage": 2,
+      "filename": "asset_boss_hanfu.png",
+      "prompt": "Boss角色设计，洛阳城守将韩福，紫色系战甲，因果律暗箭特效，手中持弓，必定命中的黑色箭矢环绕，俯视45度，三国暗黑风，透明背景，512x512",
+      "negative_prompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "size": "512x512"
+    },
+    {
+      "category": "boss",
+      "boss_id": "bianxi",
+      "name_cn": "汜水关·卞喜",
+      "stage": 3,
+      "filename": "asset_boss_bianxi.png",
+      "prompt": "Boss角色设计，汜水关守将卞喜，蓝色系战甲，时空传送门特效，源源不断涌出的死士虚影，善使流星锤，俯视45度，三国暗黑风，透明背景，512x512",
+      "negative_prompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "size": "512x512"
+    },
+    {
+      "category": "boss",
+      "boss_id": "wangzhi",
+      "name_cn": "荥阳·王植",
+      "stage": 4,
+      "filename": "asset_boss_wangzhi.png",
+      "prompt": "Boss角色设计，荥阳守将王植，红色火焰战甲，业火焚城地面燃烧特效，火焰随时间蔓延的阵法，手持火刀，俯视45度，三国暗黑风，透明背景，512x512",
+      "negative_prompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "size": "512x512"
+    },
+    {
+      "category": "boss",
+      "boss_id": "qinqi",
+      "name_cn": "黄河渡口·秦琪",
+      "stage": 5,
+      "filename": "asset_boss_qinqi.png",
+      "prompt": "Boss角色设计，黄河渡口守将秦琪，金色混合四色战甲，前四关守将幻影环绕四周，召唤投影能力，综合Boss气场，俯视45度，三国暗黑风，透明背景，512x512",
+      "negative_prompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "size": "512x512"
+    },
+    {
+      "category": "skill",
+      "skill_id": "DAMAGE",
+      "name_cn": "陷阵杀气",
+      "filename": "asset_skill_DAMAGE.png",
+      "prompt": "游戏技能图标，陷阵杀气，伤害提升被动，交叉双刀+红色杀气，血红色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "size": "256x256"
+    },
+    {
+      "category": "skill",
+      "skill_id": "SPEED",
+      "name_cn": "绝影无痕",
+      "filename": "asset_skill_SPEED.png",
+      "prompt": "游戏技能图标，绝影无痕，移动速度提升，奔马残影特效，白色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "size": "256x256"
+    },
+    {
+      "category": "skill",
+      "skill_id": "COOLDOWN",
+      "name_cn": "迅雷风烈",
+      "filename": "asset_skill_COOLDOWN.png",
+      "prompt": "游戏技能图标，迅雷风烈，冷却缩减，闪电+时钟指针特效，紫色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "size": "256x256"
+    },
+    {
+      "category": "skill",
+      "skill_id": "MAGNET",
+      "name_cn": "摸金秘术",
+      "filename": "asset_skill_MAGNET.png",
+      "prompt": "游戏技能图标，摸金秘术，拾取范围提升，磁铁吸元宝特效，金色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "size": "256x256"
+    },
+    {
+      "category": "skill",
+      "skill_id": "MAXHP",
+      "name_cn": "虎卫霸体",
+      "filename": "asset_skill_MAXHP.png",
+      "prompt": "游戏技能图标，虎卫霸体，最大生命提升，盾牌+霸体光环，蓝色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "size": "256x256"
+    },
+    {
+      "category": "skill",
+      "skill_id": "AREA",
+      "name_cn": "气吞山河",
+      "filename": "asset_skill_AREA.png",
+      "prompt": "游戏技能图标，气吞山河，攻击范围提升，扩散波纹+山河剪影，绿色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "size": "256x256"
+    },
+    {
+      "category": "skill",
+      "skill_id": "REGEN",
+      "name_cn": "青囊秘卷",
+      "filename": "asset_skill_REGEN.png",
+      "prompt": "游戏技能图标，青囊秘卷，生命回复，医书卷轴+灵芝仙草，青色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "size": "256x256"
+    },
+    {
+      "category": "skill",
+      "skill_id": "EXP",
+      "name_cn": "天命所归",
+      "filename": "asset_skill_EXP.png",
+      "prompt": "游戏技能图标，天命所归，经验获取提升，卷轴+星光环绕，金色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "size": "256x256"
+    },
+    {
+      "category": "skill",
+      "skill_id": "RESONANCE",
+      "name_cn": "历史共鸣",
+      "filename": "asset_skill_RESONANCE.png",
+      "prompt": "游戏技能图标，历史共鸣，残响掉落提升，回音波纹+历史碎片，橙色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "size": "256x256"
+    },
+    {
+      "category": "skill",
+      "skill_id": "ARMOR",
+      "name_cn": "不动如山",
+      "filename": "asset_skill_ARMOR.png",
+      "prompt": "游戏技能图标，不动如山，伤害减免，山岳+护甲特效，棕色为主，圆形技能框，俯视视角，精致UI图标，透明背景，256x256，三国古风",
+      "negative_prompt": "3D渲染, 人物, 背景, 水印, 文字, 模糊, 低分辨率, 卡通过度",
+      "size": "256x256"
+    },
+    {
+      "category": "ui",
+      "ui_id": "hud",
+      "name_cn": "HUD状态栏",
+      "filename": "asset_ui_hud.png",
+      "prompt": "游戏HUD UI设计，顶部状态栏，深色半透明背景，三国古风边框，左侧红色血条带数值，底部蓝色经验条，右上角倒计时 10:00 格式，扁平化游戏UI，透明背景，1920x100区域",
+      "negative_prompt": "3D渲染, 卡通, 低分辨率, 模糊",
+      "size": "1920x1080"
+    },
+    {
+      "category": "ui",
+      "ui_id": "upgrade_panel",
+      "name_cn": "升级选择面板",
+      "filename": "asset_ui_upgrade_panel.png",
+      "prompt": "游戏升级选择UI，中央弹窗，三张横向排列的选项卡片，每张卡片有图标、名称、描述，选中高亮，三国古风边框，暗色调背景，升级特效光晕，透明背景，1200x400",
+      "negative_prompt": "3D渲染, 卡通, 低分辨率, 模糊",
+      "size": "1200x400"
+    },
+    {
+      "category": "ui",
+      "ui_id": "wave_announcement",
+      "name_cn": "波次公告",
+      "filename": "asset_ui_wave.png",
+      "prompt": "游戏关卡波次提示UI，全屏大字横幅，【东岭关】孔秀，震撼入场效果，黑色半透明遮罩，金色大字，Boss警告红色边框，三国古风，全屏居中，1920x300",
+      "negative_prompt": "3D渲染, 卡通, 低分辨率, 模糊",
+      "size": "1920x300"
+    },
+    {
+      "category": "ui",
+      "ui_id": "start_menu",
+      "name_cn": "开始菜单",
+      "filename": "asset_ui_start_menu.png",
+      "prompt": "游戏开始菜单UI，三国古风标题，千里走单骑四个大字，关羽青龙偃月刀剪影背景，开始按钮、设置按钮，暗黑金配色，全屏背景，1920x1080，史诗感",
+      "negative_prompt": "3D渲染, 卡通, 低分辨率, 模糊",
+      "size": "1920x1080"
+    },
+    {
+      "category": "ui",
+      "ui_id": "game_over",
+      "name_cn": "游戏结算",
+      "filename": "asset_ui_game_over.png",
+      "prompt": "游戏结算UI面板，半透明深色背景，三国古风边框，统计数据：存活时间、击杀数、获得武器、等级，重试/返回按钮，居中布局，1920x1080，数据表格风格",
+      "negative_prompt": "3D渲染, 卡通, 低分辨率, 模糊",
+      "size": "1920x1080"
+    },
+    {
+      "category": "pickup",
+      "pickup_id": "exp_orb",
+      "name_cn": "经验球",
+      "filename": "asset_pickup_exp.png",
+      "prompt": "游戏拾取物图标，蓝色经验光球，发光能量球，圆形发光效果，游戏道具图标，透明背景，64x64，像素清晰",
+      "negative_prompt": "3D渲染, 卡通, 低分辨率, 模糊, 背景",
+      "size": "64x64"
+    },
+    {
+      "category": "pickup",
+      "pickup_id": "health_bun",
+      "name_cn": "肉包回血",
+      "filename": "asset_pickup_health.png",
+      "prompt": "游戏拾取物图标，红色肉馅包子，中华传统肉包造型，回血管理道具，圆形发光效果，透明背景，64x64，像素清晰",
+      "negative_prompt": "3D渲染, 卡通, 低分辨率, 模糊, 背景",
+      "size": "64x64"
+    },
+    {
+      "category": "pickup",
+      "pickup_id": "resonance_orb",
+      "name_cn": "历史残响",
+      "filename": "asset_pickup_resonance.png",
+      "prompt": "游戏拾取物图标，橙色历史残响结晶，橙金色发光能量碎片，局外升级材料，圆形发光效果，透明背景，64x64，像素清晰",
+      "negative_prompt": "3D渲染, 卡通, 低分辨率, 模糊, 背景",
+      "size": "64x64"
+    },
+    {
+      "category": "pickup",
+      "pickup_id": "magnet",
+      "name_cn": "吸铁石",
+      "filename": "asset_pickup_magnet.png",
+      "prompt": "游戏拾取物图标，紫色吸铁石，磁铁造型，吸引范围扩大效果，圆形发光效果，透明背景，64x64，像素清晰",
+      "negative_prompt": "3D渲染, 卡通, 低分辨率, 模糊, 背景",
+      "size": "64x64"
+    }
+  ],
+  "stats": {
+    "weapons": 36,
+    "enemies": 6,
+    "bosses": 5,
+    "skills": 10,
+    "ui": 5,
+    "pickups": 4
+  }
+}

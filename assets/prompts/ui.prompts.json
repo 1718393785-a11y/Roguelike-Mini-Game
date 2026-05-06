@@ -1,0 +1,75 @@
+{
+  "category": "ui",
+  "entries": [
+    {
+      "id": "hud",
+      "category": "ui",
+      "level": null,
+      "output": "assets/ui/asset_ui_hud.png",
+      "sourceSize": [
+        1920,
+        1080
+      ],
+      "prompt": "游戏HUD UI设计，顶部状态栏，深色半透明背景，三国古风边框，左侧红色血条带数值，底部蓝色经验条，右上角倒计时 10:00 格式，扁平化游戏UI，透明背景，1920x100区域",
+      "negativePrompt": "3D渲染, 卡通, 低分辨率, 模糊",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "upgrade_panel",
+      "category": "ui",
+      "level": null,
+      "output": "assets/ui/asset_ui_upgrade_panel.png",
+      "sourceSize": [
+        1200,
+        400
+      ],
+      "prompt": "游戏升级选择UI，中央弹窗，三张横向排列的选项卡片，每张卡片有图标、名称、描述，选中高亮，三国古风边框，暗色调背景，升级特效光晕，透明背景，1200x400",
+      "negativePrompt": "3D渲染, 卡通, 低分辨率, 模糊",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "wave_announcement",
+      "category": "ui",
+      "level": null,
+      "output": "assets/ui/asset_ui_wave.png",
+      "sourceSize": [
+        1920,
+        300
+      ],
+      "prompt": "游戏关卡波次提示UI，全屏大字横幅，【东岭关】孔秀，震撼入场效果，黑色半透明遮罩，金色大字，Boss警告红色边框，三国古风，全屏居中，1920x300",
+      "negativePrompt": "3D渲染, 卡通, 低分辨率, 模糊",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "start_menu",
+      "category": "ui",
+      "level": null,
+      "output": "assets/ui/asset_ui_start_menu.png",
+      "sourceSize": [
+        1920,
+        1080
+      ],
+      "prompt": "游戏开始菜单UI，三国古风标题，千里走单骑四个大字，关羽青龙偃月刀剪影背景，开始按钮、设置按钮，暗黑金配色，全屏背景，1920x1080，史诗感",
+      "negativePrompt": "3D渲染, 卡通, 低分辨率, 模糊",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "game_over",
+      "category": "ui",
+      "level": null,
+      "output": "assets/ui/asset_ui_game_over.png",
+      "sourceSize": [
+        1920,
+        1080
+      ],
+      "prompt": "游戏结算UI面板，半透明深色背景，三国古风边框，统计数据：存活时间、击杀数、获得武器、等级，重试/返回按钮，居中布局，1920x1080，数据表格风格",
+      "negativePrompt": "3D渲染, 卡通, 低分辨率, 模糊",
+      "requiresTransparency": true,
+      "tags": []
+    }
+  ]
+}

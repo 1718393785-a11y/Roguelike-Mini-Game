@@ -1,0 +1,89 @@
+{
+  "category": "enemies",
+  "entries": [
+    {
+      "id": "soldier",
+      "category": "enemy",
+      "level": null,
+      "output": "assets/enemies/asset_enemy_soldier_idle_01.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "2D游戏敌人精灵，三国魏国普通士兵，暗红色军袍，手持环首刀，站立姿态，俯视45度，古代士兵铠甲，透明背景，256x256，像素清晰，边缘锐利",
+      "negativePrompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "elite",
+      "category": "enemy",
+      "level": null,
+      "output": "assets/enemies/asset_enemy_elite_idle_01.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "2D游戏敌人精灵，三国魏国精英步兵，金色镶边铠甲，披风，更强壮体型，精英气场，手持长柄刀，军官装束，俯视45度，透明背景，256x256",
+      "negativePrompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "archer",
+      "category": "enemy",
+      "level": null,
+      "output": "assets/enemies/asset_enemy_archer_idle_01.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "2D游戏敌人精灵，三国魏国弓弩手，暗棕色皮甲，手持机关弩，射击姿态，弓箭手姿势，远程单位，体型略小，俯视45度，透明背景，256x256",
+      "negativePrompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "wooden_ox",
+      "category": "enemy",
+      "level": null,
+      "output": "assets/enemies/asset_enemy_wooden_ox_idle_01.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "2D游戏敌人精灵，三国机关木牛流马，木质机械结构，外露齿轮机关，背上驮着宝箱，快速逃跑姿态，古风机关术，俯视45度，透明背景，256x256",
+      "negativePrompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "tiger_guard",
+      "category": "enemy",
+      "level": null,
+      "output": "assets/enemies/asset_enemy_tiger_guard_idle_01.png",
+      "sourceSize": [
+        256,
+        256
+      ],
+      "prompt": "2D游戏敌人精灵，曹操虎卫军，金色虎头面具，左手持盾右手持矛，方阵护卫姿态，重甲精英，环形布阵单位，体型较大，俯视45度，透明背景，256x256",
+      "negativePrompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "requiresTransparency": true,
+      "tags": []
+    },
+    {
+      "id": "destructible_prop",
+      "category": "enemy",
+      "level": null,
+      "output": "assets/enemies/asset_enemy_destructible_prop_idle_01.png",
+      "sourceSize": [
+        128,
+        128
+      ],
+      "prompt": "2D游戏道具精灵，古代军粮木箱，木质纹理，可破坏道具，方形木箱，封条贴纸，静止放置，俯视45度，透明背景，128x128，像素清晰",
+      "negativePrompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "requiresTransparency": true,
+      "tags": []
+    }
+  ]
+}

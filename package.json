@@ -14,6 +14,8 @@
     "validate:hot-reload:browser": "node tools/run-hot-reload-check.mjs",
     "validate:pixi-renderer": "node tools/run-pixi-renderer-check.mjs",
     "validate:entity-stress": "node tools/run-entity-stress.mjs",
+    "validate:assets": "node tools/validate-assets.mjs",
+    "normalize:asset-prompts": "node tools/normalize-asset-queue.mjs",
     "validate:weapons": "tsx src/effects/validateGenericWeapons.ts",
     "validate:effects": "tsx src/effects/validateEffectGeometry.ts",
     "check:architecture": "node tools/check-architecture.mjs",
