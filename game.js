@@ -14,6 +14,7 @@ const FEATURE_FLAGS = {
     ENABLE_PIXI_RENDERER: false,
     ENABLE_HOT_RELOAD: false,
     ENABLE_PLAYER_IFRAME: false,
+    ENABLE_HIT_KNOCKBACK: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -6518,7 +6519,28 @@ class GameManager {
             this.gameOver();
             return false;
         }
+        if (applied && FEATURE_FLAGS.ENABLE_HIT_KNOCKBACK) {
+            this.knockbackEnemiesAroundPlayer();
+        }
         return applied;
+    }
+
+    knockbackEnemiesAroundPlayer() {
+        const radius = 80;
+        const force = 30;
+        const candidates = this.queryEnemiesInRange(this.player.x, this.player.y, radius + 80);
+        for (const enemy of candidates) {
+            if (enemy.knockbackResist >= 1.0) continue;
+            const dx = enemy.x - this.player.x;
+            const dy = enemy.y - this.player.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < radius && dist > 0) {
+                const normalized = 1 - (dist / radius);
+                const actualForce = force * normalized * (1 - enemy.knockbackResist);
+                enemy.x += (dx / dist) * actualForce;
+                enemy.y += (dy / dist) * actualForce;
+            }
+        }
     }
 
     updateProjectileSystem(deltaTime) {
