@@ -699,6 +699,18 @@ function collectInclusiveCircleShadowHits(originX, originY, radius, candidates, 
     return hits.sort((a, b) => a - b);
 }
 
+function collectRingShadowHits(originX, originY, radius, tolerance, candidates, excluded) {
+    const hits = [];
+    for (const entity of candidates) {
+        if (excluded?.has(entity)) continue;
+        const dist = Math.hypot(entity.x - originX, entity.y - originY);
+        if (Math.abs(dist - radius) <= tolerance + entity.size / 2) {
+            hits.push(getDebugEntityId(entity));
+        }
+    }
+    return hits.sort((a, b) => a - b);
+}
+
 function selectForwardConeTarget(player, enemies, maxAngleDiff) {
     const playerAngle = Math.atan2(player.facingDirY, player.facingDirX);
     let closestInAngle = null;
@@ -2627,6 +2639,17 @@ class FireRing {
         // 定时造成伤害和弹回
         if (this.tickTimer >= this.burnTick) {
             this.tickTimer -= this.burnTick;
+            const gm = window.gameManager;
+            const genericShadowEnabled = !!gm.genericWeaponShadow;
+            const genericShadowHits = genericShadowEnabled ? collectRingShadowHits(
+                this.x,
+                this.y,
+                currentRadius,
+                this.tolerance,
+                enemies
+            ) : [];
+            const genericHitIdSet = genericShadowEnabled ? new Set(genericShadowHits) : null;
+            const legacyHits = [];
 
             for (let i = enemies.length - 1; i >= 0; i--) {
                 const enemy = enemies[i];
@@ -2635,7 +2658,14 @@ class FireRing {
                 const dist = Math.sqrt(dx * dx + dy * dy);
 
                 // 判断是否在当前收缩火墙边缘容差范围内
-                if (Math.abs(dist - currentRadius) <= this.tolerance + enemy.size / 2) {
+                const legacyShouldHit = Math.abs(dist - currentRadius) <= this.tolerance + enemy.size / 2;
+                if (legacyShouldHit) {
+                    if (genericShadowEnabled) {
+                        legacyHits.push(getDebugEntityId(enemy));
+                    }
+                }
+                const shouldHit = genericShadowEnabled ? genericHitIdSet.has(getDebugEntityId(enemy)) : legacyShouldHit;
+                if (shouldHit) {
                     // 灼烧伤害
                     enemy.hp -= this.damagePerSecond * this.burnTick;
 
@@ -2652,6 +2682,15 @@ class FireRing {
                         gameManager.handleEnemyDeath(enemy, i);
                     }
                 }
+            }
+            if (genericShadowEnabled) {
+                gm.genericWeaponShadow.recordBehaviorSample({
+                    type: 'shield',
+                    effect: 'fire_ring_geometry',
+                    level: 6,
+                    genericHits: genericShadowHits,
+                    legacyHits: legacyHits.sort((a, b) => a - b)
+                });
             }
         }
 

@@ -1087,7 +1087,7 @@
         "maxDpsDiffRatio": 0,
         "maxDamageDiffRatio": 0,
         "maxIntervalDiffRatio": 0,
-        "behaviorSamples": 160,
+        "behaviorSamples": 180,
         "behaviorMismatches": 0,
         "lastBehaviorMismatches": [],
         "lastSamples": [
