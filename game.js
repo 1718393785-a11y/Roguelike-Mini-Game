@@ -885,6 +885,21 @@ function resolveTaipingTornadoHitSettlement(tornado, enemy) {
     };
 }
 
+function resolveRadiusDamageSettlement(enemy, damage) {
+    return {
+        damage,
+        finalHp: enemy.hp - damage,
+        willKill: enemy.hp - damage <= 0
+    };
+}
+
+function resolveRadiusStunSettlement(enemy, stunDuration) {
+    return {
+        stunDuration,
+        finalStunTimer: stunDuration
+    };
+}
+
 class GenericWeaponShadowMonitor {
     constructor() {
         this.samples = 0;
@@ -2095,12 +2110,20 @@ class CrossbowArrow {
             const effectiveRadius = resolvedLightningRadius || 120 * areaMul;
             gameManager.lightningEffects.push(new LightningColumnEffect(enemy.x, enemy.y, effectiveRadius, 3.0));
             // 全屏眩晕所有敌人在半径内
-            gameManager.stunEnemiesInRadius(enemy.x, enemy.y, effectiveRadius, 1.0);
+            gameManager.stunEnemiesInRadius(enemy.x, enemy.y, effectiveRadius, 1.0, {
+                type: 'crossbow',
+                effect: 'lightning_column_stun',
+                level: this.weaponLevel
+            });
         } else if (this.hasLightningAOE) {
             // Lv5 普通：小范围AOE 50%伤害
             const effectiveRadius = resolvedLightningRadius || 60 * areaMul;
             gameManager.lightningEffects.push(new LightningAOEEffect(enemy.x, enemy.y, effectiveRadius, 0.5));
-            gameManager.damageEnemiesInRadius(enemy.x, enemy.y, effectiveRadius, this.damage * 0.5, this.hitRecords);
+            gameManager.damageEnemiesInRadius(enemy.x, enemy.y, effectiveRadius, this.damage * 0.5, this.hitRecords, {
+                type: 'crossbow',
+                effect: 'lightning_aoe_damage',
+                level: this.weaponLevel
+            });
         }
 
         // 减少剩余穿透
@@ -5180,8 +5203,24 @@ class GameManager {
     }
 
     // 范围伤害：对圆心半径内所有敌人造成伤害，跳过已经被当前箭矢命中的敌人
-    damageEnemiesInRadius(cx, cy, radius, damage, excludeHitSet) {
+    damageEnemiesInRadius(cx, cy, radius, damage, excludeHitSet, behaviorMeta = null) {
         const nearbyEnemies = this.queryEnemiesInRange(cx, cy, radius);
+        const genericShadowEnabled = !!this.genericWeaponShadow && !!behaviorMeta;
+        const genericShadowHits = [];
+        if (genericShadowEnabled) {
+            for (const enemy of nearbyEnemies) {
+                if (excludeHitSet.has(enemy)) continue;
+                const dx = enemy.x - cx;
+                const dy = enemy.y - cy;
+                const distSq = dx * dx + dy * dy;
+                if (distSq <= radius * radius) {
+                    genericShadowHits.push(getDebugEntityId(enemy));
+                }
+            }
+            genericShadowHits.sort((a, b) => a - b);
+        }
+        const genericHitIdSet = genericShadowEnabled ? new Set(genericShadowHits) : null;
+        const legacyHits = [];
         for (let i = nearbyEnemies.length - 1; i >= 0; i--) {
             const enemy = nearbyEnemies[i];
             if (excludeHitSet.has(enemy)) continue; // 已经被本次箭矢命中，跳过避免重复伤害
@@ -5189,28 +5228,107 @@ class GameManager {
             const dx = enemy.x - cx;
             const dy = enemy.y - cy;
             const distSq = dx * dx + dy * dy;
-            if (distSq <= radius * radius) {
-                enemy.hp -= damage;
+            const legacyShouldHit = distSq <= radius * radius;
+            if (legacyShouldHit && genericShadowEnabled) {
+                legacyHits.push(getDebugEntityId(enemy));
+            }
+            const shouldHit = genericShadowEnabled ? genericHitIdSet.has(getDebugEntityId(enemy)) : legacyShouldHit;
+            if (shouldHit) {
+                const preSettlementHp = enemy.hp;
+                const genericSettlement = genericShadowEnabled ? resolveRadiusDamageSettlement(enemy, damage) : null;
+                if (genericSettlement) {
+                    enemy.hp = genericSettlement.finalHp;
+                } else {
+                    enemy.hp -= damage;
+                }
                 if (enemy.hp <= 0) {
                     const originalIdx = this.enemies.indexOf(enemy);
                     if (originalIdx >= 0) {
                         this.handleEnemyDeath(enemy, originalIdx);
                     }
                 }
+                if (genericSettlement) {
+                    this.genericWeaponShadow.recordBehaviorSample({
+                        type: behaviorMeta.type,
+                        effect: `${behaviorMeta.effect}_settlement`,
+                        level: behaviorMeta.level,
+                        genericHits: [getDebugEntityId(enemy)],
+                        legacyHits: [getDebugEntityId(enemy)],
+                        genericState: genericSettlement,
+                        legacyState: {
+                            damage,
+                            finalHp: preSettlementHp - damage,
+                            willKill: preSettlementHp - damage <= 0
+                        }
+                    });
+                }
             }
+        }
+        if (genericShadowEnabled) {
+            this.genericWeaponShadow.recordBehaviorSample({
+                type: behaviorMeta.type,
+                effect: `${behaviorMeta.effect}_geometry`,
+                level: behaviorMeta.level,
+                genericHits: genericShadowHits,
+                legacyHits: legacyHits.sort((a, b) => a - b)
+            });
         }
     }
 
     // 范围眩晕：对圆心半径内所有敌人施加眩晕
-    stunEnemiesInRadius(cx, cy, radius, stunDuration) {
+    stunEnemiesInRadius(cx, cy, radius, stunDuration, behaviorMeta = null) {
         const nearbyEnemies = this.queryEnemiesInRange(cx, cy, radius);
+        const genericShadowEnabled = !!this.genericWeaponShadow && !!behaviorMeta;
+        const genericShadowHits = [];
+        if (genericShadowEnabled) {
+            for (const enemy of nearbyEnemies) {
+                const dx = enemy.x - cx;
+                const dy = enemy.y - cy;
+                const distSq = dx * dx + dy * dy;
+                if (distSq <= radius * radius) {
+                    genericShadowHits.push(getDebugEntityId(enemy));
+                }
+            }
+            genericShadowHits.sort((a, b) => a - b);
+        }
+        const genericHitIdSet = genericShadowEnabled ? new Set(genericShadowHits) : null;
+        const legacyHits = [];
         for (const enemy of nearbyEnemies) {
             const dx = enemy.x - cx;
             const dy = enemy.y - cy;
             const distSq = dx * dx + dy * dy;
-            if (distSq <= radius * radius) {
-                enemy.stunTimer = stunDuration;
+            const legacyShouldHit = distSq <= radius * radius;
+            if (legacyShouldHit && genericShadowEnabled) {
+                legacyHits.push(getDebugEntityId(enemy));
             }
+            const shouldHit = genericShadowEnabled ? genericHitIdSet.has(getDebugEntityId(enemy)) : legacyShouldHit;
+            if (shouldHit) {
+                const genericSettlement = genericShadowEnabled ? resolveRadiusStunSettlement(enemy, stunDuration) : null;
+                enemy.stunTimer = genericSettlement ? genericSettlement.finalStunTimer : stunDuration;
+                if (genericSettlement) {
+                    this.genericWeaponShadow.recordBehaviorSample({
+                        type: behaviorMeta.type,
+                        effect: `${behaviorMeta.effect}_settlement`,
+                        level: behaviorMeta.level,
+                        genericHits: [getDebugEntityId(enemy)],
+                        legacyHits: [getDebugEntityId(enemy)],
+                        genericState: genericSettlement,
+                        legacyState: {
+                            stunDuration,
+                            finalStunTimer: stunDuration
+                        }
+                    });
+                }
+            }
+        }
+        if (genericShadowEnabled) {
+            this.genericWeaponShadow.recordBehaviorSample({
+                type: behaviorMeta.type,
+                effect: `${behaviorMeta.effect}_geometry`,
+                level: behaviorMeta.level,
+                genericHits: genericShadowHits,
+                legacyHits: legacyHits.sort((a, b) => a - b)
+            });
         }
     }
 
