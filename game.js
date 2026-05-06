@@ -1150,6 +1150,10 @@ class Saber extends Weapon {
                 const effectiveDamage = this.baseDamage * player.getDamageMultiplier();
                 this.hitRecords.add(enemy);
                 const preSettlementHp = enemy.hp;
+                const genericSettlementEnabled = !!gm.genericWeaponShadow;
+                const genericSettlement = genericSettlementEnabled
+                    ? resolveSaberHitSettlement(this, enemy, effectiveDamage)
+                    : null;
 
                 // ============ 【处决】机制 - Lv5解锁 ============
                 // Lv5: 20%血量以下秒杀小怪 / 对精英Boss双倍伤害
@@ -1169,23 +1173,31 @@ class Saber extends Weapon {
                 }
 
                 // 命中造成基础伤害
-                enemy.hp -= effectiveDamage;
+                if (genericSettlementEnabled) {
+                    enemy.hp = genericSettlement.finalHp;
+                    if (genericSettlement.hitstop > 0) {
+                        gm.hitstopTimer = genericSettlement.hitstop;
+                    }
+                } else {
+                    enemy.hp -= effectiveDamage;
+                }
 
                 // ============ 新增：刀的击退与硬直（随等级成长） ============
                 const knockbackBase = 15 + this.level * 5; // 基础15，满级45
                 const stunDuration = 0.1 + this.level * 0.02; // 0.12s ~ 0.22s
+                const resolvedKnockbackBase = genericSettlementEnabled ? genericSettlement.knockbackBase : knockbackBase;
+                const resolvedStunDuration = genericSettlementEnabled ? genericSettlement.stunDuration : stunDuration;
                 // Boss/木牛完全免疫硬直和击退
                 if (enemy.knockbackResist < 1.0) {
-                    enemy.stunTimer = Math.max(enemy.stunTimer, stunDuration);
+                    enemy.stunTimer = Math.max(enemy.stunTimer, resolvedStunDuration);
                     // 破韧击退：只有不在硬直中才会被推开，避免高频击退无限推远
-                    if (enemy.stunTimer <= stunDuration && enemy.stunTimer <= 0) {
-                        const actualKnockback = knockbackBase * (1 - enemy.knockbackResist);
+                    if (enemy.stunTimer <= resolvedStunDuration && enemy.stunTimer <= 0) {
+                        const actualKnockback = resolvedKnockbackBase * (1 - enemy.knockbackResist);
                         enemy.x += Math.cos(enemyAngle) * actualKnockback;
                         enemy.y += Math.sin(enemyAngle) * actualKnockback;
                     }
                 }
                 if (genericShadowEnabled) {
-                    const genericSettlement = resolveSaberHitSettlement(this, { ...enemy, hp: preSettlementHp }, effectiveDamage);
                     gm.genericWeaponShadow.recordBehaviorSample({
                         type: 'saber',
                         effect: 'melee_arc_settlement',
