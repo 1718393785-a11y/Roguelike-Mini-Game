@@ -5279,13 +5279,23 @@ class LegacyPixiOverlayRenderer {
 
     drawEntity(entity, tint, fallbackSize) {
         if (!entity || typeof entity.x !== 'number' || typeof entity.y !== 'number') return;
-        const sprite = this.acquireSprite();
         const size = entity.size || fallbackSize;
         const camera = FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA && window.gameManager?.camera
             ? window.gameManager.camera
             : { x: 0, y: 0 };
-        sprite.x = entity.x - camera.x;
-        sprite.y = entity.y - camera.y;
+        const screenX = entity.x - camera.x;
+        const screenY = entity.y - camera.y;
+        if (FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA && window.gameManager?.canvas) {
+            const margin = size + 50;
+            const canvas = window.gameManager.canvas;
+            if (screenX < -margin || screenX > canvas.width + margin ||
+                screenY < -margin || screenY > canvas.height + margin) {
+                return;
+            }
+        }
+        const sprite = this.acquireSprite();
+        sprite.x = screenX;
+        sprite.y = screenY;
         sprite.width = size;
         sprite.height = size;
         sprite.tint = tint;
@@ -5433,6 +5443,27 @@ class GameManager {
         const maxY = Math.max(0, this.getWorldHeight() - this.canvas.height);
         this.camera.x = Math.max(0, Math.min(maxX, this.player.x - this.canvas.width / 2));
         this.camera.y = Math.max(0, Math.min(maxY, this.player.y - this.canvas.height / 2));
+    }
+
+    isInCameraView(entity, extraMargin = 50) {
+        if (!FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA) return true;
+        if (!entity || typeof entity.x !== 'number' || typeof entity.y !== 'number') return false;
+        const size = entity.size || entity.radius || entity.currentRadius || 0;
+        const margin = size + extraMargin;
+        return entity.x >= this.camera.x - margin &&
+            entity.x <= this.camera.x + this.canvas.width + margin &&
+            entity.y >= this.camera.y - margin &&
+            entity.y <= this.camera.y + this.canvas.height + margin;
+    }
+
+    isCircleInCameraView(x, y, radius = 0, extraMargin = 50) {
+        if (!FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA) return true;
+        if (typeof x !== 'number' || typeof y !== 'number') return false;
+        const margin = radius + extraMargin;
+        return x >= this.camera.x - margin &&
+            x <= this.camera.x + this.canvas.width + margin &&
+            y >= this.camera.y - margin &&
+            y <= this.camera.y + this.canvas.height + margin;
     }
 
     // ==================== 空间网格API ====================
@@ -7606,6 +7637,7 @@ class GameManager {
 
         // 渲染火焰区域（半透明橙色）- 王植Boss技能
         for (const fire of this.fireAreas) {
+            if (!this.isCircleInCameraView(fire.x, fire.y, fire.radius, 50)) continue;
             ctx.fillStyle = 'rgba(255, 100, 0, 0.4)';
             ctx.beginPath();
             ctx.arc(fire.x, fire.y, fire.radius, 0, Math.PI * 2);
@@ -7614,11 +7646,17 @@ class GameManager {
 
         // 渲染太平要术火焰龙卷风
         for (const tornado of this.fireTornados) {
+            const radius = tornado.currentRadius || tornado.baseRadius || tornado.radius || 80;
+            if (!this.isCircleInCameraView(tornado.x, tornado.y, radius, 80)) continue;
             tornado.render(ctx);
         }
 
         // 渲染特殊区域（八门金锁盾Lv6火墙等）
         for (const area of this.specialAreas) {
+            const radius = typeof area.getCurrentRadius === 'function'
+                ? area.getCurrentRadius()
+                : (area.currentRadius || area.maxRadius || area.radius || 80);
+            if (!this.isCircleInCameraView(area.x, area.y, radius, 80)) continue;
             area.render(ctx);
         }
 
@@ -7629,6 +7667,7 @@ class GameManager {
 
         // 掉落物
         for (const pickup of this.pickups) {
+            if (!this.isInCameraView(pickup, 50)) continue;
             pickup.render(ctx);
         }
 
@@ -7638,21 +7677,26 @@ class GameManager {
 
         // 敌人
         for (const enemy of this.enemies) {
+            if (!this.isInCameraView(enemy, 50)) continue;
             enemy.render(ctx);
         }
 
         // 子弹/追踪弹
         for (const projectile of this.projectiles) {
+            if (!this.isInCameraView(projectile, 50)) continue;
             projectile.render(ctx);
         }
 
         // 渲染闪电视觉特效
         for (const effect of this.lightningEffects) {
+            const radius = effect.currentRadius || effect.maxRadius || effect.radius || 60;
+            if (!this.isCircleInCameraView(effect.x, effect.y, radius, 80)) continue;
             effect.render(ctx);
         }
 
         // 渲染浮动文字（暴击跳字等）
         for (const text of this.floatingTexts) {
+            if (!this.isInCameraView(text, 30)) continue;
             text.render(ctx);
         }
 
