@@ -20,6 +20,7 @@ const FEATURE_FLAGS = {
     ENABLE_BOSS_AFFIXES: false,
     ENABLE_GAME_SETTINGS: false,
     ENABLE_WEAPON_COOLDOWN_HUD: false,
+    ENABLE_AUDIO_MANAGER: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -43,6 +44,11 @@ function getGameSetting(path, fallback) {
 function getNumericGameSetting(path, fallback) {
     const value = getGameSetting(path, fallback);
     return Number.isFinite(value) ? value : fallback;
+}
+
+function playGameSound(name, volume = 1) {
+    if (!FEATURE_FLAGS.ENABLE_AUDIO_MANAGER || !window.audioManager) return false;
+    return window.audioManager.play(name, volume);
 }
 
 const GameRuntime = (() => {
@@ -5292,6 +5298,9 @@ class GameManager {
         this.legacySystemPipeline = FEATURE_FLAGS.ENABLE_SYSTEM_SPLIT ? new LegacySystemPipeline() : null;
         this.genericWeaponShadow = FEATURE_FLAGS.ENABLE_GENERIC_WEAPON ? new GenericWeaponShadowMonitor() : null;
         this.pixiRenderer = FEATURE_FLAGS.ENABLE_PIXI_RENDERER ? new LegacyPixiOverlayRenderer() : null;
+        if (FEATURE_FLAGS.ENABLE_AUDIO_MANAGER && window.audioManager) {
+            window.audioManager.configure({ enabled: true });
+        }
 
         // 加载局外升级（从localStorage）
         this.loadPersistentData();
@@ -5979,6 +5988,7 @@ class GameManager {
         }
 
         this.enemies.push(boss);
+        playGameSound('bossAppear');
         console.log(`[Timeline] ${bossIndex * 2 + 2} min: ${stageData.boss} Spawned! (Level scaled HP: ${dynamicHp})`);
 
         // 第三波(3min)已经由miniBoss处理，第六波(6min)及以后的关卡Boss也召唤虎卫护卫
@@ -6453,6 +6463,7 @@ class GameManager {
     }
 
     onPlayerLevelUp() {
+        playGameSound('levelUp');
         // 每升满3级奖励一次免费刷新
         if (this.player.level % 3 === 0) {
             this.player.rerolls += 1;
@@ -6729,6 +6740,9 @@ class GameManager {
         if (applied && this.player.hp <= 0) {
             this.gameOver();
             return false;
+        }
+        if (applied) {
+            playGameSound('playerHit');
         }
         if (applied && FEATURE_FLAGS.ENABLE_HIT_KNOCKBACK) {
             this.knockbackEnemiesAroundPlayer();
@@ -7101,6 +7115,7 @@ class GameManager {
     }
 
     gameOver() {
+        playGameSound('gameOver');
         // 累计残响
         this.totalResonance += this.currentResonance;
         this.savePersistentData();
@@ -7154,6 +7169,7 @@ class GameManager {
     }
 
     victory() {
+        playGameSound('victory');
         this.totalResonance += this.currentResonance;
         this.savePersistentData();
         this.gameState = GAME_STATE.VICTORY;

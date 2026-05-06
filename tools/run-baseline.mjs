@@ -178,6 +178,7 @@ async function main() {
     ENABLE_BOSS_AFFIXES: Boolean(args['boss-affixes']),
     ENABLE_GAME_SETTINGS: Boolean(args['game-settings']),
     ENABLE_WEAPON_COOLDOWN_HUD: Boolean(args['weapon-cooldown-hud']),
+    ENABLE_AUDIO_MANAGER: Boolean(args['audio-manager']),
   };
   await fs.mkdir(path.join(rootDir, 'reports'), { recursive: true });
   const { server, baseUrl } = await createServer();

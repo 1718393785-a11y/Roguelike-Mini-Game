@@ -15,8 +15,9 @@
     "ENABLE_LOW_HP_WARNING": false,
     "ENABLE_ELITE_MUTATIONS": false,
     "ENABLE_BOSS_AFFIXES": false,
-    "ENABLE_GAME_SETTINGS": true,
-    "ENABLE_WEAPON_COOLDOWN_HUD": true
+    "ENABLE_GAME_SETTINGS": false,
+    "ENABLE_WEAPON_COOLDOWN_HUD": false,
+    "ENABLE_AUDIO_MANAGER": true
   },
   "equal": true,
   "snapshotCountA": 7201,
