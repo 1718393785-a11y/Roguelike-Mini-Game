@@ -5330,6 +5330,7 @@ class GameManager {
         this.spatialGridOverflow = [];
         this.gridCols = 0;
         this.gridRows = 0;
+        this.spatialGridShapeKey = '';
         this.mapWidth = FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA ? getNumericGameSetting('MAP.WIDTH', 6000) : 0;
         this.mapHeight = FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA ? getNumericGameSetting('MAP.HEIGHT', 6000) : 0;
         this.camera = { x: 0, y: 0, smoothness: getNumericGameSetting('MAP.CAMERA_SMOOTHNESS', 0.12) };
@@ -5466,10 +5467,18 @@ class GameManager {
             y <= this.camera.y + this.canvas.height + margin;
     }
 
-    // ==================== 空间网格API ====================
-    // 每帧开始时重建空间网格：将所有敌人按坐标放入对应格子
-    rebuildSpatialGrid() {
-        // 清空网格
+    ensureSpatialGridShape() {
+        const shapeKey = `${this.gridCols}x${this.gridRows}`;
+        if (this.spatialGridShapeKey === shapeKey) {
+            for (let c = 0; c < this.gridCols; c++) {
+                const column = this.spatialGrid[c];
+                for (let r = 0; r < this.gridRows; r++) {
+                    column[r].length = 0;
+                }
+            }
+            return;
+        }
+
         this.spatialGrid = [];
         this.spatialGridOverflow = [];
         for (let c = 0; c < this.gridCols; c++) {
@@ -5478,6 +5487,14 @@ class GameManager {
                 this.spatialGrid[c][r] = [];
             }
         }
+        this.spatialGridShapeKey = shapeKey;
+    }
+
+    // ==================== 空间网格API ====================
+    // 每帧开始时重建空间网格：复用格子数组，避免大量实体时产生每帧GC。
+    rebuildSpatialGrid() {
+        this.ensureSpatialGridShape();
+        this.spatialGridOverflow.length = 0;
 
         // 将所有敌人放入对应格子
         for (const enemy of this.enemies) {
@@ -5505,11 +5522,16 @@ class GameManager {
         result.length = 0;
         for (let c = minCol; c <= maxCol; c++) {
             for (let r = minRow; r <= maxRow; r++) {
-                result.push(...this.spatialGrid[c][r]);
+                const cell = this.spatialGrid[c][r];
+                for (let i = 0; i < cell.length; i++) {
+                    result.push(cell[i]);
+                }
             }
         }
         if (this.spatialGridOverflow.length > 0) {
-            result.push(...this.spatialGridOverflow);
+            for (let i = 0; i < this.spatialGridOverflow.length; i++) {
+                result.push(this.spatialGridOverflow[i]);
+            }
         }
         return result;
     }
@@ -6752,7 +6774,10 @@ class GameManager {
         // ========== 可破坏物（木箱）低概率生成 ==========
         if (FEATURE_FLAGS.ENABLE_DESTRUCTIBLE_PROPS) {
             const maxProps = getNumericGameSetting('PROPS.DESTRUCTIBLE.MAX_COUNT', 3);
-            const propCount = this.enemies.filter(e => e.isProp).length;
+            let propCount = 0;
+            for (let i = 0; i < this.enemies.length && propCount < maxProps; i++) {
+                if (this.enemies[i].isProp) propCount++;
+            }
             const spawnChance = getNumericGameSetting('PROPS.DESTRUCTIBLE.SPAWN_CHANCE_PER_FRAME', 0.001);
             if (!hasFinalBoss && propCount < maxProps && GameRuntime.random() < spawnChance) {
                 const margin = getNumericGameSetting('PROPS.DESTRUCTIBLE.SPAWN_MARGIN', 50); // 不生成在边缘
