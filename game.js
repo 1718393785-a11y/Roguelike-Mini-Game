@@ -3085,19 +3085,20 @@ class FireRing {
         if (this.tickTimer >= this.burnTick) {
             this.tickTimer -= this.burnTick;
             const gm = window.gameManager;
+            const candidates = gm.queryEnemiesInRange(this.x, this.y, currentRadius + this.tolerance + 80);
             const genericShadowEnabled = !!gm.genericWeaponShadow;
             const genericShadowHits = genericShadowEnabled ? collectRingShadowHits(
                 this.x,
                 this.y,
                 currentRadius,
                 this.tolerance,
-                enemies
+                candidates
             ) : [];
             const genericHitIdSet = genericShadowEnabled ? new Set(genericShadowHits) : null;
             const legacyHits = [];
 
-            for (let i = enemies.length - 1; i >= 0; i--) {
-                const enemy = enemies[i];
+            for (let i = candidates.length - 1; i >= 0; i--) {
+                const enemy = candidates[i];
                 const dx = enemy.x - this.x;
                 const dy = enemy.y - this.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
@@ -3141,7 +3142,10 @@ class FireRing {
 
                     // 检查死亡
                     if (enemy.hp <= 0) {
-                        gameManager.handleEnemyDeath(enemy, i);
+                        const originalIdx = gm.enemies.indexOf(enemy);
+                        if (originalIdx >= 0) {
+                            gameManager.handleEnemyDeath(enemy, originalIdx);
+                        }
                     }
                     if (genericSettlement) {
                         gm.genericWeaponShadow.recordBehaviorSample({
@@ -6366,14 +6370,20 @@ class GameManager {
         if (roll < 0.8) {
             // ========== 数据化经验珠：硬上限 + 聚合存储 ==========
             const MAX_EXP_PICKUPS = 300; // 同屏硬上限
-            const currentExpCount = this.pickups.filter(p => p.type === PICKUP_TYPES.EXP).length;
+            let currentExpCount = 0;
+            let firstExp = null;
+            for (const pickup of this.pickups) {
+                if (pickup.type !== PICKUP_TYPES.EXP) continue;
+                if (!firstExp) firstExp = pickup;
+                currentExpCount++;
+                if (currentExpCount >= MAX_EXP_PICKUPS) break;
+            }
 
             if (currentExpCount < MAX_EXP_PICKUPS) {
                 // 未达上限：正常生成新经验珠（容量=1）
                 this.pickups.push(new Pickup(x, y, PICKUP_TYPES.EXP, 1));
             } else {
                 // 已达上限：找到第一个现存经验珠（存活最久的），隔空注能
-                const firstExp = this.pickups.find(p => p.type === PICKUP_TYPES.EXP);
                 if (firstExp) {
                     firstExp.expValue += 1;
                 } else {
