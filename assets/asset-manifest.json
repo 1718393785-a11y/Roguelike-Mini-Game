@@ -176,7 +176,13 @@
     "shield_pulse": { "src": "effects/asset_effect_shield_pulse.png", "sourceSize": [512, 512], "usage": ["weapon_effect"] },
     "taiping_tornado": { "src": "effects/asset_effect_taiping_tornado.png", "sourceSize": [512, 512], "usage": ["weapon_effect"] }
   },
-  "ui": {},
+  "ui": {
+    "menu_panel": { "src": "ui/asset_ui_menu_panel.png", "sourceSize": [1024, 768], "usage": ["menu", "panel"] },
+    "button_frame": { "src": "ui/asset_ui_button_frame.png", "sourceSize": [512, 160], "usage": ["button"] },
+    "upgrade_card": { "src": "ui/asset_ui_upgrade_card_frame.png", "sourceSize": [512, 768], "usage": ["upgrade_panel"] },
+    "dialog_panel": { "src": "ui/asset_ui_dialog_panel.png", "sourceSize": [1200, 760], "usage": ["dialog", "game_over"] },
+    "hud_bar_frame": { "src": "ui/asset_ui_hud_bar_frame.png", "sourceSize": [768, 96], "usage": ["hud"] }
+  },
   "tiles": {
     "normal": { "src": "tiles/asset_tile_normal.png", "sourceSize": [512, 512], "usage": ["world_background"] },
     "fire": { "src": "tiles/asset_tile_fire.png", "sourceSize": [512, 512], "usage": ["world_background"] },
@@ -236,6 +242,17 @@
         "effects/asset_effect_qinggang_orbit.png",
         "effects/asset_effect_shield_pulse.png",
         "effects/asset_effect_taiping_tornado.png"
+      ]
+    },
+    "ui_skin_preview": {
+      "src": "style-proofs/ui-skin-preview.png",
+      "sourceSize": [1200, 780],
+      "derived": [
+        "ui/asset_ui_menu_panel.png",
+        "ui/asset_ui_button_frame.png",
+        "ui/asset_ui_upgrade_card_frame.png",
+        "ui/asset_ui_dialog_panel.png",
+        "ui/asset_ui_hud_bar_frame.png"
       ]
     },
     "weapon_icon_atlas": {

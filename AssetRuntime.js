@@ -74,6 +74,10 @@
             return this.resolveImage(this.manifest?.effects?.[effectId]?.src);
         }
 
+        getUiSkin(uiId) {
+            return this.resolveImage(this.manifest?.ui?.[uiId]?.src);
+        }
+
         resolveImage(src) {
             if (!this.ready || !src) return null;
             const path = this.basePath + src;

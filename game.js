@@ -54,6 +54,7 @@ if (FEATURE_FLAG_PARAMS.get('artPreview') === '1') {
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
     FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS = true;
     FEATURE_FLAGS.ENABLE_ART_EFFECTS = true;
+    FEATURE_FLAGS.ENABLE_ART_UI_SKIN = true;
     FEATURE_FLAGS.ENABLE_ART_DEBUG_PREVIEW = true;
 }
 if (FEATURE_FLAG_PARAMS.get('artHud') === '1') {
@@ -95,6 +96,10 @@ if (FEATURE_FLAG_PARAMS.get('artEffects') === '1') {
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
     FEATURE_FLAGS.ENABLE_ART_EFFECTS = true;
 }
+if (FEATURE_FLAG_PARAMS.get('artUi') === '1' || FEATURE_FLAG_PARAMS.get('artUISkin') === '1') {
+    FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
+    FEATURE_FLAGS.ENABLE_ART_UI_SKIN = true;
+}
 
 function getGameSetting(path, fallback) {
     if (!FEATURE_FLAGS.ENABLE_GAME_SETTINGS) return fallback;
@@ -127,6 +132,19 @@ function drawArtEffectTexture(ctx, effectId, x, y, width, height, angle = 0, alp
     ctx.globalAlpha *= Math.max(0, Math.min(1, alpha));
     ctx.imageSmoothingEnabled = true;
     ctx.drawImage(image, -width * anchorX, -height * anchorY, width, height);
+    ctx.restore();
+    return true;
+}
+
+function drawArtUiTexture(ctx, uiId, x, y, width, height, alpha = 1) {
+    const assets = window.assetRuntime;
+    if (!FEATURE_FLAGS.ENABLE_ART_ASSETS || !FEATURE_FLAGS.ENABLE_ART_UI_SKIN || !assets?.getUiSkin) return false;
+    const image = assets.getUiSkin(uiId);
+    if (!assets.canDraw?.(image)) return false;
+    ctx.save();
+    ctx.globalAlpha *= Math.max(0, Math.min(1, alpha));
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(image, x, y, width, height);
     ctx.restore();
     return true;
 }
@@ -7785,6 +7803,7 @@ class GameManager {
         // 背景
         ctx.fillStyle = '#1a1a1a';
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        drawArtUiTexture(ctx, 'menu_panel', centerX - 280, Math.max(44, centerY - 300), 560, 640, 0.92);
 
         // 标题
         ctx.fillStyle = '#b8860b';
@@ -7811,11 +7830,20 @@ class GameManager {
         // 检测鼠标悬停，高亮背景
         const isHover = this.mouseX >= x && this.mouseX <= x + w && this.mouseY >= y && this.mouseY <= y + h;
         const finalBgColor = isHover ? this.lightenColor(bgColor, 0.3) : bgColor;
-        ctx.fillStyle = finalBgColor;
-        ctx.fillRect(x, y, w, h);
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = isHover ? 3 : 2;
-        ctx.strokeRect(x, y, w, h);
+        const usedArtButton = drawArtUiTexture(ctx, 'button_frame', x, y, w, h, isHover ? 1 : 0.92);
+        if (usedArtButton) {
+            ctx.fillStyle = isHover ? 'rgba(255, 230, 150, 0.12)' : 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(x + 6, y + 6, w - 12, h - 12);
+            ctx.strokeStyle = isHover ? '#fff1a8' : 'rgba(255, 255, 255, 0.28)';
+            ctx.lineWidth = isHover ? 3 : 1;
+            ctx.strokeRect(x + 2, y + 2, w - 4, h - 4);
+        } else {
+            ctx.fillStyle = finalBgColor;
+            ctx.fillRect(x, y, w, h);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = isHover ? 3 : 2;
+            ctx.strokeRect(x, y, w, h);
+        }
         ctx.fillStyle = textColor;
         ctx.font = 'bold 24px Arial';
         ctx.textAlign = 'center';
@@ -8369,6 +8397,7 @@ class GameManager {
 
         // 等级文字在经验条上方
         ctx.fillText(`等级 ${this.player.level}`, this.canvas.width / 2, expBarY - 8);
+        drawArtUiTexture(ctx, 'hud_bar_frame', expBarX - 10, expBarY - 12, expBarWidth + 20, expBarHeight + 28, 0.78);
 
         // 背景条
         ctx.fillStyle = '#333';
@@ -8541,6 +8570,7 @@ class GameManager {
         // 全屏半透明黑色遮罩
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        drawArtUiTexture(ctx, 'dialog_panel', this.canvas.width / 2 - 380, 54, 760, 620, 0.86);
 
         // 标题
         ctx.fillStyle = '#b8860b';
@@ -8581,11 +8611,22 @@ class GameManager {
             // 检测鼠标悬停，改变背景和边框
             const isHover = this.mouseX >= x && this.mouseX <= x + boxWidth && this.mouseY >= y && this.mouseY <= y + boxHeight;
             // 暗金色边框 + 深灰色底色
-            ctx.fillStyle = isHover ? '#3a3a3a' : '#2a2a2a';
-            ctx.fillRect(x, y, boxWidth, boxHeight);
-            ctx.strokeStyle = isHover ? '#b8860b' : '#b8860b';
-            ctx.lineWidth = isHover ? 4 : 2;
-            ctx.strokeRect(x, y, boxWidth, boxHeight);
+            const usedCardSkin = drawArtUiTexture(ctx, 'upgrade_card', x, y, boxWidth, boxHeight, isHover ? 1 : 0.9);
+            if (usedCardSkin) {
+                if (isHover) {
+                    ctx.fillStyle = 'rgba(255, 235, 160, 0.08)';
+                    ctx.fillRect(x + 8, y + 8, boxWidth - 16, boxHeight - 16);
+                }
+                ctx.strokeStyle = isHover ? '#fff1a8' : 'rgba(184, 134, 11, 0.7)';
+                ctx.lineWidth = isHover ? 4 : 1;
+                ctx.strokeRect(x + 2, y + 2, boxWidth - 4, boxHeight - 4);
+            } else {
+                ctx.fillStyle = isHover ? '#3a3a3a' : '#2a2a2a';
+                ctx.fillRect(x, y, boxWidth, boxHeight);
+                ctx.strokeStyle = isHover ? '#b8860b' : '#b8860b';
+                ctx.lineWidth = isHover ? 4 : 2;
+                ctx.strokeRect(x, y, boxWidth, boxHeight);
+            }
 
             const optionSkillKey = option.type === 'passive'
                 ? option.skillKey
@@ -8659,6 +8700,7 @@ class GameManager {
         const ctx = this.ctx;
         ctx.fillStyle = '#1a1a1a';
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        drawArtUiTexture(ctx, 'dialog_panel', this.canvas.width / 2 - 330, 118, 660, 430, 0.9);
 
         ctx.fillStyle = '#ff4444';
         ctx.font = 'bold 50px Arial';

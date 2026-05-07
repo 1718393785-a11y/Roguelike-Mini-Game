@@ -2,74 +2,39 @@
   "category": "ui",
   "entries": [
     {
-      "id": "hud",
-      "category": "ui",
-      "level": null,
-      "output": "assets/ui/asset_ui_hud.png",
-      "sourceSize": [
-        1920,
-        1080
-      ],
-      "prompt": "游戏HUD UI设计，顶部状态栏，深色半透明背景，三国古风边框，左侧红色血条带数值，底部蓝色经验条，右上角倒计时 10:00 格式，扁平化游戏UI，透明背景，1920x100区域",
-      "negativePrompt": "3D渲染, 卡通, 低分辨率, 模糊",
-      "requiresTransparency": true,
-      "tags": []
+      "id": "menu_panel",
+      "name": "开始菜单底纹面板",
+      "output": "assets/ui/asset_ui_menu_panel.png",
+      "sourceSize": [1024, 768],
+      "prompt": "2D游戏UI皮肤切片，三国古风与赛博暗金融合，开始菜单半透明面板，暗色金属底纹，金色角标，青蓝能量细线，透明背景 PNG，不包含任何文字，1024x768"
     },
     {
-      "id": "upgrade_panel",
-      "category": "ui",
-      "level": null,
-      "output": "assets/ui/asset_ui_upgrade_panel.png",
-      "sourceSize": [
-        1200,
-        400
-      ],
-      "prompt": "游戏升级选择UI，中央弹窗，三张横向排列的选项卡片，每张卡片有图标、名称、描述，选中高亮，三国古风边框，暗色调背景，升级特效光晕，透明背景，1200x400",
-      "negativePrompt": "3D渲染, 卡通, 低分辨率, 模糊",
-      "requiresTransparency": true,
-      "tags": []
+      "id": "button_frame",
+      "name": "通用按钮边框",
+      "output": "assets/ui/asset_ui_button_frame.png",
+      "sourceSize": [512, 160],
+      "prompt": "2D游戏UI按钮边框，暗金色古风金属边框，青蓝能量内线，深色半透明底，适合开始、返回、刷新按钮，透明背景 PNG，不包含文字，512x160"
     },
     {
-      "id": "wave_announcement",
-      "category": "ui",
-      "level": null,
-      "output": "assets/ui/asset_ui_wave.png",
-      "sourceSize": [
-        1920,
-        300
-      ],
-      "prompt": "游戏关卡波次提示UI，全屏大字横幅，【东岭关】孔秀，震撼入场效果，黑色半透明遮罩，金色大字，Boss警告红色边框，三国古风，全屏居中，1920x300",
-      "negativePrompt": "3D渲染, 卡通, 低分辨率, 模糊",
-      "requiresTransparency": true,
-      "tags": []
+      "id": "upgrade_card",
+      "name": "升级选项卡片边框",
+      "output": "assets/ui/asset_ui_upgrade_card_frame.png",
+      "sourceSize": [512, 768],
+      "prompt": "2D游戏升级卡片UI，暗金三国古风边框，赛博青蓝内描边，深色半透明内容区域，顶部留图标空间，透明背景 PNG，不包含文字，512x768"
     },
     {
-      "id": "start_menu",
-      "category": "ui",
-      "level": null,
-      "output": "assets/ui/asset_ui_start_menu.png",
-      "sourceSize": [
-        1920,
-        1080
-      ],
-      "prompt": "游戏开始菜单UI，三国古风标题，千里走单骑四个大字，关羽青龙偃月刀剪影背景，开始按钮、设置按钮，暗黑金配色，全屏背景，1920x1080，史诗感",
-      "negativePrompt": "3D渲染, 卡通, 低分辨率, 模糊",
-      "requiresTransparency": true,
-      "tags": []
+      "id": "dialog_panel",
+      "name": "弹窗与结算面板",
+      "output": "assets/ui/asset_ui_dialog_panel.png",
+      "sourceSize": [1200, 760],
+      "prompt": "2D游戏弹窗面板UI，暗色半透明大面板，金色边框，角落符纹装饰，青蓝能量线，适合升级弹窗、暂停、结算面板，透明背景 PNG，不包含文字，1200x760"
     },
     {
-      "id": "game_over",
-      "category": "ui",
-      "level": null,
-      "output": "assets/ui/asset_ui_game_over.png",
-      "sourceSize": [
-        1920,
-        1080
-      ],
-      "prompt": "游戏结算UI面板，半透明深色背景，三国古风边框，统计数据：存活时间、击杀数、获得武器、等级，重试/返回按钮，居中布局，1920x1080，数据表格风格",
-      "negativePrompt": "3D渲染, 卡通, 低分辨率, 模糊",
-      "requiresTransparency": true,
-      "tags": []
+      "id": "hud_bar_frame",
+      "name": "HUD条形框",
+      "output": "assets/ui/asset_ui_hud_bar_frame.png",
+      "sourceSize": [768, 96],
+      "prompt": "2D游戏HUD条形框，血条经验条通用边框，暗色金属槽，金色外框，青蓝能量内线，透明背景 PNG，不包含文字和数值，768x96"
     }
   ]
 }
