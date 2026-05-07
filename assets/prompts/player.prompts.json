@@ -1,4 +1,21 @@
 {
   "category": "player",
-  "entries": []
+  "entries": [
+    {
+      "id": "guanyu",
+      "state": "idle",
+      "frames": 2,
+      "output": "assets/player/asset_player_guanyu_idle_01.png",
+      "prompt": "2D top-down 45 degree game sprite, Guan Yu from Three Kingdoms, deep green armor robe, red cape accent, long dark beard, holding Green Dragon Crescent Blade, transparent background, high contrast readable silhouette, dark Three Kingdoms ink style, crisp at 64px game scale",
+      "negativePrompt": "text, watermark, full background, side view, front portrait, chibi, 3D render, blurry edge, cropped body"
+    },
+    {
+      "id": "guanyu",
+      "state": "move",
+      "frames": 4,
+      "output": "assets/player/asset_player_guanyu_move_01.png",
+      "prompt": "4-frame movement strip, same Guan Yu 2D top-down 45 degree game sprite, same green armor robe and red cape, stable proportions, holding Green Dragon Crescent Blade, subtle running lean, transparent background, high contrast readable silhouette, dark Three Kingdoms ink style",
+      "negativePrompt": "text, watermark, scenery, different costume, changing face, inconsistent weapon, side view, front portrait, chibi, 3D render, blurry edge"
+    }
+  ]
 }

@@ -34,7 +34,32 @@
       }
     }
   },
-  "player": {},
+  "player": {
+    "guanyu": {
+      "idle": {
+        "frames": [
+          "player/asset_player_guanyu_idle_01.png",
+          "player/asset_player_guanyu_idle_02.png"
+        ],
+        "sourceSize": [256, 256],
+        "anchor": [0.5, 0.72],
+        "worldSize": 68,
+        "usage": ["world_player"]
+      },
+      "move": {
+        "frames": [
+          "player/asset_player_guanyu_move_01.png",
+          "player/asset_player_guanyu_move_02.png",
+          "player/asset_player_guanyu_move_03.png",
+          "player/asset_player_guanyu_move_04.png"
+        ],
+        "sourceSize": [256, 256],
+        "anchor": [0.5, 0.72],
+        "worldSize": 68,
+        "usage": ["world_player"]
+      }
+    }
+  },
   "enemies": {
     "soldier": { "idle": { "src": "enemies/asset_enemy_soldier.png", "sourceSize": [256, 256], "usage": ["world_enemy"] } },
     "spearman": { "idle": { "src": "enemies/asset_enemy_spearman.png", "sourceSize": [256, 256], "usage": ["world_enemy"] } },

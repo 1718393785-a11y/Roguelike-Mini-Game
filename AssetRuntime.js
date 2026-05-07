@@ -46,6 +46,15 @@
             return this.resolveImage(entry?.frames?.[0] || entry?.src);
         }
 
+        getPlayerSprite(playerId = 'guanyu', state = 'idle', frameIndex = 0) {
+            const states = this.manifest?.player?.[playerId];
+            const entry = states?.[state] || states?.idle;
+            if (!entry) return null;
+            const frames = entry.frames || [];
+            const src = frames.length > 0 ? frames[Math.abs(frameIndex) % frames.length] : entry.src;
+            return this.resolveImage(src);
+        }
+
         resolveImage(src) {
             if (!this.ready || !src) return null;
             const path = this.basePath + src;
