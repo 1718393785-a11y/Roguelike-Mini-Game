@@ -8441,6 +8441,15 @@ class GameManager {
         const wave = Math.floor(this.gameTime / 60);
         ctx.textAlign = 'right';
         ctx.fillText(`第 ${wave + 1} 波`, this.canvas.width - 10, 95);
+        if (hasBoss && drawArtUiTexture(ctx, 'warning_banner', this.canvas.width / 2 - 260, 82, 520, 92, 0.92)) {
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#ffef9a';
+            ctx.font = 'bold 18px Arial';
+            ctx.fillText(`守将来袭：${STAGES[this.currentStage].boss}`, this.canvas.width / 2, 118);
+            ctx.fillStyle = '#ff6b4d';
+            ctx.font = '14px Arial';
+            ctx.fillText(STAGES[this.currentStage].description, this.canvas.width / 2, 143);
+        }
 
         // ========== 最右侧：已获得武器与被动技能状态栏 ==========
         const statusX = this.canvas.width - 180;
@@ -8452,11 +8461,14 @@ class GameManager {
         const finalBoxHeight = 40 + (this.player.weapons.length * itemHeight) + 8 + itemHeight + (10 * itemHeight) + 15;
 
         // 半透明背景
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(statusX - 5, statusY - 25, panelWidth, finalBoxHeight);
-        ctx.strokeStyle = '#666666';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(statusX - 5, statusY - 25, panelWidth, finalBoxHeight);
+        const usedStatusSkin = drawArtUiTexture(ctx, 'status_panel', statusX - 10, statusY - 30, panelWidth + 10, finalBoxHeight + 8, 0.82);
+        if (!usedStatusSkin) {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(statusX - 5, statusY - 25, panelWidth, finalBoxHeight);
+            ctx.strokeStyle = '#666666';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(statusX - 5, statusY - 25, panelWidth, finalBoxHeight);
+        }
 
         // 标题：武器
         ctx.fillStyle = '#b8860b';
@@ -8733,6 +8745,7 @@ class GameManager {
         // 半透明黑色遮罩
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        drawArtUiTexture(ctx, 'pause_panel', this.canvas.width / 2 - 220, this.canvas.height / 2 - 126, 440, 220, 0.9);
 
         // 文字
         ctx.fillStyle = '#ffffff';

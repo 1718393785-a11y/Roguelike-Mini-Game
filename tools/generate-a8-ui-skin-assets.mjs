@@ -14,6 +14,9 @@ const UI_ASSETS = [
   { id: 'upgrade_card', file: 'asset_ui_upgrade_card_frame.png', size: [512, 768], theme: 'card' },
   { id: 'dialog_panel', file: 'asset_ui_dialog_panel.png', size: [1200, 760], theme: 'dialog' },
   { id: 'hud_bar_frame', file: 'asset_ui_hud_bar_frame.png', size: [768, 96], theme: 'hud' },
+  { id: 'status_panel', file: 'asset_ui_status_panel.png', size: [512, 1024], theme: 'status' },
+  { id: 'warning_banner', file: 'asset_ui_warning_banner.png', size: [1200, 220], theme: 'warning' },
+  { id: 'pause_panel', file: 'asset_ui_pause_panel.png', size: [720, 360], theme: 'pause' },
 ];
 
 function hexToRgb(hex) {
@@ -179,12 +182,49 @@ function drawHudTexture(png) {
   drawCornerBrackets(png, 8, 8, w - 16, h - 16, '#f0c46a', 0.52, 0.32);
 }
 
+function drawStatusPanelTexture(png) {
+  const w = png.width;
+  const h = png.height;
+  radialGlow(png, w * 0.5, h * 0.22, w * 0.55, '#18424a', 0.2, 1.1);
+  roundedRect(png, 16, 16, w - 32, h - 32, 10, '#070b10', 0.72, '#9a741f', 0.72, 3);
+  roundedRect(png, 32, 32, w - 64, h - 64, 6, '#081317', 0.2, '#42e9ff', 0.22, 1.5);
+  for (let i = 0; i < 17; i++) {
+    const y = 70 + i * ((h - 140) / 16);
+    line(png, 44, y, w - 44, y, 1, i % 2 ? '#42e9ff' : '#b8860b', 0.08);
+  }
+  drawCornerBrackets(png, 14, 14, w - 28, h - 28, '#f0c46a', 0.58, 0.54);
+}
+
+function drawWarningBannerTexture(png) {
+  const w = png.width;
+  const h = png.height;
+  radialGlow(png, w * 0.5, h * 0.5, w * 0.38, '#9a1620', 0.34, 0.22);
+  radialGlow(png, w * 0.5, h * 0.5, w * 0.46, '#42e9ff', 0.1, 0.2);
+  roundedRect(png, 18, 18, w - 36, h - 36, 14, '#10080a', 0.76, '#c8372d', 0.82, 4);
+  roundedRect(png, 42, 46, w - 84, h - 92, 8, '#120f0f', 0.35, '#f0c46a', 0.52, 2);
+  line(png, 96, h * 0.5, w - 96, h * 0.5, 3, '#f0c46a', 0.28);
+  drawCornerBrackets(png, 18, 18, w - 36, h - 36, '#ffef9a', 0.68, 0.46);
+}
+
+function drawPausePanelTexture(png) {
+  const w = png.width;
+  const h = png.height;
+  radialGlow(png, w * 0.5, h * 0.48, w * 0.42, '#18424a', 0.3, 0.52);
+  roundedRect(png, 16, 16, w - 32, h - 32, 14, '#081014', 0.84, '#b8860b', 0.82, 4);
+  roundedRect(png, 38, 38, w - 76, h - 76, 8, '#05080c', 0.26, '#42e9ff', 0.28, 2);
+  line(png, 120, h * 0.5, w - 120, h * 0.5, 2, '#42e9ff', 0.18);
+  drawCornerBrackets(png, 16, 16, w - 32, h - 32, '#f0c46a', 0.7, 0.58);
+}
+
 function createAsset(spec) {
   const [width, height] = spec.size;
   const png = new PNG({ width, height, colorType: 6 });
   if (spec.theme === 'button') drawButtonTexture(png);
   else if (spec.theme === 'card') drawUpgradeCardTexture(png);
   else if (spec.theme === 'hud') drawHudTexture(png);
+  else if (spec.theme === 'status') drawStatusPanelTexture(png);
+  else if (spec.theme === 'warning') drawWarningBannerTexture(png);
+  else if (spec.theme === 'pause') drawPausePanelTexture(png);
   else drawPanelTexture(png, spec.theme);
   fs.writeFileSync(path.join(uiDir, spec.file), PNG.sync.write(png));
   return png;
@@ -210,6 +250,9 @@ blitScaled(preview, generated[1].png, 454, 78, 320, 100);
 blitScaled(preview, generated[2].png, 834, 36, 250, 375);
 blitScaled(preview, generated[3].png, 70, 356, 620, 392);
 blitScaled(preview, generated[4].png, 760, 538, 360, 45);
+blitScaled(preview, generated[5].png, 812, 420, 210, 330);
+blitScaled(preview, generated[6].png, 420, 208, 430, 80);
+blitScaled(preview, generated[7].png, 806, 600, 300, 150);
 fs.writeFileSync(path.join(proofDir, 'ui-skin-preview.png'), PNG.sync.write(preview));
 
 console.log(JSON.stringify({

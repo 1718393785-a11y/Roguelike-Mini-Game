@@ -181,7 +181,10 @@
     "button_frame": { "src": "ui/asset_ui_button_frame.png", "sourceSize": [512, 160], "usage": ["button"] },
     "upgrade_card": { "src": "ui/asset_ui_upgrade_card_frame.png", "sourceSize": [512, 768], "usage": ["upgrade_panel"] },
     "dialog_panel": { "src": "ui/asset_ui_dialog_panel.png", "sourceSize": [1200, 760], "usage": ["dialog", "game_over"] },
-    "hud_bar_frame": { "src": "ui/asset_ui_hud_bar_frame.png", "sourceSize": [768, 96], "usage": ["hud"] }
+    "hud_bar_frame": { "src": "ui/asset_ui_hud_bar_frame.png", "sourceSize": [768, 96], "usage": ["hud"] },
+    "status_panel": { "src": "ui/asset_ui_status_panel.png", "sourceSize": [512, 1024], "usage": ["hud", "status_panel"] },
+    "warning_banner": { "src": "ui/asset_ui_warning_banner.png", "sourceSize": [1200, 220], "usage": ["hud", "boss_warning"] },
+    "pause_panel": { "src": "ui/asset_ui_pause_panel.png", "sourceSize": [720, 360], "usage": ["pause"] }
   },
   "tiles": {
     "normal": { "src": "tiles/asset_tile_normal.png", "sourceSize": [512, 512], "usage": ["world_background"] },
@@ -252,7 +255,10 @@
         "ui/asset_ui_button_frame.png",
         "ui/asset_ui_upgrade_card_frame.png",
         "ui/asset_ui_dialog_panel.png",
-        "ui/asset_ui_hud_bar_frame.png"
+        "ui/asset_ui_hud_bar_frame.png",
+        "ui/asset_ui_status_panel.png",
+        "ui/asset_ui_warning_banner.png",
+        "ui/asset_ui_pause_panel.png"
       ]
     },
     "weapon_icon_atlas": {

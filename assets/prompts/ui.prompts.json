@@ -35,6 +35,27 @@
       "output": "assets/ui/asset_ui_hud_bar_frame.png",
       "sourceSize": [768, 96],
       "prompt": "2D游戏HUD条形框，血条经验条通用边框，暗色金属槽，金色外框，青蓝能量内线，透明背景 PNG，不包含文字和数值，768x96"
+    },
+    {
+      "id": "status_panel",
+      "name": "右侧状态栏面板",
+      "output": "assets/ui/asset_ui_status_panel.png",
+      "sourceSize": [512, 1024],
+      "prompt": "2D游戏HUD右侧状态栏皮肤，竖向半透明面板，暗色金属底，金色细边框，青蓝分隔线，适合武器与被动技能列表，透明背景 PNG，不包含文字，512x1024"
+    },
+    {
+      "id": "warning_banner",
+      "name": "Boss与波次警告横幅",
+      "output": "assets/ui/asset_ui_warning_banner.png",
+      "sourceSize": [1200, 220],
+      "prompt": "2D游戏Boss警告横幅，暗红半透明底，金色内线，红色警戒边框，三国赛博暗金风，适合Boss入场和波次提示，透明背景 PNG，不包含文字，1200x220"
+    },
+    {
+      "id": "pause_panel",
+      "name": "暂停小面板",
+      "output": "assets/ui/asset_ui_pause_panel.png",
+      "sourceSize": [720, 360],
+      "prompt": "2D游戏暂停界面小面板，暗色半透明底，金色古风角标，青蓝能量细线，透明背景 PNG，不包含文字，720x360"
     }
   ]
 }
