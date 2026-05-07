@@ -53,6 +53,7 @@ if (FEATURE_FLAG_PARAMS.get('artWeaponIcons') === '1') {
 if (FEATURE_FLAG_PARAMS.get('artPreview') === '1') {
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
     FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS = true;
+    FEATURE_FLAGS.ENABLE_ART_EFFECTS = true;
     FEATURE_FLAGS.ENABLE_ART_DEBUG_PREVIEW = true;
 }
 if (FEATURE_FLAG_PARAMS.get('artHud') === '1') {
@@ -90,6 +91,10 @@ if (FEATURE_FLAG_PARAMS.get('artTiles') === '1') {
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
     FEATURE_FLAGS.ENABLE_ART_TILES = true;
 }
+if (FEATURE_FLAG_PARAMS.get('artEffects') === '1') {
+    FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
+    FEATURE_FLAGS.ENABLE_ART_EFFECTS = true;
+}
 
 function getGameSetting(path, fallback) {
     if (!FEATURE_FLAGS.ENABLE_GAME_SETTINGS) return fallback;
@@ -109,6 +114,21 @@ function getNumericGameSetting(path, fallback) {
 function playGameSound(name, volume = 1) {
     if (!FEATURE_FLAGS.ENABLE_AUDIO_MANAGER || !window.audioManager) return false;
     return window.audioManager.play(name, volume);
+}
+
+function drawArtEffectTexture(ctx, effectId, x, y, width, height, angle = 0, alpha = 1, anchorX = 0.5, anchorY = 0.5) {
+    const assets = window.assetRuntime;
+    if (!FEATURE_FLAGS.ENABLE_ART_ASSETS || !FEATURE_FLAGS.ENABLE_ART_EFFECTS || !assets?.getEffectTexture) return false;
+    const image = assets.getEffectTexture(effectId);
+    if (!assets.canDraw?.(image)) return false;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.globalAlpha *= Math.max(0, Math.min(1, alpha));
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(image, -width * anchorX, -height * anchorY, width, height);
+    ctx.restore();
+    return true;
 }
 
 const GameRuntime = (() => {
@@ -1575,13 +1595,17 @@ class Saber extends Weapon {
         // 强制实时锚定：每一帧都用玩家当前坐标渲染，保证碰撞坐标 = 渲染坐标
         const currentX = player.x;
         const currentY = player.y;
+        const radius = this.currentRadius;
+        const alpha = Math.max(0.2, Math.min(1, this.renderTimer / 0.15));
+        if (drawArtEffectTexture(ctx, 'saber_arc', currentX, currentY, radius * 2.45, radius * 2.05, this.aimAngle, alpha, 0.28, 0.5)) {
+            return;
+        }
 
         // 暗金色扇形残影，幽蓝色数据撕裂边缘
         ctx.save();
         ctx.translate(currentX, currentY);
         ctx.rotate(this.aimAngle);
 
-        const radius = this.currentRadius;
         const startAngle = -this.halfAngle;
         const endAngle = this.halfAngle;
 
@@ -1943,6 +1967,20 @@ class Spear extends Weapon {
 
             // 透明度衰减
             const alpha = stab.lifeTimer / 0.25 * 0.9;
+            if (drawArtEffectTexture(
+                ctx,
+                'spear_stab',
+                x,
+                y,
+                this.length * 1.28,
+                Math.max(this.width * 5.8, 90),
+                Math.atan2(dirY, dirX),
+                alpha,
+                0.12,
+                0.5
+            )) {
+                continue;
+            }
 
             ctx.save();
             ctx.translate(x, y);
@@ -2334,6 +2372,11 @@ class CrossbowArrow {
         const angle = Math.atan2(this.vy, this.vx);
         const endX = this.x + Math.cos(angle) * this.length;
         const endY = this.y + Math.sin(angle) * this.length;
+        const textureWidth = Math.max(this.length * 2.35, 52);
+        const textureHeight = this.hasLightningColumn ? 34 : (this.hasLightningAOE ? 30 : 24);
+        if (drawArtEffectTexture(ctx, 'crossbow_arrow', this.x, this.y, textureWidth, textureHeight, angle, 0.95, 0.1, 0.5)) {
+            return;
+        }
 
         // 根据等级改变颜色：有雷电则带蓝色调
         let strokeColor = '#e8e8e8';
@@ -2759,6 +2802,11 @@ class QinggangSword extends Weapon {
         const areaMul = 1 + (player.modifiers.areaMulti || 0);
         const effectiveLength = this.swordLength * areaMul;
         const effectiveHalfWidth = this.swordHalfWidth * areaMul;
+        const maxOrbitRadius = Math.max(...orbitConfigs.map(orbit => orbit.radius));
+        const textureSize = (maxOrbitRadius + effectiveLength) * 2.35;
+        if (drawArtEffectTexture(ctx, 'qinggang_orbit', player.x, player.y, textureSize, textureSize, this.baseAngle, 0.86, 0.5, 0.5)) {
+            return;
+        }
 
         for (const orbit of orbitConfigs) {
             for (let i = 0; i < orbit.count; i++) {
@@ -2965,6 +3013,7 @@ class FireTornado {
     render(ctx) {
         let strokeColor, fillColor, shadowColor;
         let lineWidth = 3;
+        let legacyRandomCalls = 1;
 
         if (this.mode === 'massive_storm') {
             // 巨型聚变风暴：红橙色烈焰
@@ -2987,6 +3036,12 @@ class FireTornado {
 
         const pulse = 0.9 + 0.1 * Math.sin(Date.now() / 40);
         const renderRadius = this.currentRadius * pulse;
+        const artAlpha = this.mode === 'massive_storm' ? 0.88 : 0.74;
+        if (drawArtEffectTexture(ctx, 'taiping_tornado', this.x, this.y, renderRadius * 2.35, renderRadius * 2.35, GameRuntime.frame * 0.035, artAlpha, 0.5, 0.5)) {
+            if (this.mode !== 'massive_storm') legacyRandomCalls++;
+            for (let i = 0; i < legacyRandomCalls - 1; i++) GameRuntime.random();
+            return;
+        }
 
         ctx.save();
         ctx.shadowBlur = 15;
@@ -3245,6 +3300,9 @@ class FireRing {
         const alpha = 0.6 * (this.lifetime / this.totalLifetime) + 0.2;
         const pulse = 0.9 + 0.1 * Math.sin(Date.now() / 30);
         const renderRadius = currentRadius * pulse;
+        if (drawArtEffectTexture(ctx, 'shield_pulse', this.x, this.y, renderRadius * 2.25, renderRadius * 2.25, -GameRuntime.frame * 0.018, alpha, 0.5, 0.5)) {
+            return;
+        }
 
         ctx.save();
         ctx.shadowBlur = 15;
@@ -3537,6 +3595,9 @@ class Shield extends Weapon {
             colorHex = '#4169E1'; // 蓄力深蓝色
         } else {
             colorHex = '#00FFFF'; // 爆发亮青色
+        }
+        if (drawArtEffectTexture(ctx, 'shield_pulse', this.x, this.y, this.currentRadius * 2.25, this.currentRadius * 2.25, GameRuntime.frame * 0.02, alpha, 0.5, 0.5)) {
+            return;
         }
 
         // 开启辉光效果
