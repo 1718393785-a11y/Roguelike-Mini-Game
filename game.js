@@ -4217,57 +4217,81 @@ class Enemy {
         if (!state) return;
         const reach = size * 0.42;
         const arcRadius = state.slashSize;
-        const start = -state.side * (0.95 - state.swingProgress * 0.2);
-        const end = state.side * (0.18 + state.swingProgress * 1.05);
-        const bladeStartX = Math.cos(start) * arcRadius * 0.42 + reach * 0.42;
-        const bladeStartY = Math.sin(start) * arcRadius * 0.42;
-        const bladeEndX = Math.cos(end) * arcRadius + reach;
-        const bladeEndY = Math.sin(end) * arcRadius;
         const bladeAlpha = Math.min(1, state.slashAlpha + 0.22);
+        const trailStart = -state.side * (0.82 - state.swingProgress * 0.1);
+        const trailEnd = state.side * (0.12 + state.swingProgress * 0.82);
+        const bladeAngle = -state.side * 0.78 + state.side * state.swingProgress * 1.55;
+        const hiltX = reach * 0.18;
+        const hiltY = state.side * size * 0.07;
+        const bladeLength = Math.max(22, size * 0.56);
+        const tipX = hiltX + Math.cos(bladeAngle) * bladeLength;
+        const tipY = hiltY + Math.sin(bladeAngle) * bladeLength;
+        const normalX = -Math.sin(bladeAngle) * state.side;
+        const normalY = Math.cos(bladeAngle) * state.side;
+        const curveX = hiltX + Math.cos(bladeAngle) * bladeLength * 0.55 + normalX * size * 0.18;
+        const curveY = hiltY + Math.sin(bladeAngle) * bladeLength * 0.55 + normalY * size * 0.18;
+        const guardX1 = hiltX - normalX * size * 0.18;
+        const guardY1 = hiltY - normalY * size * 0.18;
+        const guardX2 = hiltX + normalX * size * 0.18;
+        const guardY2 = hiltY + normalY * size * 0.18;
+        const gripX = hiltX - Math.cos(bladeAngle) * size * 0.22;
+        const gripY = hiltY - Math.sin(bladeAngle) * size * 0.22;
 
         ctx.save();
         ctx.rotate(state.angle);
+
         ctx.globalCompositeOperation = 'lighter';
-
-        ctx.globalAlpha = state.slashAlpha * 0.36;
-        ctx.fillStyle = 'rgba(255, 188, 48, 0.9)';
-        ctx.beginPath();
-        ctx.moveTo(reach * 0.24, 0);
-        ctx.arc(reach, 0, arcRadius, start, end, state.side < 0);
-        ctx.quadraticCurveTo(reach * 0.48, state.side * arcRadius * 0.32, reach * 0.24, 0);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.globalAlpha = state.slashAlpha;
-        ctx.strokeStyle = 'rgba(255, 230, 118, 0.98)';
-        ctx.lineWidth = Math.max(6, this.size * 0.26);
+        ctx.globalAlpha = state.slashAlpha * 0.28;
+        ctx.strokeStyle = 'rgba(210, 230, 226, 0.5)';
+        ctx.lineWidth = Math.max(2, this.size * 0.1);
         ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.arc(reach, 0, arcRadius, start, end, state.side < 0);
-        ctx.stroke();
-
-        ctx.strokeStyle = 'rgba(255, 255, 230, 0.95)';
-        ctx.lineWidth = Math.max(3, this.size * 0.12);
-        ctx.beginPath();
-        ctx.moveTo(bladeStartX, bladeStartY);
-        ctx.lineTo(bladeEndX, bladeEndY);
+        ctx.arc(reach, 0, arcRadius * 0.84, trailStart, trailEnd, state.side < 0);
         ctx.stroke();
 
         ctx.globalCompositeOperation = 'source-over';
         ctx.globalAlpha = bladeAlpha;
-        ctx.strokeStyle = 'rgba(80, 38, 16, 0.9)';
-        ctx.lineWidth = Math.max(2, this.size * 0.08);
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+
+        // Dark outer silhouette so the blade reads on dark backgrounds.
+        ctx.strokeStyle = 'rgba(46, 32, 28, 0.95)';
+        ctx.lineWidth = Math.max(7, this.size * 0.27);
         ctx.beginPath();
-        ctx.moveTo(reach * 0.12, state.side * this.size * 0.08);
-        ctx.lineTo(bladeStartX, bladeStartY);
+        ctx.moveTo(hiltX, hiltY);
+        ctx.quadraticCurveTo(curveX, curveY, tipX, tipY);
         ctx.stroke();
 
-        ctx.globalAlpha = bladeAlpha;
-        ctx.strokeStyle = 'rgba(255, 236, 154, 0.85)';
-        ctx.lineWidth = Math.max(2, this.size * 0.1);
+        // Steel body of the curved saber.
+        ctx.strokeStyle = 'rgba(218, 232, 228, 0.98)';
+        ctx.lineWidth = Math.max(5, this.size * 0.19);
         ctx.beginPath();
-        ctx.moveTo(reach * 0.2, state.side * this.size * 0.06);
-        ctx.lineTo(bladeEndX, bladeEndY);
+        ctx.moveTo(hiltX, hiltY);
+        ctx.quadraticCurveTo(curveX, curveY, tipX, tipY);
+        ctx.stroke();
+
+        // Bright cutting edge, offset slightly toward the outside of the curve.
+        ctx.strokeStyle = 'rgba(255, 250, 210, 0.92)';
+        ctx.lineWidth = Math.max(2, this.size * 0.07);
+        ctx.beginPath();
+        ctx.moveTo(hiltX + normalX * 2, hiltY + normalY * 2);
+        ctx.quadraticCurveTo(curveX + normalX * 3, curveY + normalY * 3, tipX + normalX * 2, tipY + normalY * 2);
+        ctx.stroke();
+
+        // Guard and grip.
+        ctx.globalAlpha = bladeAlpha;
+        ctx.strokeStyle = 'rgba(216, 154, 52, 0.95)';
+        ctx.lineWidth = Math.max(3, this.size * 0.12);
+        ctx.beginPath();
+        ctx.moveTo(guardX1, guardY1);
+        ctx.lineTo(guardX2, guardY2);
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(93, 48, 28, 0.96)';
+        ctx.lineWidth = Math.max(3, this.size * 0.11);
+        ctx.beginPath();
+        ctx.moveTo(hiltX, hiltY);
+        ctx.lineTo(gripX, gripY);
         ctx.stroke();
         ctx.restore();
     }
