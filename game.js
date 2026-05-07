@@ -3952,12 +3952,12 @@ class Player {
             const frameIndex = Math.floor(GameRuntime.frame / frameSpeed);
             const sprite = assets.getPlayerSprite?.('guanyu', state, frameIndex);
             if (assets.canDraw?.(sprite)) {
-                const renderSize = this.size * 2.75;
+                const renderSize = this.size * 3.35;
                 const angle = Math.atan2(this.facingDirY, this.facingDirX);
                 ctx.save();
                 ctx.translate(this.x, this.y);
                 ctx.rotate(angle);
-                ctx.drawImage(sprite, 42, 34, 178, 178, -renderSize / 2, -renderSize / 2, renderSize, renderSize);
+                ctx.drawImage(sprite, -renderSize / 2, -renderSize / 2, renderSize, renderSize);
                 ctx.restore();
                 ctx.globalAlpha = previousAlpha;
                 return;

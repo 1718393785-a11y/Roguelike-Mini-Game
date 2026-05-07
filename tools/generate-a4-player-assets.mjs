@@ -3,185 +3,224 @@ import path from 'node:path';
 import { PNG } from 'pngjs';
 
 const root = process.cwd();
+const sourcePath = process.env.PLAYER_SHEET_SOURCE
+  || 'D:\\Claude code\\.claude\\games\\时空骇客过五关\\测试\\assets\\player\\player_main.png';
 const playerDir = path.join(root, 'assets', 'player');
 const proofDir = path.join(root, 'assets', 'style-proofs');
 fs.mkdirSync(playerDir, { recursive: true });
 fs.mkdirSync(proofDir, { recursive: true });
 
 const FRAME_SIZE = 256;
-const FRAMES = [
-  { state: 'idle', index: 1, lean: 0, step: 0, cape: 0 },
-  { state: 'idle', index: 2, lean: -2, step: 0, cape: 3 },
-  { state: 'move', index: 1, lean: 5, step: 8, cape: -8 },
-  { state: 'move', index: 2, lean: 0, step: -5, cape: 2 },
-  { state: 'move', index: 3, lean: -5, step: -8, cape: 8 },
-  { state: 'move', index: 4, lean: 0, step: 5, cape: -2 },
+const OUTPUTS = [
+  { out: 'asset_player_guanyu_idle_01.png', crop: { x: 590, y: 32, w: 190, h: 260 } },
+  { out: 'asset_player_guanyu_idle_02.png', crop: { x: 590, y: 32, w: 190, h: 260 }, nudgeX: 1 },
+  { out: 'asset_player_guanyu_move_01.png', crop: { x: 590, y: 32, w: 190, h: 260 } },
+  { out: 'asset_player_guanyu_move_02.png', crop: { x: 790, y: 35, w: 178, h: 248 } },
+  { out: 'asset_player_guanyu_move_03.png', crop: { x: 970, y: 35, w: 180, h: 248 } },
+  { out: 'asset_player_guanyu_move_04.png', crop: { x: 1185, y: 35, w: 180, h: 248 } },
 ];
 
-function rgba(hex, alpha = 255) {
-  const value = hex.replace('#', '');
+function idx(png, x, y) {
+  return (y * png.width + x) * 4;
+}
+
+function copyCrop(source, crop) {
+  const out = new PNG({ width: crop.w, height: crop.h });
+  for (let y = 0; y < crop.h; y++) {
+    for (let x = 0; x < crop.w; x++) {
+      const si = idx(source, crop.x + x, crop.y + y);
+      const di = idx(out, x, y);
+      out.data[di] = source.data[si];
+      out.data[di + 1] = source.data[si + 1];
+      out.data[di + 2] = source.data[si + 2];
+      out.data[di + 3] = source.data[si + 3];
+    }
+  }
+  return out;
+}
+
+function isSheetBackground(png, x, y) {
+  const i = idx(png, x, y);
+  const r = png.data[i];
+  const g = png.data[i + 1];
+  const b = png.data[i + 2];
+  const a = png.data[i + 3];
+  if (a < 16) return true;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const nearBlackBackdrop = max < 78;
+  const blueDark = max < 142 && b >= r + 4 && g >= r - 14;
+  const desaturatedBackdrop = max < 105 && max - min < 40 && b >= r - 4;
+  return nearBlackBackdrop || blueDark || desaturatedBackdrop;
+}
+
+function removeConnectedBackground(png) {
+  const visited = new Uint8Array(png.width * png.height);
+  const queue = [];
+  const push = (x, y) => {
+    if (x < 0 || y < 0 || x >= png.width || y >= png.height) return;
+    const k = y * png.width + x;
+    if (visited[k]) return;
+    if (!isSheetBackground(png, x, y)) return;
+    visited[k] = 1;
+    queue.push([x, y]);
+  };
+
+  for (let x = 0; x < png.width; x++) {
+    push(x, 0);
+    push(x, png.height - 1);
+  }
+  for (let y = 0; y < png.height; y++) {
+    push(0, y);
+    push(png.width - 1, y);
+  }
+
+  for (let head = 0; head < queue.length; head++) {
+    const [x, y] = queue[head];
+    push(x + 1, y);
+    push(x - 1, y);
+    push(x, y + 1);
+    push(x, y - 1);
+  }
+
+  for (let y = 0; y < png.height; y++) {
+    for (let x = 0; x < png.width; x++) {
+      if (visited[y * png.width + x]) png.data[idx(png, x, y) + 3] = 0;
+    }
+  }
+}
+
+function restoreSilhouetteOutline(png) {
+  const originalAlpha = new Uint8Array(png.width * png.height);
+  for (let y = 0; y < png.height; y++) {
+    for (let x = 0; x < png.width; x++) {
+      originalAlpha[y * png.width + x] = png.data[idx(png, x, y) + 3];
+    }
+  }
+  for (let y = 0; y < png.height; y++) {
+    for (let x = 0; x < png.width; x++) {
+      const i = idx(png, x, y);
+      if (png.data[i + 3] !== 0) continue;
+      let nearBody = false;
+      for (let oy = -2; oy <= 2 && !nearBody; oy++) {
+        for (let ox = -2; ox <= 2; ox++) {
+          const nx = x + ox;
+          const ny = y + oy;
+          if (nx < 0 || ny < 0 || nx >= png.width || ny >= png.height) continue;
+          if (originalAlpha[ny * png.width + nx] > 96) {
+            nearBody = true;
+            break;
+          }
+        }
+      }
+      if (nearBody) {
+        png.data[i] = 18;
+        png.data[i + 1] = 12;
+        png.data[i + 2] = 18;
+        png.data[i + 3] = 190;
+      }
+    }
+  }
+}
+
+function alphaBounds(png) {
+  let minX = png.width;
+  let minY = png.height;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y = 0; y < png.height; y++) {
+    for (let x = 0; x < png.width; x++) {
+      if (png.data[idx(png, x, y) + 3] > 24) {
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      }
+    }
+  }
+  return maxX >= minX ? { minX, minY, maxX, maxY } : null;
+}
+
+function sampleNearest(source, x, y) {
+  const sx = Math.max(0, Math.min(source.width - 1, Math.round(x)));
+  const sy = Math.max(0, Math.min(source.height - 1, Math.round(y)));
+  const i = idx(source, sx, sy);
   return [
-    parseInt(value.slice(0, 2), 16),
-    parseInt(value.slice(2, 4), 16),
-    parseInt(value.slice(4, 6), 16),
-    alpha,
+    source.data[i],
+    source.data[i + 1],
+    source.data[i + 2],
+    source.data[i + 3],
   ];
 }
 
-function putPixel(png, x, y, color) {
-  const ix = Math.round(x);
-  const iy = Math.round(y);
-  if (ix < 0 || iy < 0 || ix >= png.width || iy >= png.height) return;
-  const i = (iy * png.width + ix) * 4;
-  const srcA = color[3] / 255;
-  const dstA = png.data[i + 3] / 255;
-  const outA = srcA + dstA * (1 - srcA);
-  if (outA <= 0) return;
-  png.data[i] = Math.round((color[0] * srcA + png.data[i] * dstA * (1 - srcA)) / outA);
-  png.data[i + 1] = Math.round((color[1] * srcA + png.data[i + 1] * dstA * (1 - srcA)) / outA);
-  png.data[i + 2] = Math.round((color[2] * srcA + png.data[i + 2] * dstA * (1 - srcA)) / outA);
-  png.data[i + 3] = Math.round(outA * 255);
+function normalizeFrame(source, nudgeX = 0) {
+  removeConnectedBackground(source);
+  restoreSilhouetteOutline(source);
+  const bounds = alphaBounds(source);
+  const out = new PNG({ width: FRAME_SIZE, height: FRAME_SIZE });
+  if (!bounds) return out;
+
+  const bw = bounds.maxX - bounds.minX + 1;
+  const bh = bounds.maxY - bounds.minY + 1;
+  const scale = Math.min(188 / bw, 218 / bh);
+  const drawW = bw * scale;
+  const drawH = bh * scale;
+  const targetX = (FRAME_SIZE - drawW) / 2 + nudgeX;
+  const targetY = 222 - drawH;
+
+  for (let y = 0; y < FRAME_SIZE; y++) {
+    for (let x = 0; x < FRAME_SIZE; x++) {
+      const sx = bounds.minX + (x - targetX) / scale;
+      const sy = bounds.minY + (y - targetY) / scale;
+      if (sx < bounds.minX || sy < bounds.minY || sx > bounds.maxX || sy > bounds.maxY) continue;
+      const [r, g, b, a] = sampleNearest(source, sx, sy);
+      const di = idx(out, x, y);
+      out.data[di] = r;
+      out.data[di + 1] = g;
+      out.data[di + 2] = b;
+      out.data[di + 3] = a;
+    }
+  }
+  return out;
 }
 
-function fillEllipse(png, cx, cy, rx, ry, color) {
-  for (let y = Math.floor(cy - ry); y <= Math.ceil(cy + ry); y++) {
-    for (let x = Math.floor(cx - rx); x <= Math.ceil(cx + rx); x++) {
-      const dx = (x - cx) / rx;
-      const dy = (y - cy) / ry;
-      if (dx * dx + dy * dy <= 1) putPixel(png, x, y, color);
+function blit(dst, src, ox, oy, scale = 1) {
+  const w = Math.round(src.width * scale);
+  const h = Math.round(src.height * scale);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const [r, g, b, a] = sampleNearest(src, x / scale, y / scale);
+      const di = idx(dst, ox + x, oy + y);
+      dst.data[di] = r;
+      dst.data[di + 1] = g;
+      dst.data[di + 2] = b;
+      dst.data[di + 3] = a;
     }
   }
 }
 
-function pointInPoly(x, y, points) {
-  let inside = false;
-  for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
-    const xi = points[i][0], yi = points[i][1];
-    const xj = points[j][0], yj = points[j][1];
-    const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
-    if (intersect) inside = !inside;
-  }
-  return inside;
+if (!fs.existsSync(sourcePath)) {
+  throw new Error(`Player source sheet not found: ${sourcePath}`);
 }
 
-function fillPoly(png, points, color) {
-  const minX = Math.floor(Math.min(...points.map(p => p[0])));
-  const maxX = Math.ceil(Math.max(...points.map(p => p[0])));
-  const minY = Math.floor(Math.min(...points.map(p => p[1])));
-  const maxY = Math.ceil(Math.max(...points.map(p => p[1])));
-  for (let y = minY; y <= maxY; y++) {
-    for (let x = minX; x <= maxX; x++) {
-      if (pointInPoly(x + 0.5, y + 0.5, points)) putPixel(png, x, y, color);
-    }
-  }
+const sheet = PNG.sync.read(fs.readFileSync(sourcePath));
+const generated = [];
+for (const spec of OUTPUTS) {
+  const frame = normalizeFrame(copyCrop(sheet, spec.crop), spec.nudgeX || 0);
+  fs.writeFileSync(path.join(playerDir, spec.out), PNG.sync.write(frame));
+  generated.push(path.join('assets', 'player', spec.out));
 }
 
-function drawLine(png, x1, y1, x2, y2, width, color) {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const len = Math.max(1, Math.hypot(dx, dy));
-  const steps = Math.ceil(len * 1.4);
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    fillEllipse(png, x1 + dx * t, y1 + dy * t, width / 2, width / 2, color);
-  }
+const proof = new PNG({ width: FRAME_SIZE * OUTPUTS.length, height: FRAME_SIZE });
+for (let i = 0; i < OUTPUTS.length; i++) {
+  const frame = PNG.sync.read(fs.readFileSync(path.join(playerDir, OUTPUTS[i].out)));
+  blit(proof, frame, i * FRAME_SIZE, 0);
 }
-
-function drawFrame(spec) {
-  const png = new PNG({ width: FRAME_SIZE, height: FRAME_SIZE });
-  const cx = 128 + spec.lean;
-  const cy = 132;
-  const shadow = rgba('000000', 70);
-  const outline = rgba('1f1510', 230);
-  const armorDark = rgba('123722', 255);
-  const armorMid = rgba('1f6b36', 255);
-  const armorLight = rgba('6fbf6b', 240);
-  const robe = rgba('235f32', 255);
-  const gold = rgba('d5a640', 255);
-  const skin = rgba('c38652', 255);
-  const beard = rgba('22140f', 255);
-  const steel = rgba('dce8df', 255);
-
-  fillEllipse(png, 128, 188, 44, 13, shadow);
-
-  const backLeg = spec.step >= 0 ? -1 : 1;
-  drawLine(png, cx - 8, cy + 36, cx - 18 * backLeg, cy + 66, 13, outline);
-  drawLine(png, cx + 8, cy + 36, cx + 16 * backLeg, cy + 66, 13, outline);
-  drawLine(png, cx - 8, cy + 36, cx - 18 * backLeg, cy + 66, 9, robe);
-  drawLine(png, cx + 8, cy + 36, cx + 16 * backLeg, cy + 66, 9, robe);
-
-  fillPoly(png, [
-    [cx - 46, cy + 4 + spec.cape],
-    [cx - 20, cy - 34],
-    [cx - 6, cy + 46],
-    [cx - 36, cy + 70],
-  ], rgba('6e221e', 235));
-
-  fillPoly(png, [
-    [cx - 25, cy - 25],
-    [cx + 28, cy - 28],
-    [cx + 34, cy + 36],
-    [cx, cy + 58],
-    [cx - 31, cy + 34],
-  ], outline);
-  fillPoly(png, [
-    [cx - 18, cy - 19],
-    [cx + 22, cy - 21],
-    [cx + 26, cy + 30],
-    [cx, cy + 47],
-    [cx - 23, cy + 29],
-  ], armorMid);
-  fillPoly(png, [
-    [cx - 16, cy - 8],
-    [cx + 20, cy - 10],
-    [cx + 18, cy + 15],
-    [cx - 10, cy + 22],
-  ], armorDark);
-  drawLine(png, cx - 18, cy + 1, cx + 22, cy + 2, 4, gold);
-  drawLine(png, cx - 5, cy - 19, cx - 1, cy + 44, 4, gold);
-  drawLine(png, cx + 20, cy - 12, cx + 27, cy + 28, 3, armorLight);
-
-  drawLine(png, cx - 21, cy - 6, cx - 46, cy + 20 + spec.step * 0.5, 13, outline);
-  drawLine(png, cx + 24, cy - 6, cx + 54, cy + 16 - spec.step * 0.4, 13, outline);
-  drawLine(png, cx - 21, cy - 6, cx - 46, cy + 20 + spec.step * 0.5, 8, armorMid);
-  drawLine(png, cx + 24, cy - 6, cx + 54, cy + 16 - spec.step * 0.4, 8, armorMid);
-
-  drawLine(png, cx + 36, cy + 20, cx + 73, cy - 35, 7, outline);
-  drawLine(png, cx + 36, cy + 20, cx + 73, cy - 35, 4, rgba('7d4b28', 255));
-  drawLine(png, cx + 73, cy - 35, cx + 101, cy - 55, 12, outline);
-  drawLine(png, cx + 73, cy - 35, cx + 101, cy - 55, 7, steel);
-  drawLine(png, cx + 89, cy - 49, cx + 103, cy - 43, 4, gold);
-
-  fillEllipse(png, cx + 5, cy - 48, 20, 22, outline);
-  fillEllipse(png, cx + 5, cy - 50, 15, 17, skin);
-  fillEllipse(png, cx + 1, cy - 31, 13, 17, beard);
-  fillEllipse(png, cx + 10, cy - 56, 4, 4, rgba('f3c28b', 230));
-  drawLine(png, cx - 10, cy - 69, cx + 20, cy - 69, 7, outline);
-  drawLine(png, cx - 8, cy - 69, cx + 18, cy - 69, 4, gold);
-
-  return png;
-}
-
-function writeFrame(spec) {
-  const file = `asset_player_guanyu_${spec.state}_${String(spec.index).padStart(2, '0')}.png`;
-  fs.writeFileSync(path.join(playerDir, file), PNG.sync.write(drawFrame(spec)));
-  return file;
-}
-
-const generated = FRAMES.map(writeFrame);
-const atlas = new PNG({ width: 1536, height: 256 });
-function blit(dst, src, ox, oy) {
-  PNG.bitblt(src, dst, 0, 0, src.width, src.height, ox, oy);
-}
-FRAMES.forEach((spec, index) => {
-  const file = `asset_player_guanyu_${spec.state}_${String(spec.index).padStart(2, '0')}.png`;
-  const src = PNG.sync.read(fs.readFileSync(path.join(playerDir, file)));
-  blit(atlas, src, index * 256, 0);
-});
-fs.writeFileSync(path.join(proofDir, 'player-guanyu-preview.png'), PNG.sync.write(atlas));
+fs.writeFileSync(path.join(proofDir, 'player-guanyu-preview.png'), PNG.sync.write(proof));
 
 console.log(JSON.stringify({
+  source: sourcePath,
   player: 'guanyu',
-  generated: generated.map(file => path.join('assets', 'player', file)),
+  generated,
   proof: 'assets/style-proofs/player-guanyu-preview.png',
 }, null, 2));
