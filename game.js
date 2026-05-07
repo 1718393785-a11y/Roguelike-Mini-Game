@@ -29,6 +29,7 @@ const FEATURE_FLAGS = {
     ENABLE_ART_SKILL_ICONS: false,
     ENABLE_ART_PICKUPS: false,
     ENABLE_ART_ENEMY_SPRITES: false,
+    ENABLE_ART_BOSS_SPRITES: false,
     ENABLE_ART_PLAYER_SPRITE: false,
     ENABLE_ART_EFFECTS: false,
     ENABLE_ART_UI_SKIN: false,
@@ -74,6 +75,11 @@ if (FEATURE_FLAG_PARAMS.get('artA1A2') === '1') {
 if (FEATURE_FLAG_PARAMS.get('artEnemies') === '1') {
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
     FEATURE_FLAGS.ENABLE_ART_ENEMY_SPRITES = true;
+    FEATURE_FLAGS.ENABLE_ART_BOSS_SPRITES = true;
+}
+if (FEATURE_FLAG_PARAMS.get('artBosses') === '1') {
+    FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
+    FEATURE_FLAGS.ENABLE_ART_BOSS_SPRITES = true;
 }
 if (FEATURE_FLAG_PARAMS.get('artPlayer') === '1') {
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
@@ -5016,22 +5022,48 @@ class Boss extends Enemy {
         return this.hp <= 0;
     }
 
+    getArtBossId() {
+        switch (this.stageIndex) {
+            case 0: return 'kongxiu';
+            case 1: return 'hanfu';
+            case 2: return 'bianxi';
+            case 3: return 'wangzhi';
+            case 4: return 'qinqi';
+            default: return 'kongxiu';
+        }
+    }
+
+    tryRenderArtBoss(ctx, assets) {
+        if (!FEATURE_FLAGS.ENABLE_ART_ASSETS || !FEATURE_FLAGS.ENABLE_ART_BOSS_SPRITES || !assets) return false;
+        const sprite = assets.getBossSprite?.(this.getArtBossId(), 'idle');
+        if (!assets.canDraw?.(sprite)) return false;
+        const renderSize = this.size * 1.55;
+        ctx.save();
+        ctx.drawImage(sprite, this.x - renderSize / 2, this.y - renderSize / 2, renderSize, renderSize);
+        ctx.restore();
+        return true;
+    }
+
     render(ctx) {
-        // 大 Boss 渲染为巨型方块
-        ctx.fillStyle = this.color;
-        ctx.fillRect(
-            this.x - this.size / 2,
-            this.y - this.size / 2,
-            this.size,
-            this.size
-        );
+        const usedArtBoss = this.tryRenderArtBoss(ctx, window.gameManager?.assets);
+        if (!usedArtBoss) {
+            // 大 Boss 渲染为巨型方块
+            ctx.fillStyle = this.color;
+            ctx.fillRect(
+                this.x - this.size / 2,
+                this.y - this.size / 2,
+                this.size,
+                this.size
+            );
+        }
 
         // 浮动血条：只有受伤了才显示，满血隐藏
         if (this.hp < this.maxHp) {
-            const barW = this.size;
+            const visualSize = usedArtBoss ? this.size * 1.55 : this.size;
+            const barW = visualSize;
             const barH = 6;
             const barX = this.x - barW / 2;
-            const barY = this.y - this.size / 2 - barH - 2;
+            const barY = this.y - visualSize / 2 - barH - 2;
 
             ctx.fillStyle = '#aa0000';
             ctx.fillRect(barX, barY, barW, barH);
@@ -5043,7 +5075,8 @@ class Boss extends Enemy {
             ctx.fillStyle = '#ffff00';
             ctx.font = 'bold 14px sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText(this.affixes.map(affix => this.getAffixName(affix)).join(' '), this.x, this.y - this.size / 2 - 18);
+            const visualSize = usedArtBoss ? this.size * 1.55 : this.size;
+            ctx.fillText(this.affixes.map(affix => this.getAffixName(affix)).join(' '), this.x, this.y - visualSize / 2 - 18);
         }
     }
 }

@@ -187,6 +187,7 @@ async function main() {
     ENABLE_ART_SKILL_ICONS: Boolean(args['art-skill-icons']),
     ENABLE_ART_PICKUPS: Boolean(args['art-pickups']),
     ENABLE_ART_ENEMY_SPRITES: Boolean(args['art-enemy-sprites']),
+    ENABLE_ART_BOSS_SPRITES: Boolean(args['art-boss-sprites']),
     ENABLE_ART_PLAYER_SPRITE: Boolean(args['art-player-sprite']),
     ENABLE_ART_EFFECTS: Boolean(args['art-effects']),
     ENABLE_ART_UI_SKIN: Boolean(args['art-ui-skin']),
@@ -206,6 +207,11 @@ async function main() {
   if (args['art-enemies']) {
     defaultFlags.ENABLE_ART_ASSETS = true;
     defaultFlags.ENABLE_ART_ENEMY_SPRITES = true;
+    defaultFlags.ENABLE_ART_BOSS_SPRITES = true;
+  }
+  if (args['art-bosses']) {
+    defaultFlags.ENABLE_ART_ASSETS = true;
+    defaultFlags.ENABLE_ART_BOSS_SPRITES = true;
   }
   if (Object.entries(defaultFlags).some(([name, enabled]) => name.startsWith('ENABLE_ART_') && name !== 'ENABLE_ART_ASSETS' && enabled)) {
     defaultFlags.ENABLE_ART_ASSETS = true;

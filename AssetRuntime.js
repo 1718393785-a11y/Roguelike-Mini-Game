@@ -55,6 +55,11 @@
             return this.resolveImage(src);
         }
 
+        getBossSprite(bossId, state = 'idle') {
+            const entry = this.manifest?.bosses?.[bossId]?.[state];
+            return this.resolveImage(entry?.frames?.[0] || entry?.src);
+        }
+
         resolveImage(src) {
             if (!this.ready || !src) return null;
             const path = this.basePath + src;
