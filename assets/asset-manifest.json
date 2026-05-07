@@ -112,7 +112,7 @@
         "frames": ["bosses/asset_boss_qinqi_idle_01.png"],
         "sourceSize": [256, 256],
         "anchor": [0.5, 0.78],
-        "worldSize": 124,
+        "worldSize": 216,
         "usage": ["world_boss"]
       }
     }

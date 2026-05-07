@@ -1,75 +1,60 @@
 {
   "category": "bosses",
+  "styleDirection": {
+    "camera": "俯视45度，2D游戏精灵，透明背景，512x512",
+    "visualBar": "暗黑三国 + 时空骇客，不做Q版，不做简笔小人；角色轮廓必须占画布高度70%以上，装备层次、武器、技能特效要清晰可读",
+    "runtimeRule": "普通Boss世界显示约92px，最终Boss秦琪世界显示216px，设计稿需要保留放大后仍清晰的肩甲、武器和光环轮廓"
+  },
   "entries": [
     {
       "id": "kongxiu",
       "category": "boss",
-      "level": null,
       "output": "assets/bosses/asset_boss_kongxiu_idle_01.png",
-      "sourceSize": [
-        512,
-        512
-      ],
-      "prompt": "Boss角色设计，东岭关守将孔秀，绿色系战甲，随机强化光环环绕，武将姿态，Boss气场，5个随机词缀符文漂浮，俯视45度，三国暗黑风，透明背景，512x512",
-      "negativePrompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "sourceSize": [512, 512],
+      "prompt": "Boss角色设计，东岭关守将孔秀，绿色系厚重战甲，随机强化光环环绕，5个词缀符文漂浮在肩后和刀刃附近，武将站姿沉稳，暗黑三国风融合时空骇客能量纹路，俯视45度，2D游戏精灵，透明背景，512x512，轮廓清晰，角色主体占画布高度70%以上",
+      "negativePrompt": "侧视, 正面, Q版, 卡通小人, 简笔画, 3D渲染, 背景场景, 文字, 水印, 模糊, 单色块, 低细节盔甲",
       "requiresTransparency": true,
-      "tags": []
+      "tags": ["green_armor", "random_affix", "rune_halo"]
     },
     {
       "id": "hanfu",
       "category": "boss",
-      "level": null,
       "output": "assets/bosses/asset_boss_hanfu_idle_01.png",
-      "sourceSize": [
-        512,
-        512
-      ],
-      "prompt": "Boss角色设计，洛阳城守将韩福，紫色系战甲，因果律暗箭特效，手中持弓，必定命中的黑色箭矢环绕，俯视45度，三国暗黑风，透明背景，512x512",
-      "negativePrompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "sourceSize": [512, 512],
+      "prompt": "Boss角色设计，洛阳城守将韩福，紫色系战甲，手持复合长弓，黑色因果暗箭绕身形成弧形轨道，箭簇带紫黑拖尾，姿态像正在锁定玩家，暗黑三国风融合赛博符纹，俯视45度，2D游戏精灵，透明背景，512x512，角色主体占画布高度70%以上",
+      "negativePrompt": "侧视, 正面, Q版, 卡通小人, 3D渲染, 背景场景, 文字, 水印, 模糊, 普通弓兵, 低细节",
       "requiresTransparency": true,
-      "tags": []
+      "tags": ["purple_armor", "tracking_arrow", "ranged_boss"]
     },
     {
       "id": "bianxi",
       "category": "boss",
-      "level": null,
       "output": "assets/bosses/asset_boss_bianxi_idle_01.png",
-      "sourceSize": [
-        512,
-        512
-      ],
-      "prompt": "Boss角色设计，汜水关守将卞喜，蓝色系战甲，时空传送门特效，源源不断涌出的死士虚影，善使流星锤，俯视45度，三国暗黑风，透明背景，512x512",
-      "negativePrompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "sourceSize": [512, 512],
+      "prompt": "Boss角色设计，汜水关守将卞喜，蓝色系战甲，善使流星锤，身后打开半透明时空传送门，门内有死士虚影涌出但不遮挡主体，盔甲带冷蓝能量裂纹，暗黑三国风，俯视45度，2D游戏精灵，透明背景，512x512，角色主体占画布高度70%以上",
+      "negativePrompt": "侧视, 正面, Q版, 卡通小人, 3D渲染, 背景场景, 文字, 水印, 模糊, 普通士兵, 低细节",
       "requiresTransparency": true,
-      "tags": []
+      "tags": ["blue_armor", "portal", "summoner_boss"]
     },
     {
       "id": "wangzhi",
       "category": "boss",
-      "level": null,
       "output": "assets/bosses/asset_boss_wangzhi_idle_01.png",
-      "sourceSize": [
-        512,
-        512
-      ],
-      "prompt": "Boss角色设计，荥阳守将王植，红色火焰战甲，业火焚城地面燃烧特效，火焰随时间蔓延的阵法，手持火刀，俯视45度，三国暗黑风，透明背景，512x512",
-      "negativePrompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "sourceSize": [512, 512],
+      "prompt": "Boss角色设计，荥阳守将王植，红色火焰战甲，手持火刀，脚下有业火阵法圆环和向外蔓延的火纹，肩甲和刀刃有高亮橙红熔岩边，暗黑三国风，俯视45度，2D游戏精灵，透明背景，512x512，角色主体占画布高度70%以上",
+      "negativePrompt": "侧视, 正面, Q版, 卡通小人, 3D渲染, 背景场景, 文字, 水印, 模糊, 普通火焰贴图, 低细节",
       "requiresTransparency": true,
-      "tags": []
+      "tags": ["red_armor", "fire_ring", "burning_city"]
     },
     {
       "id": "qinqi",
-      "category": "boss",
-      "level": null,
+      "category": "final_boss",
       "output": "assets/bosses/asset_boss_qinqi_idle_01.png",
-      "sourceSize": [
-        512,
-        512
-      ],
-      "prompt": "Boss角色设计，黄河渡口守将秦琪，金色混合四色战甲，前四关守将幻影环绕四周，召唤投影能力，综合Boss气场，俯视45度，三国暗黑风，透明背景，512x512",
-      "negativePrompt": "侧视, 正面, Q版, 卡通, 3D渲染, 背景场景, 文字, 水印, 模糊",
+      "sourceSize": [512, 512],
+      "prompt": "最终Boss角色设计，黄河渡口守将秦琪，金色为主并混合绿色、紫色、蓝色、红色四关能量的复合战甲，肩甲更宽、披风更长、武器更夸张，前四关守将幻影环绕四周形成历史投影阵列，身后有黄河渡口时空裂隙光环但背景透明，整体压迫感明显强于前四位Boss，暗黑三国风融合时空骇客符文，俯视45度，2D游戏精灵，透明背景，512x512，主体占画布高度80%以上，轮廓厚重，放大到普通Boss 1.7倍后仍然清晰",
+      "negativePrompt": "侧视, 正面, Q版, 卡通小人, 3D渲染, 背景场景, 文字, 水印, 模糊, 普通士兵, 低细节, 瘦小体型, 单一金色, 没有投影",
       "requiresTransparency": true,
-      "tags": []
+      "tags": ["final_boss", "gold_four_color_armor", "history_projection", "oversized_silhouette"]
     }
   ]
 }

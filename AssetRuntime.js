@@ -60,6 +60,12 @@
             return this.resolveImage(entry?.frames?.[0] || entry?.src);
         }
 
+        getBossWorldSize(bossId, state = 'idle') {
+            const entry = this.manifest?.bosses?.[bossId]?.[state];
+            const size = Number(entry?.worldSize);
+            return Number.isFinite(size) && size > 0 ? size : null;
+        }
+
         getTileTexture(tileId) {
             return this.resolveImage(this.manifest?.tiles?.[tileId]?.src);
         }

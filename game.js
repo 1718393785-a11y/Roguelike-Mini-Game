@@ -5040,9 +5040,11 @@ class Boss extends Enemy {
 
     tryRenderArtBoss(ctx, assets) {
         if (!FEATURE_FLAGS.ENABLE_ART_ASSETS || !FEATURE_FLAGS.ENABLE_ART_BOSS_SPRITES || !assets) return false;
-        const sprite = assets.getBossSprite?.(this.getArtBossId(), 'idle');
+        const bossId = this.getArtBossId();
+        const sprite = assets.getBossSprite?.(bossId, 'idle');
         if (!assets.canDraw?.(sprite)) return false;
-        const renderSize = this.size * 1.55;
+        const renderSize = assets.getBossWorldSize?.(bossId, 'idle') || this.size * 1.55;
+        this.lastArtBossVisualSize = renderSize;
         ctx.save();
         ctx.drawImage(sprite, this.x - renderSize / 2, this.y - renderSize / 2, renderSize, renderSize);
         ctx.restore();
@@ -5064,7 +5066,7 @@ class Boss extends Enemy {
 
         // 浮动血条：只有受伤了才显示，满血隐藏
         if (this.hp < this.maxHp) {
-            const visualSize = usedArtBoss ? this.size * 1.55 : this.size;
+            const visualSize = usedArtBoss ? (this.lastArtBossVisualSize || this.size * 1.55) : this.size;
             const barW = visualSize;
             const barH = 6;
             const barX = this.x - barW / 2;
@@ -5080,7 +5082,7 @@ class Boss extends Enemy {
             ctx.fillStyle = '#ffff00';
             ctx.font = 'bold 14px sans-serif';
             ctx.textAlign = 'center';
-            const visualSize = usedArtBoss ? this.size * 1.55 : this.size;
+            const visualSize = usedArtBoss ? (this.lastArtBossVisualSize || this.size * 1.55) : this.size;
             ctx.fillText(this.affixes.map(affix => this.getAffixName(affix)).join(' '), this.x, this.y - visualSize / 2 - 18);
         }
     }
