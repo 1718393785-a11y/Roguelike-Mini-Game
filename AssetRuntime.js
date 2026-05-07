@@ -70,6 +70,10 @@
             return this.resolveImage(this.manifest?.tiles?.[tileId]?.src);
         }
 
+        getEffectTexture(effectId) {
+            return this.resolveImage(this.manifest?.effects?.[effectId]?.src);
+        }
+
         resolveImage(src) {
             if (!this.ready || !src) return null;
             const path = this.basePath + src;

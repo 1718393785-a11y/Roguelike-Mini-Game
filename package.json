@@ -22,6 +22,7 @@
     "generate:art-a4": "node tools/generate-a4-player-assets.mjs",
     "generate:art-a5": "node tools/generate-a5-boss-assets.mjs",
     "generate:art-a6": "node tools/generate-a6-tile-assets.mjs",
+    "generate:art-a7": "node tools/generate-a7-weapon-progression-effects.mjs",
     "validate:weapons": "tsx src/effects/validateGenericWeapons.ts",
     "validate:effects": "tsx src/effects/validateEffectGeometry.ts",
     "check:architecture": "node tools/check-architecture.mjs",

@@ -1,4 +1,41 @@
 {
   "category": "effects",
-  "entries": []
+  "entries": [
+    {
+      "id": "saber_arc",
+      "name": "百炼环首刀挥砍弧光",
+      "output": "assets/effects/asset_effect_saber_arc.png",
+      "prompt": "2D俯视动作游戏武器特效，三国赛博暗金风，环首刀半月挥砍弧光，金色刀芒叠加青蓝能量边缘，透明背景 PNG，512x512，边缘清晰，高对比度，不包含角色和文字"
+    },
+    {
+      "id": "spear_stab",
+      "name": "青龙偃月枪突刺残影",
+      "output": "assets/effects/asset_effect_spear_stab.png",
+      "prompt": "2D俯视动作游戏武器特效，长枪突刺残影，银白枪锋、青蓝速度线、紫色能量拖尾，透明背景 PNG，512x512，方向感明确，边缘锐利，不包含角色和文字"
+    },
+    {
+      "id": "crossbow_arrow",
+      "name": "诸葛连弩箭矢轨迹",
+      "output": "assets/effects/asset_effect_crossbow_arrow.png",
+      "prompt": "2D俯视动作游戏投射物特效，多发弩箭并行飞行，紫色雷电、金色箭头、青色能量尾迹，透明背景 PNG，512x512，适合游戏运行时叠加，不包含角色和文字"
+    },
+    {
+      "id": "qinggang_orbit",
+      "name": "青釭剑阵环绕剑影",
+      "output": "assets/effects/asset_effect_qinggang_orbit.png",
+      "prompt": "2D俯视动作游戏武器特效，青釭剑阵环绕，六把青蓝剑影围绕圆环旋转，水墨能量轨迹，透明背景 PNG，512x512，清晰可读，不包含角色和文字"
+    },
+    {
+      "id": "shield_pulse",
+      "name": "玄武护阵脉冲",
+      "output": "assets/effects/asset_effect_shield_pulse.png",
+      "prompt": "2D俯视动作游戏防御特效，玄武护盾脉冲，金色护阵、橙红火墙边缘、古代符纹圆环，透明背景 PNG，512x512，适合范围防御技能，不包含角色和文字"
+    },
+    {
+      "id": "taiping_tornado",
+      "name": "太平火卷旋风",
+      "output": "assets/effects/asset_effect_taiping_tornado.png",
+      "prompt": "2D俯视动作游戏范围特效，太平术火焰旋风，红橙火焰旋涡、金色火星、水墨能量流，透明背景 PNG，512x512，动势强烈但轮廓清楚，不包含角色和文字"
+    }
+  ]
 }
