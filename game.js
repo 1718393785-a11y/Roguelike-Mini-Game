@@ -3979,6 +3979,10 @@ class Enemy {
         this.stunTimer = 0;
         this.knockbackResist = 0;
         this.closeAttackVisualTimer = 0;
+        this.closeAttackVisualDuration = 0.38;
+        this.closeAttackVisualCooldown = 0;
+        this.closeAttackVisualGapTimer = 0;
+        this.closeAttackVisualQueuedSwings = 0;
         this.closeAttackVisualAngle = 0;
 
         // Boss/精英首领完全免疫击退和硬直
@@ -4006,9 +4010,7 @@ class Enemy {
 
     // 需传入 canvas 尺寸用于销毁判定
     update(deltaTime, canvasWidth, canvasHeight) {
-        if (this.closeAttackVisualTimer > 0) {
-            this.closeAttackVisualTimer = Math.max(0, this.closeAttackVisualTimer - deltaTime);
-        }
+        this.updateCloseAttackVisual(deltaTime);
 
         if (this.stunTimer > 0) {
             this.stunTimer -= deltaTime;
@@ -4095,6 +4097,40 @@ class Enemy {
         return true;
     }
 
+    updateCloseAttackVisual(deltaTime) {
+        if (this.closeAttackVisualCooldown > 0) {
+            this.closeAttackVisualCooldown = Math.max(0, this.closeAttackVisualCooldown - deltaTime);
+        }
+        if (this.closeAttackVisualTimer > 0) {
+            this.closeAttackVisualTimer = Math.max(0, this.closeAttackVisualTimer - deltaTime);
+            if (this.closeAttackVisualTimer > 0) return;
+            if (this.closeAttackVisualQueuedSwings > 0) {
+                this.closeAttackVisualGapTimer = 0.1;
+                return;
+            }
+            this.closeAttackVisualCooldown = 1.35;
+        }
+        if (this.closeAttackVisualGapTimer > 0) {
+            this.closeAttackVisualGapTimer = Math.max(0, this.closeAttackVisualGapTimer - deltaTime);
+            if (this.closeAttackVisualGapTimer <= 0 && this.closeAttackVisualQueuedSwings > 0) {
+                this.closeAttackVisualQueuedSwings--;
+                this.startCloseAttackVisual(this.closeAttackVisualAngle);
+            }
+            return;
+        }
+
+        const player = window.gameManager?.player;
+        if (!player || !this.canUseCloseAttackVisual() || this.closeAttackVisualCooldown > 0) return;
+
+        const dx = player.x - this.x;
+        const dy = player.y - this.y;
+        const attackRange = this.getCloseAttackVisualRange(player);
+        if (dx * dx + dy * dy <= attackRange * attackRange) {
+            const swings = this.isElite || this.type === 'tiger_guard' ? 2 : 1;
+            this.triggerCloseAttackVisual(Math.atan2(dy, dx), swings);
+        }
+    }
+
     getArtEnemyId() {
         if (this.isBoss || this.isLevelBoss) return null;
         if (this.isProp) return 'prop';
@@ -4124,6 +4160,24 @@ class Enemy {
         return true;
     }
 
+    getCloseAttackVisualRange(player = window.gameManager?.player) {
+        if (!player) return 0;
+        return Math.max(150, (this.size + player.size) * 2.8);
+    }
+
+    triggerCloseAttackVisual(angle, swings = 1) {
+        if (!this.canUseCloseAttackVisual()) return;
+        if (this.closeAttackVisualCooldown > 0) return;
+        if (this.closeAttackVisualTimer > 0 || this.closeAttackVisualGapTimer > 0) return;
+        this.closeAttackVisualQueuedSwings = Math.max(0, Math.min(1, Math.round(swings) - 1));
+        this.startCloseAttackVisual(angle);
+    }
+
+    startCloseAttackVisual(angle) {
+        this.closeAttackVisualAngle = angle;
+        this.closeAttackVisualTimer = this.closeAttackVisualDuration;
+    }
+
     getCloseAttackVisualState() {
         const player = window.gameManager?.player;
         if (!player || !this.canUseCloseAttackVisual()) return null;
@@ -4131,12 +4185,11 @@ class Enemy {
         const dx = player.x - this.x;
         const dy = player.y - this.y;
         const distSq = dx * dx + dy * dy;
-        const attackRange = Math.max(150, (this.size + player.size) * 2.8);
         const hasStoredStrike = this.closeAttackVisualTimer > 0;
-        if (!hasStoredStrike && distSq > attackRange * attackRange) return null;
+        if (!hasStoredStrike) return null;
 
         const dist = Math.sqrt(distSq) || 1;
-        const storedProgress = hasStoredStrike ? 1 - this.closeAttackVisualTimer / 0.42 : null;
+        const storedProgress = 1 - this.closeAttackVisualTimer / this.closeAttackVisualDuration;
         const phase = storedProgress == null ? ((GameRuntime.frame + this.id * 7) % 36) / 36 : 0.2 + Math.min(1, storedProgress) * 0.62;
         const side = this.id % 2 === 0 ? 1 : -1;
         const windup = phase < 0.32 ? phase / 0.32 : Math.max(0, 1 - (phase - 0.32) / 0.68);
@@ -7339,8 +7392,7 @@ class GameManager {
                     enemy.isProp;
 
                 if (!isNoDamageEnemy && typeof enemy.canUseCloseAttackVisual === 'function' && enemy.canUseCloseAttackVisual()) {
-                    enemy.closeAttackVisualTimer = Math.max(enemy.closeAttackVisualTimer || 0, 0.42);
-                    enemy.closeAttackVisualAngle = Math.atan2(this.player.y - enemy.y, this.player.x - enemy.x);
+                    enemy.triggerCloseAttackVisual(Math.atan2(this.player.y - enemy.y, this.player.x - enemy.x), 1);
                 }
 
                 if (isNoDamageEnemy) {
