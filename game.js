@@ -31,6 +31,7 @@ const FEATURE_FLAGS = {
     ENABLE_ART_ENEMY_SPRITES: false,
     ENABLE_ART_BOSS_SPRITES: false,
     ENABLE_ART_PLAYER_SPRITE: false,
+    ENABLE_ART_TILES: false,
     ENABLE_ART_EFFECTS: false,
     ENABLE_ART_UI_SKIN: false,
     ENABLE_ART_PIXI_TEXTURES: false,
@@ -84,6 +85,10 @@ if (FEATURE_FLAG_PARAMS.get('artBosses') === '1') {
 if (FEATURE_FLAG_PARAMS.get('artPlayer') === '1') {
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
     FEATURE_FLAGS.ENABLE_ART_PLAYER_SPRITE = true;
+}
+if (FEATURE_FLAG_PARAMS.get('artTiles') === '1') {
+    FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
+    FEATURE_FLAGS.ENABLE_ART_TILES = true;
 }
 
 function getGameSetting(path, fallback) {
@@ -5892,6 +5897,13 @@ class GameManager {
 
     // 查询给定坐标 + 半径范围内的所有敌人：只检查所在格 + 相邻8格
     queryEnemiesInRange(x, y, radius, outputArray) {
+        this.ensureSpatialGridShape();
+        if (this.gridCols <= 0 || this.gridRows <= 0) {
+            const emptyResult = outputArray || [];
+            emptyResult.length = 0;
+            return emptyResult;
+        }
+
         // 计算查询范围覆盖哪些格子
         const minCol = Math.max(0, Math.floor((x - radius) / this.gridCellSize));
         const maxCol = Math.min(this.gridCols - 1, Math.floor((x + radius) / this.gridCellSize));
@@ -5903,7 +5915,8 @@ class GameManager {
         result.length = 0;
         for (let c = minCol; c <= maxCol; c++) {
             for (let r = minRow; r <= maxRow; r++) {
-                const cell = this.spatialGrid[c][r];
+                const cell = this.spatialGrid[c]?.[r];
+                if (!cell) continue;
                 for (let i = 0; i < cell.length; i++) {
                     result.push(cell[i]);
                 }
@@ -8031,10 +8044,33 @@ class GameManager {
     renderScrollingBackground(ctx, baseColor) {
         ctx.fillStyle = baseColor;
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        if (!FEATURE_FLAGS.ENABLE_SCROLLING_BACKGROUND) return;
-
         const cameraX = FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA ? this.camera.x : 0;
         const cameraY = FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA ? this.camera.y : 0;
+
+        if (FEATURE_FLAGS.ENABLE_ART_ASSETS && FEATURE_FLAGS.ENABLE_ART_TILES && this.assets) {
+            const tileIds = ['normal', 'normal', 'normal', 'fire', 'void'];
+            const tileId = tileIds[this.currentStage] || 'normal';
+            const tile = this.assets.getTileTexture?.(tileId);
+            if (this.assets.canDraw?.(tile)) {
+                const configuredSize = getNumericGameSetting('MAP.ART_TILE_SIZE', 512);
+                const size = configuredSize > 0 ? configuredSize : 512;
+                const offsetX = -((cameraX % size) + size) % size;
+                const offsetY = -((cameraY % size) + size) % size;
+                ctx.save();
+                ctx.globalAlpha = 0.72;
+                for (let x = offsetX - size; x < this.canvas.width + size; x += size) {
+                    for (let y = offsetY - size; y < this.canvas.height + size; y += size) {
+                        ctx.drawImage(tile, x, y, size, size);
+                    }
+                }
+                ctx.globalAlpha = 0.28;
+                ctx.fillStyle = baseColor;
+                ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                ctx.restore();
+            }
+        }
+        if (!FEATURE_FLAGS.ENABLE_SCROLLING_BACKGROUND) return;
+
         const tileSize = getNumericGameSetting('MAP.BACKGROUND_TILE_SIZE', 160);
         const minorGrid = getNumericGameSetting('MAP.BACKGROUND_MINOR_GRID', 40);
         const tileOffsetX = -((cameraX % tileSize) + tileSize) % tileSize;

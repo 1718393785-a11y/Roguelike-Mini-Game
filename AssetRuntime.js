@@ -60,6 +60,10 @@
             return this.resolveImage(entry?.frames?.[0] || entry?.src);
         }
 
+        getTileTexture(tileId) {
+            return this.resolveImage(this.manifest?.tiles?.[tileId]?.src);
+        }
+
         resolveImage(src) {
             if (!this.ready || !src) return null;
             const path = this.basePath + src;

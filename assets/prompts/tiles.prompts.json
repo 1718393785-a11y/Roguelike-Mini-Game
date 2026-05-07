@@ -1,4 +1,20 @@
 {
   "category": "tiles",
-  "entries": []
+  "entries": [
+    {
+      "id": "normal",
+      "source": "D:\\Claude code\\.claude\\games\\时空骇客过五关\\测试\\assets\\map\\普通地图材质.png",
+      "prompt": "6000x6000 large-map ground tile, dark Three Kingdoms sci-fi battlefield floor, cyan circuit grid, readable top-down 2D texture, seamless-feeling 512x512 crop, not too dark"
+    },
+    {
+      "id": "fire",
+      "source": "D:\\Claude code\\.claude\\games\\时空骇客过五关\\测试\\assets\\map\\火焰地图材质.png",
+      "prompt": "late-stage fire battlefield ground tile, ancient war floor with glowing red-orange cracks, top-down 2D texture, 512x512, readable but not noisy"
+    },
+    {
+      "id": "void",
+      "source": "D:\\Claude code\\.claude\\games\\时空骇客过五关\\测试\\assets\\map\\黑洞地图材质.png",
+      "prompt": "final-stage void battlefield ground tile, black hole distortion and purple cyan sci-fi motifs, top-down 2D texture, 512x512, bright enough for silhouettes"
+    }
+  ]
 }

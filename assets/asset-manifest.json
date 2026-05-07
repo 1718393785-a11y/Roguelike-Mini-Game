@@ -140,7 +140,11 @@
   },
   "effects": {},
   "ui": {},
-  "tiles": {},
+  "tiles": {
+    "normal": { "src": "tiles/asset_tile_normal.png", "sourceSize": [512, 512], "usage": ["world_background"] },
+    "fire": { "src": "tiles/asset_tile_fire.png", "sourceSize": [512, 512], "usage": ["world_background"] },
+    "void": { "src": "tiles/asset_tile_void.png", "sourceSize": [512, 512], "usage": ["world_background"] }
+  },
   "atlases": {},
   "styleProofs": {
     "weapon_icon_atlas": {
@@ -190,6 +194,15 @@
         "enemies/asset_enemy_wooden_ox.png",
         "enemies/asset_enemy_tiger_guard.png",
         "enemies/asset_enemy_prop_box.png"
+      ]
+    },
+    "tile_texture_preview": {
+      "src": "style-proofs/tile-texture-preview.png",
+      "sourceSize": [1536, 512],
+      "derived": [
+        "tiles/asset_tile_normal.png",
+        "tiles/asset_tile_fire.png",
+        "tiles/asset_tile_void.png"
       ]
     }
   }
