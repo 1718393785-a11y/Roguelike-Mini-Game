@@ -3946,17 +3946,14 @@ class Player {
 
         const assets = window.gameManager?.assets;
         if (FEATURE_FLAGS.ENABLE_ART_ASSETS && FEATURE_FLAGS.ENABLE_ART_PLAYER_SPRITE && assets) {
-            const moving = this.moveUp || this.moveDown || this.moveLeft || this.moveRight;
-            const state = moving ? 'move' : 'idle';
-            const frameSpeed = moving ? 8 : 18;
+            const state = 'idle';
+            const frameSpeed = 18;
             const frameIndex = Math.floor(GameRuntime.frame / frameSpeed);
             const sprite = assets.getPlayerSprite?.('guanyu', state, frameIndex);
             if (assets.canDraw?.(sprite)) {
-                const renderSize = this.size * 3.35;
-                const angle = Math.atan2(this.facingDirY, this.facingDirX);
+                const renderSize = this.size * 2.75;
                 ctx.save();
                 ctx.translate(this.x, this.y);
-                ctx.rotate(angle);
                 ctx.drawImage(sprite, -renderSize / 2, -renderSize / 2, renderSize, renderSize);
                 ctx.restore();
                 ctx.globalAlpha = previousAlpha;
