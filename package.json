@@ -14,6 +14,7 @@
     "validate:hot-reload:browser": "node tools/run-hot-reload-check.mjs",
     "validate:pixi-renderer": "node tools/run-pixi-renderer-check.mjs",
     "validate:entity-stress": "node tools/run-entity-stress.mjs",
+    "validate:damage": "node tools/run-damage-regression.mjs --browser chrome",
     "validate:assets": "node tools/validate-assets.mjs",
     "normalize:asset-prompts": "node tools/normalize-asset-queue.mjs",
     "generate:art-a1-a2": "node tools/generate-a1-a2-assets.mjs",
