@@ -3978,6 +3978,8 @@ class Enemy {
         this.resonanceDrop = 1;
         this.stunTimer = 0;
         this.knockbackResist = 0;
+        this.closeAttackVisualTimer = 0;
+        this.closeAttackVisualAngle = 0;
 
         // Boss/精英首领完全免疫击退和硬直
         if (this.isBoss || this.isLevelBoss || this.isMiniBoss) {
@@ -4004,6 +4006,10 @@ class Enemy {
 
     // 需传入 canvas 尺寸用于销毁判定
     update(deltaTime, canvasWidth, canvasHeight) {
+        if (this.closeAttackVisualTimer > 0) {
+            this.closeAttackVisualTimer = Math.max(0, this.closeAttackVisualTimer - deltaTime);
+        }
+
         if (this.stunTimer > 0) {
             this.stunTimer -= deltaTime;
             return true; // 返回存活状态
@@ -4125,39 +4131,90 @@ class Enemy {
         const dx = player.x - this.x;
         const dy = player.y - this.y;
         const distSq = dx * dx + dy * dy;
-        const attackRange = Math.max(46, (this.size + player.size) * 1.15);
-        if (distSq > attackRange * attackRange) return null;
+        const attackRange = Math.max(150, (this.size + player.size) * 2.8);
+        const hasStoredStrike = this.closeAttackVisualTimer > 0;
+        if (!hasStoredStrike && distSq > attackRange * attackRange) return null;
 
         const dist = Math.sqrt(distSq) || 1;
-        const phase = ((GameRuntime.frame + this.id * 5) % 24) / 24;
-        const windup = phase < 0.45 ? phase / 0.45 : Math.max(0, 1 - (phase - 0.45) / 0.55);
-        const strike = Math.sin(phase * Math.PI);
+        const storedProgress = hasStoredStrike ? 1 - this.closeAttackVisualTimer / 0.42 : null;
+        const phase = storedProgress == null ? ((GameRuntime.frame + this.id * 7) % 36) / 36 : 0.2 + Math.min(1, storedProgress) * 0.62;
+        const side = this.id % 2 === 0 ? 1 : -1;
+        const windup = phase < 0.32 ? phase / 0.32 : Math.max(0, 1 - (phase - 0.32) / 0.68);
+        const swingProgress = phase < 0.2 ? 0 : Math.min(1, (phase - 0.2) / 0.62);
+        const swingEase = swingProgress <= 0 ? 0 : Math.sin(Math.min(1, swingProgress) * Math.PI * 0.5);
+        const recovery = phase > 0.7 ? Math.min(1, (phase - 0.7) / 0.3) : 0;
+        const strike = Math.sin(Math.min(1, swingProgress) * Math.PI);
+        const spriteTilt = side * ((phase < 0.32 ? -0.28 * windup : -0.28 + swingEase * 0.72) - recovery * 0.2);
         return {
-            angle: Math.atan2(dy, dx),
+            angle: hasStoredStrike ? this.closeAttackVisualAngle : Math.atan2(dy, dx),
             dirX: dx / dist,
             dirY: dy / dist,
-            lunge: windup * Math.min(10, this.size * 0.45),
-            scale: 1 + strike * 0.08,
-            slashAlpha: phase > 0.28 && phase < 0.62 ? 0.62 : 0,
-            slashSize: Math.max(16, this.size * 0.9),
+            side,
+            phase,
+            lunge: Math.min(14, this.size * 0.58) * Math.max(windup, strike),
+            scale: 1 + strike * 0.1,
+            spriteTilt,
+            slashAlpha: 0.32 + 0.58 * Math.max(0, strike),
+            slashSize: Math.max(24, this.size * 1.25),
+            swingProgress,
         };
     }
 
     drawCloseAttackSlash(ctx, state, size) {
-        if (!state || state.slashAlpha <= 0) return;
-        const reach = size * 0.34;
+        if (!state) return;
+        const reach = size * 0.42;
+        const arcRadius = state.slashSize;
+        const start = -state.side * (0.95 - state.swingProgress * 0.2);
+        const end = state.side * (0.18 + state.swingProgress * 1.05);
+        const bladeStartX = Math.cos(start) * arcRadius * 0.42 + reach * 0.42;
+        const bladeStartY = Math.sin(start) * arcRadius * 0.42;
+        const bladeEndX = Math.cos(end) * arcRadius + reach;
+        const bladeEndY = Math.sin(end) * arcRadius;
+        const bladeAlpha = Math.min(1, state.slashAlpha + 0.22);
+
         ctx.save();
         ctx.rotate(state.angle);
+        ctx.globalCompositeOperation = 'lighter';
+
+        ctx.globalAlpha = state.slashAlpha * 0.36;
+        ctx.fillStyle = 'rgba(255, 188, 48, 0.9)';
+        ctx.beginPath();
+        ctx.moveTo(reach * 0.24, 0);
+        ctx.arc(reach, 0, arcRadius, start, end, state.side < 0);
+        ctx.quadraticCurveTo(reach * 0.48, state.side * arcRadius * 0.32, reach * 0.24, 0);
+        ctx.closePath();
+        ctx.fill();
+
         ctx.globalAlpha = state.slashAlpha;
-        ctx.strokeStyle = 'rgba(255, 226, 120, 0.95)';
-        ctx.lineWidth = Math.max(3, this.size * 0.16);
+        ctx.strokeStyle = 'rgba(255, 230, 118, 0.98)';
+        ctx.lineWidth = Math.max(6, this.size * 0.26);
+        ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.arc(reach, 0, state.slashSize, -0.72, 0.72);
+        ctx.arc(reach, 0, arcRadius, start, end, state.side < 0);
         ctx.stroke();
-        ctx.strokeStyle = 'rgba(255, 255, 230, 0.75)';
-        ctx.lineWidth = Math.max(1.5, this.size * 0.07);
+
+        ctx.strokeStyle = 'rgba(255, 255, 230, 0.95)';
+        ctx.lineWidth = Math.max(3, this.size * 0.12);
         ctx.beginPath();
-        ctx.arc(reach, 0, state.slashSize * 0.74, -0.55, 0.55);
+        ctx.moveTo(bladeStartX, bladeStartY);
+        ctx.lineTo(bladeEndX, bladeEndY);
+        ctx.stroke();
+
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.globalAlpha = bladeAlpha;
+        ctx.strokeStyle = 'rgba(80, 38, 16, 0.9)';
+        ctx.lineWidth = Math.max(2, this.size * 0.08);
+        ctx.beginPath();
+        ctx.moveTo(reach * 0.12, state.side * this.size * 0.08);
+        ctx.lineTo(bladeStartX, bladeStartY);
+        ctx.stroke();
+
+        ctx.globalAlpha = bladeAlpha;
+        ctx.strokeStyle = 'rgba(255, 236, 154, 0.85)';
+        ctx.lineWidth = Math.max(2, this.size * 0.1);
+        ctx.beginPath();
+        ctx.moveTo(reach * 0.2, state.side * this.size * 0.06);
+        ctx.lineTo(bladeEndX, bladeEndY);
         ctx.stroke();
         ctx.restore();
     }
@@ -4174,6 +4231,7 @@ class Enemy {
         const renderY = this.y + (attackState ? attackState.dirY * attackState.lunge : 0);
         ctx.translate(renderX, renderY);
         if (rotation) ctx.rotate(rotation);
+        if (attackState) ctx.rotate(attackState.spriteTilt);
         if (attackState) ctx.scale(attackState.scale, attackState.scale);
         ctx.drawImage(sprite, -size / 2, -size / 2, size, size);
         ctx.restore();
@@ -7279,6 +7337,11 @@ class GameManager {
                     enemy instanceof WoodenOxEnemy ||
                     enemy instanceof ArcherEnemy ||
                     enemy.isProp;
+
+                if (!isNoDamageEnemy && typeof enemy.canUseCloseAttackVisual === 'function' && enemy.canUseCloseAttackVisual()) {
+                    enemy.closeAttackVisualTimer = Math.max(enemy.closeAttackVisualTimer || 0, 0.42);
+                    enemy.closeAttackVisualAngle = Math.atan2(this.player.y - enemy.y, this.player.x - enemy.x);
+                }
 
                 if (isNoDamageEnemy) {
                     if (enemy.isProp) {
