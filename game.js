@@ -5855,9 +5855,10 @@ class GameManager {
             y <= this.camera.y + this.canvas.height + margin;
     }
 
-    ensureSpatialGridShape() {
+    ensureSpatialGridShape({ clear = true } = {}) {
         const shapeKey = `${this.gridCols}x${this.gridRows}`;
         if (this.spatialGridShapeKey === shapeKey) {
+            if (!clear) return;
             for (let c = 0; c < this.gridCols; c++) {
                 const column = this.spatialGrid[c];
                 for (let r = 0; r < this.gridRows; r++) {
@@ -5899,7 +5900,7 @@ class GameManager {
 
     // 查询给定坐标 + 半径范围内的所有敌人：只检查所在格 + 相邻8格
     queryEnemiesInRange(x, y, radius, outputArray) {
-        this.ensureSpatialGridShape();
+        this.ensureSpatialGridShape({ clear: false });
         if (this.gridCols <= 0 || this.gridRows <= 0) {
             const emptyResult = outputArray || [];
             emptyResult.length = 0;
