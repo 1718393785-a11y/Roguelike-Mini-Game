@@ -2537,6 +2537,44 @@ class LevelUpNovaEffect {
     }
 }
 
+class PropBreakEffect {
+    constructor(x, y, size = 48) {
+        this.x = x;
+        this.y = y;
+        this.size = size;
+        this.maxLifetime = 0.32;
+        this.lifetime = this.maxLifetime;
+    }
+
+    update(deltaTime) {
+        this.lifetime -= deltaTime;
+        return this.lifetime > 0;
+    }
+
+    render(ctx) {
+        const progress = 1 - this.lifetime / this.maxLifetime;
+        const alpha = Math.max(0, this.lifetime / this.maxLifetime);
+        const renderSize = this.size * (1.05 + progress * 0.35);
+        if (drawArtEffectTexture(ctx, 'prop_break', this.x, this.y, renderSize, renderSize, progress * 0.25, alpha, 0.5, 0.5)) {
+            return;
+        }
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = '#d8903f';
+        ctx.lineWidth = 3;
+        for (let i = 0; i < 8; i++) {
+            const angle = (Math.PI * 2 * i) / 8;
+            const inner = this.size * 0.12;
+            const outer = this.size * (0.28 + progress * 0.34);
+            ctx.beginPath();
+            ctx.moveTo(this.x + Math.cos(angle) * inner, this.y + Math.sin(angle) * inner);
+            ctx.lineTo(this.x + Math.cos(angle) * outer, this.y + Math.sin(angle) * outer);
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+}
+
 // 浮动文字特效 - 用于暴击跳字等
 class FloatingText {
     constructor(x, y, text, color, size = 20) {
@@ -6921,6 +6959,7 @@ class GameManager {
     handleEnemyDeath(enemy, index) {
         // 可破坏物（木箱）走专属掉落逻辑
         if (enemy.isProp) {
+            this.lightningEffects.push(new PropBreakEffect(enemy.x, enemy.y, enemy.size * 2.25));
             enemy.generateDrop(this.pickups);
         } else {
             this.trySpawnPickup(enemy);
