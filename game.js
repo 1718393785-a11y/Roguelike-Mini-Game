@@ -8927,25 +8927,31 @@ class GameManager {
 
     renderGameOver() {
         const ctx = this.ctx;
-        ctx.fillStyle = '#1a1a1a';
+        const panelX = this.canvas.width / 2 - 330;
+        const panelY = 118;
+        ctx.fillStyle = '#100c0c';
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        drawArtUiTexture(ctx, 'dialog_panel', this.canvas.width / 2 - 330, 118, 660, 430, 0.9);
+        drawArtUiTexture(ctx, 'dialog_panel', panelX, panelY, 660, 430, 0.92);
 
-        ctx.fillStyle = '#ff4444';
+        ctx.shadowBlur = 14;
+        ctx.shadowColor = 'rgba(255, 64, 64, 0.72)';
+        ctx.fillStyle = '#ff5a4f';
         ctx.font = 'bold 50px Arial';
         ctx.textAlign = 'center';
         ctx.fillText('GAME OVER', this.canvas.width / 2, 180);
+        ctx.shadowBlur = 0;
 
-        ctx.fillStyle = '#cccccc';
+        ctx.fillStyle = '#f0d8b8';
         ctx.font = '24px Arial';
         ctx.fillText('历史推演失败', this.canvas.width / 2, 240);
         ctx.fillText('回到最初的开始吧~', this.canvas.width / 2, 275);
+        ctx.fillStyle = '#d8c4a0';
         ctx.fillText(`存活时间：${Math.floor(this.gameTime / 60)}:${(Math.floor(this.gameTime % 60)).toString().padStart(2, '0')}`, this.canvas.width / 2, 315);
         ctx.fillText(`本局等级：${this.player.level}`, this.canvas.width / 2, 355);
         ctx.fillText(`获得历史残响：${this.currentResonance}`, this.canvas.width / 2, 395);
         ctx.fillText(`累计残响：${this.totalResonance}`, this.canvas.width / 2, 435);
 
-        ctx.fillStyle = '#ffa500';
+        ctx.fillStyle = '#ffc66d';
         ctx.font = '20px Arial';
         ctx.fillText('按 R 键重新跃迁', this.canvas.width / 2, 480);
 
@@ -9016,11 +9022,17 @@ class GameManager {
         const boxY = cy - boxH / 2;
 
         // 面板底色与边框
-        ctx.fillStyle = 'rgba(0, 20, 20, 0.85)';
-        ctx.fillRect(boxX, boxY, boxW, boxH);
-        ctx.strokeStyle = '#00ffcc';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(boxX, boxY, boxW, boxH);
+        const usedVictoryPanel = drawArtUiTexture(ctx, 'dialog_panel', boxX - 24, boxY - 24, boxW + 48, boxH + 48, 0.88);
+        if (usedVictoryPanel) {
+            ctx.fillStyle = 'rgba(0, 22, 24, 0.58)';
+            ctx.fillRect(boxX + 16, boxY + 14, boxW - 32, boxH - 28);
+        } else {
+            ctx.fillStyle = 'rgba(0, 20, 20, 0.85)';
+            ctx.fillRect(boxX, boxY, boxW, boxH);
+            ctx.strokeStyle = '#00ffcc';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(boxX, boxY, boxW, boxH);
+        }
 
         // 左侧青色高亮装饰条
         ctx.fillStyle = '#00ffcc';
