@@ -6650,6 +6650,7 @@ class GameManager {
         // 纯黑背景
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, w, h);
+        drawArtUiTexture(ctx, 'dialog_panel', cx - 420, cy - 190, 840, 340, 0.72);
 
         // 1秒淡入，1秒淡出
         let alpha = 1;
@@ -6662,7 +6663,7 @@ class GameManager {
         ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
 
         // 渲染大标题
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#ffd36a';
         ctx.font = 'bold 48px "楷体", "STKaiti", serif';
         ctx.textAlign = 'center';
         ctx.fillText(this.cutsceneTitle, cx, cy - 100);
@@ -6677,7 +6678,7 @@ class GameManager {
         // 渲染跳过提示
         ctx.globalAlpha = 1.0; // 提示字不受淡入淡出影响
         ctx.font = '16px Arial';
-        ctx.fillStyle = '#666666';
+        ctx.fillStyle = '#a99662';
         ctx.fillText('按 ENTER 跳过', cx, h - 50);
 
         // 判定动画结束或玩家跳过
@@ -7960,8 +7961,9 @@ class GameManager {
         const ctx = this.ctx;
         ctx.fillStyle = '#1a1a1a';
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        drawArtUiTexture(ctx, 'menu_panel', this.canvas.width / 2 - 360, 18, 720, 116, 0.68);
 
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#ffd36a';
         ctx.font = 'bold 30px Arial';
         ctx.textAlign = 'center';
         ctx.fillText('历史残响 基因重塑', this.canvas.width / 2, 50);
@@ -7993,25 +7995,34 @@ class GameManager {
                 this.mouseY <= y + itemHeight - 10
             );
 
-            // 背景 - 相对于 baseX，悬停时提亮
-            if (isHover && canAfford) {
-                ctx.fillStyle = '#3a3a4a';
-            } else if (isHover) {
-                ctx.fillStyle = '#3a3a3a';
+            const usedCardSkin = drawArtUiTexture(ctx, 'upgrade_card', baseX, y, boxWidth, itemHeight - 10, isHover ? 0.96 : 0.82);
+            if (usedCardSkin) {
+                ctx.fillStyle = canAfford ? 'rgba(30, 54, 82, 0.26)' : 'rgba(8, 8, 8, 0.38)';
+                ctx.fillRect(baseX + 8, y + 8, boxWidth - 16, itemHeight - 26);
+                ctx.strokeStyle = isHover ? '#fff1a8' : (canAfford ? 'rgba(184, 134, 11, 0.62)' : 'rgba(120, 120, 120, 0.36)');
+                ctx.lineWidth = isHover ? 3 : 1;
+                ctx.strokeRect(baseX + 2, y + 2, boxWidth - 4, itemHeight - 14);
             } else {
-                ctx.fillStyle = canAfford ? '#2a2a3a' : '#2a2a2a';
-            }
-            ctx.fillRect(baseX, y, boxWidth, itemHeight - 10);
+                // 背景 - 相对于 baseX，悬停时提亮
+                if (isHover && canAfford) {
+                    ctx.fillStyle = '#3a3a4a';
+                } else if (isHover) {
+                    ctx.fillStyle = '#3a3a3a';
+                } else {
+                    ctx.fillStyle = canAfford ? '#2a2a3a' : '#2a2a2a';
+                }
+                ctx.fillRect(baseX, y, boxWidth, itemHeight - 10);
 
-            // 边框 - 悬停时高亮金色
-            if (isHover) {
-                ctx.strokeStyle = '#b8860b';
-                ctx.lineWidth = 3;
-            } else {
-                ctx.strokeStyle = canAfford ? '#4169e1' : '#555';
-                ctx.lineWidth = 2;
+                // 边框 - 悬停时高亮金色
+                if (isHover) {
+                    ctx.strokeStyle = '#b8860b';
+                    ctx.lineWidth = 3;
+                } else {
+                    ctx.strokeStyle = canAfford ? '#4169e1' : '#555';
+                    ctx.lineWidth = 2;
+                }
+                ctx.strokeRect(baseX, y, boxWidth, itemHeight - 10);
             }
-            ctx.strokeRect(baseX, y, boxWidth, itemHeight - 10);
 
             // ========== 左侧：文字区域 ==========
             ctx.fillStyle = '#ffffff';
