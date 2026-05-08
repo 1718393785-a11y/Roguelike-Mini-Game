@@ -5206,6 +5206,12 @@ class Projectile {
     }
 
     render(ctx) {
+        if (this.isEnemyProjectile) {
+            const angle = Math.atan2(this.dy, this.dx);
+            if (drawArtEffectTexture(ctx, 'boss_affix_arrow', this.x, this.y, this.size * 7.2, this.size * 2.8, angle, 0.92, 0.5, 0.5)) {
+                return;
+            }
+        }
         ctx.fillStyle = this.color;
         ctx.fillRect(
             this.x - this.size / 2,
@@ -5239,6 +5245,14 @@ class BossProjectile extends Projectile {
         this.dx /= len;
         this.dy /= len;
         return super.update(deltaTime, canvasWidth, canvasHeight);
+    }
+
+    render(ctx) {
+        const angle = Math.atan2(this.dy, this.dx);
+        if (drawArtEffectTexture(ctx, 'boss_dark_arrow', this.x, this.y, this.size * 8.4, this.size * 3.1, angle, 0.95, 0.5, 0.5)) {
+            return;
+        }
+        super.render(ctx);
     }
 }
 
@@ -8251,6 +8265,11 @@ class GameManager {
         // 渲染火焰区域（半透明橙色）- 王植Boss技能
         for (const fire of this.fireAreas) {
             if (!this.isCircleInCameraView(fire.x, fire.y, fire.radius, 50)) continue;
+            const effectId = fire.isBossAffix ? 'boss_scorched_ground' : 'boss_fire_area';
+            const rotation = (GameRuntime.frame * (fire.isBossAffix ? -0.01 : 0.012)) + ((fire.x + fire.y) % 31) * 0.01;
+            if (drawArtEffectTexture(ctx, effectId, fire.x, fire.y, fire.radius * 2.45, fire.radius * 2.05, rotation, fire.isBossAffix ? 0.58 : 0.64, 0.5, 0.5)) {
+                continue;
+            }
             ctx.fillStyle = 'rgba(255, 100, 0, 0.4)';
             ctx.beginPath();
             ctx.arc(fire.x, fire.y, fire.radius, 0, Math.PI * 2);

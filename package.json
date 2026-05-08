@@ -26,6 +26,7 @@
     "generate:art-a8": "node tools/generate-a8-ui-skin-assets.mjs",
     "generate:art-a9": "node tools/generate-a9-enemy-animation-assets.mjs",
     "generate:art-a10": "node tools/generate-a10-boss-animation-assets.mjs",
+    "generate:art-a11": "node tools/generate-a11-boss-effect-assets.mjs",
     "validate:weapons": "tsx src/effects/validateGenericWeapons.ts",
     "validate:effects": "tsx src/effects/validateEffectGeometry.ts",
     "check:architecture": "node tools/check-architecture.mjs",

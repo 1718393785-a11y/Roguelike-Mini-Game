@@ -236,7 +236,11 @@
     "crossbow_arrow": { "src": "effects/asset_effect_crossbow_arrow.png", "sourceSize": [512, 512], "usage": ["weapon_effect"] },
     "qinggang_orbit": { "src": "effects/asset_effect_qinggang_orbit.png", "sourceSize": [512, 512], "usage": ["weapon_effect"] },
     "shield_pulse": { "src": "effects/asset_effect_shield_pulse.png", "sourceSize": [512, 512], "usage": ["weapon_effect"] },
-    "taiping_tornado": { "src": "effects/asset_effect_taiping_tornado.png", "sourceSize": [512, 512], "usage": ["weapon_effect"] }
+    "taiping_tornado": { "src": "effects/asset_effect_taiping_tornado.png", "sourceSize": [512, 512], "usage": ["weapon_effect"] },
+    "boss_dark_arrow": { "src": "effects/asset_effect_boss_dark_arrow.png", "sourceSize": [512, 512], "usage": ["boss_effect"] },
+    "boss_affix_arrow": { "src": "effects/asset_effect_boss_affix_arrow.png", "sourceSize": [512, 512], "usage": ["boss_effect"] },
+    "boss_fire_area": { "src": "effects/asset_effect_boss_fire_area.png", "sourceSize": [512, 512], "usage": ["boss_effect"] },
+    "boss_scorched_ground": { "src": "effects/asset_effect_boss_scorched_ground.png", "sourceSize": [512, 512], "usage": ["boss_effect"] }
   },
   "ui": {
     "menu_panel": { "src": "ui/asset_ui_menu_panel.png", "sourceSize": [1024, 768], "usage": ["menu", "panel"] },
@@ -423,6 +427,16 @@
         "bosses/asset_boss_qinqi_idle_02.png",
         "bosses/asset_boss_qinqi_cast_01.png",
         "bosses/asset_boss_qinqi_cast_02.png"
+      ]
+    },
+    "boss_effect_preview": {
+      "src": "style-proofs/boss-effect-preview.png",
+      "sourceSize": [1024, 512],
+      "derived": [
+        "effects/asset_effect_boss_dark_arrow.png",
+        "effects/asset_effect_boss_affix_arrow.png",
+        "effects/asset_effect_boss_fire_area.png",
+        "effects/asset_effect_boss_scorched_ground.png"
       ]
     },
     "tile_texture_preview": {
