@@ -2453,6 +2453,9 @@ class LightningAOEEffect {
     render(ctx) {
         // 闪烁半透明浅蓝色圆
         const alpha = this.lifetime / 0.15 * 0.6;
+        if (drawArtEffectTexture(ctx, 'lightning_aoe', this.x, this.y, this.radius * 2.45, this.radius * 2.45, GameRuntime.frame * 0.03, alpha, 0.5, 0.5)) {
+            return;
+        }
         ctx.save();
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
@@ -2482,6 +2485,9 @@ class LightningColumnEffect {
 
     render(ctx) {
         const alpha = this.lifetime / 0.15 * 0.8;
+        if (drawArtEffectTexture(ctx, 'lightning_column', this.x, ctx.canvas.height / 2, this.radius * 3.2, ctx.canvas.height * 1.18, 0, alpha, 0.5, 0.5)) {
+            return;
+        }
         // 亮蓝色竖直矩形贯穿屏幕
         ctx.save();
         ctx.fillStyle = `rgba(135, 206, 250, ${alpha})`;
@@ -2516,6 +2522,9 @@ class LevelUpNovaEffect {
 
     render(ctx) {
         const alpha = this.lifetime / this.maxLifetime;
+        if (drawArtEffectTexture(ctx, 'levelup_nova', this.x, this.y, this.currentRadius * 2.35, this.currentRadius * 2.35, GameRuntime.frame * 0.012, alpha, 0.5, 0.5)) {
+            return;
+        }
         ctx.save();
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.currentRadius, 0, Math.PI * 2);

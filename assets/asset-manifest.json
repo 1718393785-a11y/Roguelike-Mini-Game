@@ -240,7 +240,10 @@
     "boss_dark_arrow": { "src": "effects/asset_effect_boss_dark_arrow.png", "sourceSize": [512, 512], "usage": ["boss_effect"] },
     "boss_affix_arrow": { "src": "effects/asset_effect_boss_affix_arrow.png", "sourceSize": [512, 512], "usage": ["boss_effect"] },
     "boss_fire_area": { "src": "effects/asset_effect_boss_fire_area.png", "sourceSize": [512, 512], "usage": ["boss_effect"] },
-    "boss_scorched_ground": { "src": "effects/asset_effect_boss_scorched_ground.png", "sourceSize": [512, 512], "usage": ["boss_effect"] }
+    "boss_scorched_ground": { "src": "effects/asset_effect_boss_scorched_ground.png", "sourceSize": [512, 512], "usage": ["boss_effect"] },
+    "lightning_aoe": { "src": "effects/asset_effect_lightning_aoe.png", "sourceSize": [512, 512], "usage": ["combat_feedback"] },
+    "lightning_column": { "src": "effects/asset_effect_lightning_column.png", "sourceSize": [512, 512], "usage": ["combat_feedback"] },
+    "levelup_nova": { "src": "effects/asset_effect_levelup_nova.png", "sourceSize": [512, 512], "usage": ["combat_feedback"] }
   },
   "ui": {
     "menu_panel": { "src": "ui/asset_ui_menu_panel.png", "sourceSize": [1024, 768], "usage": ["menu", "panel"] },
@@ -437,6 +440,15 @@
         "effects/asset_effect_boss_affix_arrow.png",
         "effects/asset_effect_boss_fire_area.png",
         "effects/asset_effect_boss_scorched_ground.png"
+      ]
+    },
+    "combat_feedback_preview": {
+      "src": "style-proofs/combat-feedback-preview.png",
+      "sourceSize": [768, 256],
+      "derived": [
+        "effects/asset_effect_lightning_aoe.png",
+        "effects/asset_effect_lightning_column.png",
+        "effects/asset_effect_levelup_nova.png"
       ]
     },
     "tile_texture_preview": {
