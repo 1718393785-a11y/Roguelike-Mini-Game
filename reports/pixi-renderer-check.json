@@ -7,11 +7,13 @@
     "failed": false,
     "frames": 8,
     "spritesCreated": 1,
+    "presentationMode": "canvas-frame-texture",
     "renderer": 1,
     "activeSprites": 1,
-    "pooledSprites": 0
+    "pooledSprites": 0,
+    "presentingCanvasFrame": true
   },
   "screenshotPath": "D:\\Codex\\Codex game design\\zero_downtime_refactor\\reports\\pixi-overlay.png",
-  "visiblePixels": 900,
+  "visiblePixels": 921600,
   "ok": true
 }

@@ -89,7 +89,7 @@ async function main() {
     await page.evaluate(() => window.gameManager.startNewGame());
     await page.waitForFunction(() => {
       const status = window.__PIXI_RENDERER_STATUS__;
-      return status?.ready && status.frames > 0 && status.activeSprites > 0;
+      return status?.ready && status.frames > 0 && status.presentingCanvasFrame && status.activeSprites > 0;
     }, null, { timeout: 10000 });
 
     const screenshotDir = path.join(rootDir, 'reports');
@@ -106,7 +106,14 @@ async function main() {
       status,
       screenshotPath,
       visiblePixels,
-      ok: Boolean(status?.ready && status.frames > 0 && status.activeSprites > 0 && visiblePixels > 0),
+      ok: Boolean(
+        status?.ready &&
+        status.frames > 0 &&
+        status.presentingCanvasFrame &&
+        status.presentationMode === 'canvas-frame-texture' &&
+        status.activeSprites > 0 &&
+        visiblePixels > 0
+      ),
     };
     await fs.writeFile(path.join(rootDir, 'reports', 'pixi-renderer-check.json'), JSON.stringify(report, null, 2));
     if (!report.ok) throw new Error('Pixi renderer check failed. See reports/pixi-renderer-check.json.');

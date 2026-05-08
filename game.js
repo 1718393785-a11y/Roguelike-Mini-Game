@@ -5725,6 +5725,8 @@ class LegacyPixiOverlayRenderer {
         this.frameCount = 0;
         this.availableSprites = [];
         this.activeSprites = [];
+        this.sourceCanvas = null;
+        this.screenSprite = null;
         this.canvas = document.createElement('canvas');
         this.canvas.id = 'pixiOverlayCanvas';
         this.canvas.setAttribute('aria-hidden', 'true');
@@ -5735,6 +5737,7 @@ class LegacyPixiOverlayRenderer {
             failed: false,
             frames: 0,
             spritesCreated: 0,
+            presentationMode: 'pending',
         };
         this.init();
     }
@@ -5765,10 +5768,12 @@ class LegacyPixiOverlayRenderer {
                     ...window.__PIXI_RENDERER_STATUS__,
                     ready: true,
                     renderer: this.app.renderer?.type || 'unknown',
+                    presentationMode: 'canvas-frame-texture',
                 };
             })
             .catch(error => {
                 this.failed = true;
+                if (this.sourceCanvas) this.sourceCanvas.style.opacity = '';
                 window.__PIXI_RENDERER_STATUS__ = {
                     ...window.__PIXI_RENDERER_STATUS__,
                     failed: true,
@@ -5818,12 +5823,13 @@ class LegacyPixiOverlayRenderer {
     render(game) {
         if (!this.ready || this.failed) return;
         this.releaseAllSprites();
-        this.drawEntity(game.player, 0xb8860b, game.player?.size || 30);
+        this.presentCanvasFrame(game);
+        this.drawEntity(game.player, 0xb8860b, game.player?.size || 30, 0);
         for (const enemy of game.enemies || []) {
-            this.drawEntity(enemy, enemy.isBoss ? 0x7b2cff : (enemy.isElite ? 0xffa500 : 0x8b0000), enemy.size || 18);
+            this.drawEntity(enemy, enemy.isBoss ? 0x7b2cff : (enemy.isElite ? 0xffa500 : 0x8b0000), enemy.size || 18, 0);
         }
         for (const projectile of game.projectiles || []) {
-            this.drawEntity(projectile, projectile.isEnemyProjectile ? 0xff4444 : 0xe8e8e8, projectile.size || 8);
+            this.drawEntity(projectile, projectile.isEnemyProjectile ? 0xff4444 : 0xe8e8e8, projectile.size || 8, 0);
         }
         this.app.render();
         this.frameCount++;
@@ -5832,10 +5838,29 @@ class LegacyPixiOverlayRenderer {
             frames: this.frameCount,
             activeSprites: this.activeSprites.length,
             pooledSprites: this.availableSprites.length,
+            presentingCanvasFrame: Boolean(this.screenSprite),
         };
     }
 
-    drawEntity(entity, tint, fallbackSize) {
+    presentCanvasFrame(game) {
+        if (!game?.canvas || !this.pixi || !this.app) return;
+        if (!this.screenSprite) {
+            this.sourceCanvas = game.canvas;
+            const texture = this.pixi.Texture.from(game.canvas);
+            this.screenSprite = new this.pixi.Sprite(texture);
+            this.screenSprite.x = 0;
+            this.screenSprite.y = 0;
+            this.screenSprite.width = window.innerWidth;
+            this.screenSprite.height = window.innerHeight;
+            this.app.stage.addChildAt(this.screenSprite, 0);
+            game.canvas.style.opacity = '0';
+        }
+        this.screenSprite.width = window.innerWidth;
+        this.screenSprite.height = window.innerHeight;
+        this.screenSprite.texture?.source?.update?.();
+    }
+
+    drawEntity(entity, tint, fallbackSize, alpha = 0.85) {
         if (!entity || typeof entity.x !== 'number' || typeof entity.y !== 'number') return;
         const size = entity.size || fallbackSize;
         const camera = FEATURE_FLAGS.ENABLE_LARGE_MAP_CAMERA && window.gameManager?.camera
@@ -5857,10 +5882,11 @@ class LegacyPixiOverlayRenderer {
         sprite.width = size;
         sprite.height = size;
         sprite.tint = tint;
-        sprite.alpha = 0.85;
+        sprite.alpha = alpha;
     }
 
     destroy() {
+        if (this.sourceCanvas) this.sourceCanvas.style.opacity = '';
         this.releaseAllSprites();
         this.app?.destroy(false);
         this.canvas.remove();
