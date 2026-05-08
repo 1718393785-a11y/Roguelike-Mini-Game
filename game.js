@@ -8816,13 +8816,21 @@ class GameManager {
         this.rerollButtonRect = { x: rerollX, y: rerollY, width: rerollButtonW, height: rerollButtonH };
 
         const hasRerolls = this.player.rerolls > 0;
-        // 按钮背景
-        ctx.fillStyle = hasRerolls ? (this.rerollHover ? '#3a3a3a' : '#2a2a2a') : '#1a1a1a';
-        ctx.fillRect(rerollX, rerollY, rerollButtonW, rerollButtonH);
-        // 边框
-        ctx.strokeStyle = hasRerolls ? '#b8860b' : '#444444';
-        ctx.lineWidth = hasRerolls ? 3 : 2;
-        ctx.strokeRect(rerollX, rerollY, rerollButtonW, rerollButtonH);
+        const usedRerollButton = drawArtUiTexture(ctx, 'button_frame', rerollX, rerollY, rerollButtonW, rerollButtonH, hasRerolls ? (this.rerollHover ? 1 : 0.92) : 0.48);
+        if (usedRerollButton) {
+            ctx.fillStyle = hasRerolls
+                ? (this.rerollHover ? 'rgba(255, 235, 160, 0.12)' : 'rgba(9, 18, 28, 0.16)')
+                : 'rgba(0, 0, 0, 0.42)';
+            ctx.fillRect(rerollX + 7, rerollY + 7, rerollButtonW - 14, rerollButtonH - 14);
+        } else {
+            // 按钮背景
+            ctx.fillStyle = hasRerolls ? (this.rerollHover ? '#3a3a3a' : '#2a2a2a') : '#1a1a1a';
+            ctx.fillRect(rerollX, rerollY, rerollButtonW, rerollButtonH);
+            // 边框
+            ctx.strokeStyle = hasRerolls ? '#b8860b' : '#444444';
+            ctx.lineWidth = hasRerolls ? 3 : 2;
+            ctx.strokeRect(rerollX, rerollY, rerollButtonW, rerollButtonH);
+        }
         // 文字
         ctx.fillStyle = hasRerolls ? '#ffffff' : '#666666';
         ctx.font = 'bold 16px Arial';
