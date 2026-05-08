@@ -5848,7 +5848,7 @@ class LegacyPixiOverlayRenderer {
         if (window.__PIXI_BUNDLE_PROMISE__) return window.__PIXI_BUNDLE_PROMISE__;
         window.__PIXI_BUNDLE_PROMISE__ = new Promise((resolve, reject) => {
             const script = document.createElement('script');
-            script.src = 'node_modules/pixi.js/dist/pixi.min.js';
+            script.src = 'vendor/pixi.min.js';
             script.onload = resolve;
             script.onerror = () => reject(new Error('Failed to load local PixiJS bundle.'));
             document.head.appendChild(script);
