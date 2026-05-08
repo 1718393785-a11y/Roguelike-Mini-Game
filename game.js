@@ -4411,10 +4411,15 @@ class Enemy {
     tryRenderArtEnemy(ctx, assets, rotation = 0) {
         if (!FEATURE_FLAGS.ENABLE_ART_ASSETS || !FEATURE_FLAGS.ENABLE_ART_ENEMY_SPRITES || !assets) return false;
         const enemyId = this.getArtEnemyId();
-        const sprite = enemyId ? assets.getEnemySprite(enemyId) : null;
+        const attackState = this.getCloseAttackVisualState();
+        const isStaticProp = this.isProp || enemyId === 'prop';
+        const artState = attackState ? 'attack' : (isStaticProp ? 'idle' : 'move');
+        const frameIndex = attackState
+            ? Math.min(1, Math.floor(Math.max(0, Math.min(0.999, attackState.swingProgress)) * 2))
+            : Math.floor((GameRuntime.frame + this.id * 7) / 12);
+        const sprite = enemyId ? assets.getEnemySprite(enemyId, artState, frameIndex) : null;
         if (!assets.canDraw(sprite)) return false;
         const size = this.getArtRenderSize();
-        const attackState = this.getCloseAttackVisualState();
         ctx.save();
         const renderX = this.x + (attackState ? attackState.dirX * attackState.lunge : 0);
         const renderY = this.y + (attackState ? attackState.dirY * attackState.lunge : 0);

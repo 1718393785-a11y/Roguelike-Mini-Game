@@ -41,9 +41,12 @@
             return this.resolveImage(this.manifest?.pickups?.[pickupId]?.src);
         }
 
-        getEnemySprite(enemyId, state = 'idle') {
-            const entry = this.manifest?.enemies?.[enemyId]?.[state];
-            return this.resolveImage(entry?.frames?.[0] || entry?.src);
+        getEnemySprite(enemyId, state = 'idle', frameIndex = 0) {
+            const states = this.manifest?.enemies?.[enemyId];
+            const entry = states?.[state] || states?.idle;
+            const frames = entry?.frames || [];
+            const src = frames.length > 0 ? frames[Math.abs(frameIndex) % frames.length] : entry?.src;
+            return this.resolveImage(src);
         }
 
         getPlayerSprite(playerId = 'guanyu', state = 'idle', frameIndex = 0) {
