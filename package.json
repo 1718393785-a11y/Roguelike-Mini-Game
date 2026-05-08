@@ -17,6 +17,7 @@
     "validate:entity-stress": "node tools/run-entity-stress.mjs",
     "validate:damage": "node tools/run-damage-regression.mjs --browser chrome",
     "validate:assets": "node tools/validate-assets.mjs",
+    "validate:release": "node tools/run-release-readiness.mjs",
     "normalize:asset-prompts": "node tools/normalize-asset-queue.mjs",
     "generate:art-a1-a2": "node tools/generate-a1-a2-assets.mjs",
     "generate:art-a3": "node tools/generate-a3-enemy-assets.mjs",
