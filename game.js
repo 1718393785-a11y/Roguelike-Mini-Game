@@ -8450,15 +8450,16 @@ class GameManager {
         const hpPercent = this.player.hp / this.player.maxHp;
 
         // 深色背景框
-        ctx.fillStyle = '#222222';
+        const usedHpFrame = drawArtUiTexture(ctx, 'hud_bar_frame', barX - 8, barY - 10, barW + 16, barH + 22, 0.78);
+        ctx.fillStyle = usedHpFrame ? 'rgba(22, 11, 10, 0.72)' : '#222222';
         ctx.fillRect(barX, barY, barW, barH);
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(barX, barY, barW, barH);
 
         // 绿色血量填充
         ctx.fillStyle = hpPercent > 0.5 ? '#00aa00' : hpPercent > 0.25 ? '#aaaa00' : '#aa0000';
         ctx.fillRect(barX + 2, barY + 2, (barW - 4) * hpPercent, barH - 4);
+        ctx.strokeStyle = usedHpFrame ? 'rgba(255, 229, 154, 0.7)' : '#ffffff';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(barX, barY, barW, barH);
 
         // 文字：当前HP / 最大HP
         ctx.fillStyle = '#ffffff';
@@ -8475,11 +8476,17 @@ class GameManager {
         // 暂停按钮
         const pauseX = this.canvas.width - buttonW - padding;
         const pauseY = padding;
-        ctx.fillStyle = this.gameState === GAME_STATE.PAUSED ? '#ff8c00' : '#333';
-        ctx.fillRect(pauseX, pauseY, buttonW, buttonH);
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(pauseX, pauseY, buttonW, buttonH);
+        const usedPauseButton = drawArtUiTexture(ctx, 'button_frame', pauseX, pauseY, buttonW, buttonH, this.gameState === GAME_STATE.PAUSED ? 1 : 0.9);
+        if (usedPauseButton) {
+            ctx.fillStyle = this.gameState === GAME_STATE.PAUSED ? 'rgba(255, 158, 56, 0.18)' : 'rgba(10, 18, 24, 0.18)';
+            ctx.fillRect(pauseX + 5, pauseY + 5, buttonW - 10, buttonH - 10);
+        } else {
+            ctx.fillStyle = this.gameState === GAME_STATE.PAUSED ? '#ff8c00' : '#333';
+            ctx.fillRect(pauseX, pauseY, buttonW, buttonH);
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(pauseX, pauseY, buttonW, buttonH);
+        }
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 14px Arial';
         ctx.textAlign = 'center';
@@ -8488,10 +8495,16 @@ class GameManager {
         // 重启按钮
         const restartX = this.canvas.width - 2 * buttonW - 2 * padding;
         const restartY = padding;
-        ctx.fillStyle = '#4a4a4a';
-        ctx.fillRect(restartX, restartY, buttonW, buttonH);
-        ctx.strokeStyle = '#fff';
-        ctx.strokeRect(restartX, restartY, buttonW, buttonH);
+        const usedRestartButton = drawArtUiTexture(ctx, 'button_frame', restartX, restartY, buttonW, buttonH, 0.9);
+        if (usedRestartButton) {
+            ctx.fillStyle = 'rgba(10, 18, 24, 0.18)';
+            ctx.fillRect(restartX + 5, restartY + 5, buttonW - 10, buttonH - 10);
+        } else {
+            ctx.fillStyle = '#4a4a4a';
+            ctx.fillRect(restartX, restartY, buttonW, buttonH);
+            ctx.strokeStyle = '#fff';
+            ctx.strokeRect(restartX, restartY, buttonW, buttonH);
+        }
         ctx.fillStyle = '#fff';
         ctx.fillText('主页', restartX + buttonW/2, restartY + buttonH/2 + 5);
 
