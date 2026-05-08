@@ -5125,12 +5125,20 @@ class Boss extends Enemy {
     tryRenderArtBoss(ctx, assets) {
         if (!FEATURE_FLAGS.ENABLE_ART_ASSETS || !FEATURE_FLAGS.ENABLE_ART_BOSS_SPRITES || !assets) return false;
         const bossId = this.getArtBossId();
-        const sprite = assets.getBossSprite?.(bossId, 'idle');
+        const castWindow = 0.55;
+        const isCasting = this.chargeTimer > 0 || (this.abilityCooldown - this.abilityTimer) <= castWindow;
+        const artState = isCasting ? 'cast' : 'idle';
+        const frameIndex = isCasting
+            ? Math.floor((GameRuntime.frame % 18) / 9)
+            : Math.floor((GameRuntime.frame + this.id * 5) / 24);
+        const sprite = assets.getBossSprite?.(bossId, artState, frameIndex);
         if (!assets.canDraw?.(sprite)) return false;
         const renderSize = assets.getBossWorldSize?.(bossId, 'idle') || this.size * 1.55;
         this.lastArtBossVisualSize = renderSize;
         ctx.save();
-        ctx.drawImage(sprite, this.x - renderSize / 2, this.y - renderSize / 2, renderSize, renderSize);
+        const pulse = isCasting ? 1 + Math.sin(GameRuntime.frame * 0.32) * 0.035 : 1;
+        const drawSize = renderSize * pulse;
+        ctx.drawImage(sprite, this.x - drawSize / 2, this.y - drawSize / 2, drawSize, drawSize);
         ctx.restore();
         return true;
     }

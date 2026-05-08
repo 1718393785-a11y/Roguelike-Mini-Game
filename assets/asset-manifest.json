@@ -130,7 +130,14 @@
   "bosses": {
     "kongxiu": {
       "idle": {
-        "frames": ["bosses/asset_boss_kongxiu_idle_01.png"],
+        "frames": ["bosses/asset_boss_kongxiu_idle_01.png", "bosses/asset_boss_kongxiu_idle_02.png"],
+        "sourceSize": [256, 256],
+        "anchor": [0.5, 0.78],
+        "worldSize": 92,
+        "usage": ["world_boss"]
+      },
+      "cast": {
+        "frames": ["bosses/asset_boss_kongxiu_cast_01.png", "bosses/asset_boss_kongxiu_cast_02.png"],
         "sourceSize": [256, 256],
         "anchor": [0.5, 0.78],
         "worldSize": 92,
@@ -139,7 +146,14 @@
     },
     "hanfu": {
       "idle": {
-        "frames": ["bosses/asset_boss_hanfu_idle_01.png"],
+        "frames": ["bosses/asset_boss_hanfu_idle_01.png", "bosses/asset_boss_hanfu_idle_02.png"],
+        "sourceSize": [256, 256],
+        "anchor": [0.5, 0.78],
+        "worldSize": 92,
+        "usage": ["world_boss"]
+      },
+      "cast": {
+        "frames": ["bosses/asset_boss_hanfu_cast_01.png", "bosses/asset_boss_hanfu_cast_02.png"],
         "sourceSize": [256, 256],
         "anchor": [0.5, 0.78],
         "worldSize": 92,
@@ -148,7 +162,14 @@
     },
     "bianxi": {
       "idle": {
-        "frames": ["bosses/asset_boss_bianxi_idle_01.png"],
+        "frames": ["bosses/asset_boss_bianxi_idle_01.png", "bosses/asset_boss_bianxi_idle_02.png"],
+        "sourceSize": [256, 256],
+        "anchor": [0.5, 0.78],
+        "worldSize": 92,
+        "usage": ["world_boss"]
+      },
+      "cast": {
+        "frames": ["bosses/asset_boss_bianxi_cast_01.png", "bosses/asset_boss_bianxi_cast_02.png"],
         "sourceSize": [256, 256],
         "anchor": [0.5, 0.78],
         "worldSize": 92,
@@ -157,7 +178,14 @@
     },
     "wangzhi": {
       "idle": {
-        "frames": ["bosses/asset_boss_wangzhi_idle_01.png"],
+        "frames": ["bosses/asset_boss_wangzhi_idle_01.png", "bosses/asset_boss_wangzhi_idle_02.png"],
+        "sourceSize": [256, 256],
+        "anchor": [0.5, 0.78],
+        "worldSize": 92,
+        "usage": ["world_boss"]
+      },
+      "cast": {
+        "frames": ["bosses/asset_boss_wangzhi_cast_01.png", "bosses/asset_boss_wangzhi_cast_02.png"],
         "sourceSize": [256, 256],
         "anchor": [0.5, 0.78],
         "worldSize": 92,
@@ -166,7 +194,14 @@
     },
     "qinqi": {
       "idle": {
-        "frames": ["bosses/asset_boss_qinqi_idle_01.png"],
+        "frames": ["bosses/asset_boss_qinqi_idle_01.png", "bosses/asset_boss_qinqi_idle_02.png"],
+        "sourceSize": [256, 256],
+        "anchor": [0.5, 0.78],
+        "worldSize": 216,
+        "usage": ["world_boss"]
+      },
+      "cast": {
+        "frames": ["bosses/asset_boss_qinqi_cast_01.png", "bosses/asset_boss_qinqi_cast_02.png"],
         "sourceSize": [256, 256],
         "anchor": [0.5, 0.78],
         "worldSize": 216,
@@ -367,6 +402,27 @@
         "enemies/asset_enemy_tiger_guard_move_02.png",
         "enemies/asset_enemy_tiger_guard_attack_01.png",
         "enemies/asset_enemy_tiger_guard_attack_02.png"
+      ]
+    },
+    "boss_animation_preview": {
+      "src": "style-proofs/boss-animation-preview.png",
+      "sourceSize": [640, 384],
+      "derived": [
+        "bosses/asset_boss_kongxiu_idle_02.png",
+        "bosses/asset_boss_kongxiu_cast_01.png",
+        "bosses/asset_boss_kongxiu_cast_02.png",
+        "bosses/asset_boss_hanfu_idle_02.png",
+        "bosses/asset_boss_hanfu_cast_01.png",
+        "bosses/asset_boss_hanfu_cast_02.png",
+        "bosses/asset_boss_bianxi_idle_02.png",
+        "bosses/asset_boss_bianxi_cast_01.png",
+        "bosses/asset_boss_bianxi_cast_02.png",
+        "bosses/asset_boss_wangzhi_idle_02.png",
+        "bosses/asset_boss_wangzhi_cast_01.png",
+        "bosses/asset_boss_wangzhi_cast_02.png",
+        "bosses/asset_boss_qinqi_idle_02.png",
+        "bosses/asset_boss_qinqi_cast_01.png",
+        "bosses/asset_boss_qinqi_cast_02.png"
       ]
     },
     "tile_texture_preview": {

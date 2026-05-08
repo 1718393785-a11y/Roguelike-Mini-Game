@@ -58,9 +58,12 @@
             return this.resolveImage(src);
         }
 
-        getBossSprite(bossId, state = 'idle') {
-            const entry = this.manifest?.bosses?.[bossId]?.[state];
-            return this.resolveImage(entry?.frames?.[0] || entry?.src);
+        getBossSprite(bossId, state = 'idle', frameIndex = 0) {
+            const states = this.manifest?.bosses?.[bossId];
+            const entry = states?.[state] || states?.idle;
+            const frames = entry?.frames || [];
+            const src = frames.length > 0 ? frames[Math.abs(frameIndex) % frames.length] : entry?.src;
+            return this.resolveImage(src);
         }
 
         getBossWorldSize(bossId, state = 'idle') {
