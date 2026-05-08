@@ -2599,10 +2599,29 @@ class FloatingText {
     render(ctx) {
         const alpha = this.lifetime / this.maxLifetime;
         ctx.save();
-        ctx.fillStyle = this.color.replace(')', `, ${alpha})`).replace('rgb', 'rgba');
+        const progress = 1 - alpha;
+        const popScale = 1 + Math.sin(Math.min(1, progress) * Math.PI) * 0.16;
+        const isCritical = String(this.text).includes('CRIT') || String(this.text).includes('爆');
+        const fillColor = this.color.replace(')', `, ${alpha})`).replace('rgb', 'rgba');
+        ctx.translate(this.x, this.y);
+        ctx.scale(popScale, popScale);
+        ctx.shadowBlur = isCritical ? 12 * alpha : 6 * alpha;
+        ctx.shadowColor = isCritical ? 'rgba(255, 190, 72, 0.9)' : fillColor;
         ctx.font = `bold ${this.size}px Arial`;
         ctx.textAlign = 'center';
-        ctx.fillText(this.text, this.x, this.y);
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = `rgba(18, 10, 6, ${Math.min(0.9, alpha)})`;
+        ctx.lineWidth = Math.max(3, this.size * 0.16);
+        ctx.strokeText(this.text, 0, 0);
+        ctx.fillStyle = fillColor;
+        ctx.fillText(this.text, 0, 0);
+        if (isCritical) {
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = `rgba(255, 236, 164, ${alpha * 0.72})`;
+            ctx.font = `bold ${Math.max(10, this.size * 0.46)}px Arial`;
+            ctx.fillText('◆', -this.size * 0.58, -this.size * 0.34);
+            ctx.fillText('◆', this.size * 0.58, -this.size * 0.34);
+        }
         ctx.restore();
     }
 }
