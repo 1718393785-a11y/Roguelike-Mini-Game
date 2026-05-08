@@ -1,0 +1,26 @@
+{
+  "type": "config-runtime-check",
+  "chromePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "loaded": {
+    "weapons": 6,
+    "enemies": 7,
+    "balance": true,
+    "waves": 5,
+    "effects": 9,
+    "appliedAtFrame": 0
+  },
+  "applied": {
+    "weapons": 6,
+    "enemies": 7,
+    "balance": true,
+    "waves": 5,
+    "effects": 9,
+    "appliedAtFrame": 0
+  },
+  "hasRuntimeSpec": true,
+  "stageCount": 5,
+  "firstStageName": "东岭关",
+  "playerSpeed": 200,
+  "propHp": 30,
+  "ok": true
+}

@@ -1190,6 +1190,66 @@ function fetchWeaponJsonConfig(cacheBust = false) {
         });
 }
 
+function fetchSpecJson(name, cacheBust = false) {
+    const suffix = cacheBust ? `?t=${Date.now()}` : '';
+    return fetch(`src/spec/${name}.json${suffix}`, cacheBust ? { cache: 'no-store' } : undefined)
+        .then(response => {
+            if (!response.ok) throw new Error(`Failed to load src/spec/${name}.json`);
+            return response.json();
+        });
+}
+
+function loadRuntimeSpecConfig(cacheBust = false) {
+    return Promise.all([
+        fetchSpecJson('weapons', cacheBust),
+        fetchSpecJson('enemies', cacheBust),
+        fetchSpecJson('balance', cacheBust),
+        fetchSpecJson('waves', cacheBust),
+        fetchSpecJson('effects', cacheBust),
+    ]).then(([weapons, enemies, balance, waves, effects]) => ({
+        weapons,
+        enemies,
+        balance,
+        waves,
+        effects,
+    }));
+}
+
+function applyRuntimeSpecConfig(specConfig) {
+    if (!specConfig) return;
+    window.__RUNTIME_SPEC_CONFIG__ = specConfig;
+    applyWeaponJsonConfig(specConfig.weapons || {});
+
+    const balance = specConfig.balance || {};
+    const player = balance.player || {};
+    if (typeof window.setGameSetting === 'function') {
+        window.setGameSetting('PLAYER.BASE_MAX_HP', player.hp ?? window.getGameSetting?.('PLAYER.BASE_MAX_HP', 100));
+        window.setGameSetting('PLAYER.BASE_SPEED', player.speed ?? window.getGameSetting?.('PLAYER.BASE_SPEED', 200));
+        window.setGameSetting('PLAYER.PICKUP_RADIUS', player.magnetRadius ?? window.getGameSetting?.('PLAYER.PICKUP_RADIUS', 50));
+        window.setGameSetting('PERFORMANCE.SPATIAL_GRID.CELL_SIZE', balance.spatialHash?.cellSize ?? window.getGameSetting?.('PERFORMANCE.SPATIAL_GRID.CELL_SIZE', 100));
+        window.setGameSetting('PROPS.DESTRUCTIBLE.HP', specConfig.enemies?.destructible_prop?.hp ?? window.getGameSetting?.('PROPS.DESTRUCTIBLE.HP', 30));
+        window.setGameSetting('PROPS.DESTRUCTIBLE.SIZE', specConfig.enemies?.destructible_prop?.size ?? window.getGameSetting?.('PROPS.DESTRUCTIBLE.SIZE', 32));
+        window.setGameSetting('PROPS.DESTRUCTIBLE.MAX_COUNT', balance.spawn?.maxProps ?? window.getGameSetting?.('PROPS.DESTRUCTIBLE.MAX_COUNT', 3));
+        window.setGameSetting('PROPS.DESTRUCTIBLE.SPAWN_CHANCE_PER_FRAME', balance.spawn?.propSpawnChancePerFrame ?? window.getGameSetting?.('PROPS.DESTRUCTIBLE.SPAWN_CHANCE_PER_FRAME', 0.001));
+        window.setGameSetting('PROPS.DESTRUCTIBLE.SPAWN_MARGIN', balance.spawn?.propSpawnMargin ?? window.getGameSetting?.('PROPS.DESTRUCTIBLE.SPAWN_MARGIN', 50));
+    }
+
+    if (Array.isArray(specConfig.waves?.stages)) {
+        for (let i = 0; i < Math.min(STAGES.length, specConfig.waves.stages.length); i++) {
+            Object.assign(STAGES[i], specConfig.waves.stages[i]);
+        }
+    }
+
+    window.__SPEC_CONFIG_APPLIED__ = {
+        weapons: Object.keys(specConfig.weapons || {}).length,
+        enemies: Object.keys(specConfig.enemies || {}).length,
+        balance: Boolean(specConfig.balance),
+        waves: Array.isArray(specConfig.waves?.stages) ? specConfig.waves.stages.length : 0,
+        effects: Object.keys(specConfig.effects || {}).length,
+        appliedAtFrame: GameRuntime.getFrame(),
+    };
+}
+
 function startWeaponConfigHotReload() {
     if (!FEATURE_FLAGS.ENABLE_JSON_CONFIG || !FEATURE_FLAGS.ENABLE_HOT_RELOAD) return;
     if (window.__WEAPON_CONFIG_HOT_RELOAD_STARTED__) return;
@@ -1222,10 +1282,10 @@ function startWeaponConfigHotReload() {
 }
 
 if (FEATURE_FLAGS.ENABLE_JSON_CONFIG) {
-    fetchWeaponJsonConfig(false)
+    loadRuntimeSpecConfig(false)
         .then(config => {
-            applyWeaponJsonConfig(config);
-            window.__JSON_CONFIG_LOADED__ = { weapons: Object.keys(config).length };
+            applyRuntimeSpecConfig(config);
+            window.__JSON_CONFIG_LOADED__ = window.__SPEC_CONFIG_APPLIED__;
             GameRuntime.markConfigLoaded();
             startWeaponConfigHotReload();
         })
