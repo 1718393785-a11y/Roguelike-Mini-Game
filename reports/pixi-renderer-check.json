@@ -5,7 +5,7 @@
     "enabled": true,
     "ready": true,
     "failed": false,
-    "frames": 8,
+    "frames": 9,
     "spritesCreated": 1,
     "presentationMode": "canvas-frame-texture",
     "renderer": 1,
