@@ -101,6 +101,33 @@ if (FEATURE_FLAG_PARAMS.get('artUi') === '1' || FEATURE_FLAG_PARAMS.get('artUISk
     FEATURE_FLAGS.ENABLE_ART_UI_SKIN = true;
 }
 
+const ART_FEATURE_FLAGS = [
+    'ENABLE_ART_ASSETS',
+    'ENABLE_ART_WEAPON_ICONS',
+    'ENABLE_ART_SKILL_ICONS',
+    'ENABLE_ART_PICKUPS',
+    'ENABLE_ART_ENEMY_SPRITES',
+    'ENABLE_ART_BOSS_SPRITES',
+    'ENABLE_ART_PLAYER_SPRITE',
+    'ENABLE_ART_TILES',
+    'ENABLE_ART_EFFECTS',
+    'ENABLE_ART_UI_SKIN',
+    'ENABLE_ART_PIXI_TEXTURES',
+    'ENABLE_ART_DEBUG_PREVIEW',
+];
+
+function disableArtFeatures() {
+    for (const flagName of ART_FEATURE_FLAGS) {
+        FEATURE_FLAGS[flagName] = false;
+    }
+}
+
+function setBootState(state, message) {
+    document.body.dataset.bootState = state;
+    const bootMessage = document.getElementById('bootMessage');
+    if (bootMessage && message) bootMessage.textContent = message;
+}
+
 function getGameSetting(path, fallback) {
     if (!FEATURE_FLAGS.ENABLE_GAME_SETTINGS) return fallback;
     let cursor = window.GAME_SETTINGS;
@@ -5961,7 +5988,6 @@ class GameManager {
         this.genericWeaponShadow = FEATURE_FLAGS.ENABLE_GENERIC_WEAPON ? new GenericWeaponShadowMonitor() : null;
         this.pixiRenderer = FEATURE_FLAGS.ENABLE_PIXI_RENDERER ? new LegacyPixiOverlayRenderer() : null;
         this.assets = FEATURE_FLAGS.ENABLE_ART_ASSETS ? window.assetRuntime : null;
-        this.assets?.initialize?.();
         if (FEATURE_FLAGS.ENABLE_AUDIO_MANAGER && window.audioManager) {
             window.audioManager.configure({ enabled: true });
         }
@@ -9232,7 +9258,40 @@ class GameManager {
     }
 }
 
+async function bootstrapGame() {
+    setBootState('loading', 'Preparing game runtime...');
+
+    if (FEATURE_FLAGS.ENABLE_ART_ASSETS && window.assetRuntime) {
+        setBootState('loading', 'Loading art assets...');
+        const initialized = await window.assetRuntime.initialize();
+        if (initialized) {
+            const preloadResult = await window.assetRuntime.preloadAll();
+            if (!preloadResult.ok) {
+                disableArtFeatures();
+                setBootState('fallback', 'Art assets unavailable. Starting fallback renderer...');
+            } else {
+                setBootState('ready', 'Assets loaded.');
+            }
+        } else {
+            disableArtFeatures();
+            setBootState('fallback', 'Asset manifest unavailable. Starting fallback renderer...');
+        }
+    } else {
+        setBootState('ready', 'Starting game...');
+    }
+
+    new GameManager();
+    if (document.body.dataset.bootState !== 'fallback') {
+        setBootState('ready', 'Ready');
+    }
+}
+
 // 初始化游戏
 window.addEventListener('load', () => {
-    new GameManager();
+    bootstrapGame().catch(error => {
+        disableArtFeatures();
+        window.__BOOT_ERROR__ = String(error && error.message ? error.message : error);
+        setBootState('fallback', 'Startup failed. Starting fallback renderer...');
+        new GameManager();
+    });
 });

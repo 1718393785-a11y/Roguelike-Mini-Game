@@ -27,6 +27,85 @@
             return this.ready;
         }
 
+        async preloadAll() {
+            if (!this.ready || !this.manifest) return { ok: false, total: 0, failed: 0 };
+            const paths = this.collectRuntimeAssetPaths();
+            const results = await Promise.all(paths.map(path => this.loadImage(path)));
+            const failed = results.filter(result => !result.ok).length;
+            const summary = {
+                ok: failed === 0,
+                total: results.length,
+                loaded: results.length - failed,
+                failed,
+                errors: this.errors.slice(-10),
+            };
+            window.__ASSET_PRELOAD__ = summary;
+            this.publishStatus();
+            return summary;
+        }
+
+        collectRuntimeAssetPaths() {
+            const paths = new Set();
+            const collectEntry = (entry) => {
+                if (!entry || typeof entry !== 'object') return;
+                if (typeof entry.src === 'string') paths.add(this.basePath + entry.src);
+                if (Array.isArray(entry.frames)) {
+                    for (const frame of entry.frames) {
+                        if (typeof frame === 'string') paths.add(this.basePath + frame);
+                    }
+                }
+            };
+            const visit = (value) => {
+                if (!value || typeof value !== 'object') return;
+                if (typeof value.src === 'string' || Array.isArray(value.frames)) {
+                    collectEntry(value);
+                    return;
+                }
+                for (const nested of Object.values(value)) {
+                    visit(nested);
+                }
+            };
+            for (const section of ['weapons', 'skills', 'pickups', 'enemies', 'bosses', 'player', 'effects', 'ui', 'tiles']) {
+                visit(this.manifest?.[section]);
+            }
+            return Array.from(paths);
+        }
+
+        loadImage(path) {
+            if (this.cache.has(path)) {
+                const cached = this.cache.get(path);
+                if (cached.complete) {
+                    const ok = cached.naturalWidth > 0 && cached.naturalHeight > 0;
+                    return Promise.resolve({ ok, path });
+                }
+                return new Promise(resolve => {
+                    cached.addEventListener('load', () => resolve({ ok: true, path }), { once: true });
+                    cached.addEventListener('error', () => resolve({ ok: false, path }), { once: true });
+                });
+            }
+
+            const image = new Image();
+            const done = (ok) => {
+                if (ok) {
+                    this.loaded++;
+                } else {
+                    this.errors.push(`image load failed: ${path}`);
+                }
+                this.publishStatus();
+                return { ok, path };
+            };
+
+            this.requested++;
+            this.cache.set(path, image);
+            this.publishStatus();
+
+            return new Promise(resolve => {
+                image.onload = () => resolve(done(true));
+                image.onerror = () => resolve(done(false));
+                image.src = path;
+            });
+        }
+
         getWeaponIcon(weaponId, level = 1) {
             const weapon = this.manifest?.weapons?.[weaponId];
             const entry = weapon?.levels?.[String(Math.max(1, Math.min(6, level)))] || weapon?.levels?.['1'];
@@ -88,20 +167,8 @@
             if (!this.ready || !src) return null;
             const path = this.basePath + src;
             if (this.cache.has(path)) return this.cache.get(path);
-            const image = new Image();
-            image.onload = () => {
-                this.loaded++;
-                this.publishStatus();
-            };
-            image.onerror = () => {
-                this.errors.push(`image load failed: ${path}`);
-                this.publishStatus();
-            };
-            this.requested++;
-            image.src = path;
-            this.cache.set(path, image);
-            this.publishStatus();
-            return image;
+            this.loadImage(path);
+            return this.cache.get(path) || null;
         }
 
         canDraw(image) {

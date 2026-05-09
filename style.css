@@ -26,6 +26,50 @@ canvas {
     z-index: 1;
 }
 
+body[data-boot-state='loading'] #gameCanvas {
+    opacity: 0;
+}
+
+#bootOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(circle at top, rgba(38, 68, 82, 0.35), transparent 48%),
+        linear-gradient(180deg, rgba(6, 10, 14, 0.96), rgba(10, 10, 10, 0.98));
+    transition: opacity 180ms ease;
+}
+
+body[data-boot-state='ready'] #bootOverlay,
+body[data-boot-state='fallback'] #bootOverlay {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.boot-panel {
+    min-width: 280px;
+    max-width: 420px;
+    padding: 24px 28px;
+    border: 1px solid rgba(121, 164, 187, 0.32);
+    background: rgba(9, 16, 22, 0.88);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+}
+
+.boot-title {
+    color: #d9e9f2;
+    font: 700 24px/1.2 'Segoe UI', sans-serif;
+    letter-spacing: 0;
+}
+
+.boot-message {
+    margin-top: 10px;
+    color: rgba(217, 233, 242, 0.78);
+    font: 400 14px/1.5 'Segoe UI', sans-serif;
+}
+
 #pixiOverlayCanvas {
     position: fixed;
     inset: 0;

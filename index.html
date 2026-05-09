@@ -41,7 +41,13 @@
         })()
     </script>
 </head>
-<body>
+<body data-boot-state="loading">
+    <div id="bootOverlay" role="status" aria-live="polite">
+        <div class="boot-panel">
+            <div class="boot-title">Loading Assets</div>
+            <div id="bootMessage" class="boot-message">Preparing game runtime...</div>
+        </div>
+    </div>
     <canvas id="gameCanvas"></canvas>
     <script src="GameSettings.js"></script>
     <script src="AudioManager.js"></script>
