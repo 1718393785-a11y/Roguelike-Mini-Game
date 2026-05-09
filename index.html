@@ -7,6 +7,39 @@
     <meta name="mobile-web-app-capable" content="yes">
     <title>千里走单骑 - 基线保护</title>
     <link rel="stylesheet" href="style.css">
+    <script>
+        (function () {
+            const isGitHubPages = window.location.hostname.endsWith('github.io')
+            const params = new URLSearchParams(window.location.search)
+            const hasArtParam = [
+                'artAssets',
+                'artWeaponIcons',
+                'artSkillIcons',
+                'artPickups',
+                'artA1A2',
+                'artEnemies',
+                'artBosses',
+                'artPlayer',
+                'artTiles',
+                'artEffects',
+                'artUi',
+                'artUISkin',
+                'artHud',
+                'artPreview'
+            ].some(key => params.has(key))
+
+            if (!isGitHubPages || hasArtParam) return
+
+            params.set('artA1A2', '1')
+            params.set('artEnemies', '1')
+            params.set('artPlayer', '1')
+            params.set('artTiles', '1')
+            params.set('artEffects', '1')
+            params.set('artUi', '1')
+            params.set('artHud', '1')
+            window.location.replace(`${window.location.pathname}?${params.toString()}${window.location.hash}`)
+        })()
+    </script>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
