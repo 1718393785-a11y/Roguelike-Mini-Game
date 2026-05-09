@@ -9262,15 +9262,15 @@ async function bootstrapGame() {
     setBootState('loading', 'Preparing game runtime...');
 
     if (FEATURE_FLAGS.ENABLE_ART_ASSETS && window.assetRuntime) {
-        setBootState('loading', 'Loading art assets...');
+        setBootState('loading', 'Loading startup assets...');
         const initialized = await window.assetRuntime.initialize();
         if (initialized) {
-            const preloadResult = await window.assetRuntime.preloadAll();
+            const preloadResult = await window.assetRuntime.preloadAll('critical');
             if (!preloadResult.ok) {
                 disableArtFeatures();
                 setBootState('fallback', 'Art assets unavailable. Starting fallback renderer...');
             } else {
-                setBootState('ready', 'Assets loaded.');
+                setBootState('ready', 'Startup assets loaded.');
             }
         } else {
             disableArtFeatures();
@@ -9283,6 +9283,11 @@ async function bootstrapGame() {
     new GameManager();
     if (document.body.dataset.bootState !== 'fallback') {
         setBootState('ready', 'Ready');
+        if (FEATURE_FLAGS.ENABLE_ART_ASSETS && window.assetRuntime) {
+            window.assetRuntime.preloadDeferred('all').catch(error => {
+                window.__ASSET_DEFERRED_ERROR__ = String(error && error.message ? error.message : error);
+            });
+        }
     }
 }
 

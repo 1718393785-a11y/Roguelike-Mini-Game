@@ -27,12 +27,13 @@
             return this.ready;
         }
 
-        async preloadAll() {
+        async preloadAll(plan = 'all') {
             if (!this.ready || !this.manifest) return { ok: false, total: 0, failed: 0 };
-            const paths = this.collectRuntimeAssetPaths();
+            const paths = this.collectRuntimeAssetPaths(plan);
             const results = await Promise.all(paths.map(path => this.loadImage(path)));
             const failed = results.filter(result => !result.ok).length;
             const summary = {
+                plan,
                 ok: failed === 0,
                 total: results.length,
                 loaded: results.length - failed,
@@ -44,7 +45,14 @@
             return summary;
         }
 
-        collectRuntimeAssetPaths() {
+        preloadDeferred(plan = 'all') {
+            return this.preloadAll(plan).then(summary => {
+                window.__ASSET_DEFERRED_PRELOAD__ = summary;
+                return summary;
+            });
+        }
+
+        collectRuntimeAssetPaths(plan = 'all') {
             const paths = new Set();
             const collectEntry = (entry) => {
                 if (!entry || typeof entry !== 'object') return;
@@ -65,7 +73,31 @@
                     visit(nested);
                 }
             };
-            for (const section of ['weapons', 'skills', 'pickups', 'enemies', 'bosses', 'player', 'effects', 'ui', 'tiles']) {
+
+            const sections = plan === 'critical'
+                ? [
+                    ['weapons'],
+                    ['skills'],
+                    ['pickups'],
+                    ['player'],
+                    ['enemies'],
+                    ['effects'],
+                    ['ui'],
+                    ['tiles'],
+                ]
+                : [
+                    ['weapons'],
+                    ['skills'],
+                    ['pickups'],
+                    ['player'],
+                    ['enemies'],
+                    ['bosses'],
+                    ['effects'],
+                    ['ui'],
+                    ['tiles'],
+                ];
+
+            for (const [section] of sections) {
                 visit(this.manifest?.[section]);
             }
             return Array.from(paths);
