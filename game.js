@@ -178,7 +178,11 @@ function drawArtUiTexture(ctx, uiId, x, y, width, height, alpha = 1) {
 
 const GameRuntime = (() => {
     const params = new URLSearchParams(window.location.search);
-    const seedText = params.get('seed') || '0';
+    const seedText = params.has('seed') ? params.get('seed') : (() => {
+        const values = new Uint32Array(1);
+        window.crypto?.getRandomValues?.(values);
+        return `${Date.now()}-${values[0] || performance.now()}`;
+    })();
     const fixedDelta = 1 / 60;
     const recordEnabled = params.get('record') === '1';
     const snapshotEnabled = params.get('snapshot') === '1' || params.has('baselineSeconds');
@@ -4566,20 +4570,34 @@ class Enemy {
         const enemyId = this.getArtEnemyId();
         const attackState = this.getCloseAttackVisualState();
         const isStaticProp = this.isProp || enemyId === 'prop';
-        const artState = attackState ? 'attack' : (isStaticProp ? 'idle' : 'move');
+        const player = window.gameManager?.player;
+        const dx = player ? player.x - this.x : 0;
+        const dy = player ? player.y - this.y : 0;
+        const distSq = dx * dx + dy * dy;
+        const activeMoveRange = Math.pow(this.getCloseAttackVisualRange(player) * 1.9, 2);
+        const useMoveFrames = !isStaticProp && !attackState && distSq > 0 && distSq <= activeMoveRange;
+        const artState = attackState ? 'attack' : (useMoveFrames ? 'move' : 'idle');
         const frameIndex = attackState
             ? Math.min(1, Math.floor(Math.max(0, Math.min(0.999, attackState.swingProgress)) * 2))
-            : Math.floor((GameRuntime.frame + this.id * 7) / 12);
+            : (useMoveFrames ? Math.floor((GameRuntime.frame + this.id * 5) / 28) : 0);
         const sprite = enemyId ? assets.getEnemySprite(enemyId, artState, frameIndex) : null;
         if (!assets.canDraw(sprite)) return false;
         const size = this.getArtRenderSize();
         ctx.save();
+        const idleBreath = !attackState && !useMoveFrames && !isStaticProp
+            ? Math.sin((GameRuntime.frame + this.id * 11) * 0.035) * Math.min(1.1, this.size * 0.025)
+            : 0;
         const renderX = this.x + (attackState ? attackState.dirX * attackState.lunge : 0);
-        const renderY = this.y + (attackState ? attackState.dirY * attackState.lunge : 0);
+        const renderY = this.y + (attackState ? attackState.dirY * attackState.lunge : 0) + idleBreath;
         ctx.translate(renderX, renderY);
         if (rotation) ctx.rotate(rotation);
         if (attackState) ctx.rotate(attackState.spriteTilt);
-        if (attackState) ctx.scale(attackState.scale, attackState.scale);
+        if (attackState) {
+            ctx.scale(attackState.scale, attackState.scale);
+        } else if (useMoveFrames) {
+            const moveSway = Math.sin((GameRuntime.frame + this.id * 9) * 0.08) * 0.018;
+            ctx.rotate(moveSway);
+        }
         ctx.drawImage(sprite, -size / 2, -size / 2, size, size);
         ctx.restore();
         if (attackState) {
@@ -5418,11 +5436,17 @@ class Pickup {
         this.expValue = expValue;
         // 不同类型不同大小
         if (type === PICKUP_TYPES.MAGNET) {
-            this.size = 24; // 吸铁石更大更醒目
+            this.size = 36; // 吸铁石更大更醒目
         } else if (type === PICKUP_TYPES.CHICKEN) {
-            this.size = 18; // 烤鸡腿比馒头稍大
+            this.size = 34; // 烤鸡腿比馒头稍大
+        } else if (type === PICKUP_TYPES.BUN) {
+            this.size = 30;
+        } else if (type === PICKUP_TYPES.RESONANCE) {
+            this.size = 28;
+        } else if (type === PICKUP_TYPES.BOSS_EXP) {
+            this.size = 38;
         } else {
-            this.size = 15; // 默认大小
+            this.size = 24; // 默认大小
         }
         this.color = type.color;
         this.basePickupRadius = 50;
@@ -5561,16 +5585,15 @@ class Pickup {
         let displaySize = this.size;
         if (this.type === PICKUP_TYPES.EXP) {
             if (this.expValue > 1 && this.expValue <= 10) {
-                // 1 < 容量 ≤ 10 → 橙色，15px
+                // 1 < 容量 <= 10
                 displayColor = '#ff8c00';
-                displaySize = 15;
+                displaySize = 28;
             } else if (this.expValue > 10) {
-                // 容量 > 10 → 红色，20px
+                // 容量 > 10
                 displayColor = '#ff0000';
-                displaySize = 20;
+                displaySize = 34;
             } else {
-                // expValue = 1 → 保持原蓝色，15px
-                displaySize = 15;
+                displaySize = 24;
             }
         }
 
@@ -5578,14 +5601,16 @@ class Pickup {
             const pickupId = this.getArtPickupId();
             const icon = pickupId ? assets.getPickupIcon(pickupId) : null;
             if (assets.canDraw(icon)) {
-                const iconSize = Math.max(displaySize, this.type === PICKUP_TYPES.MAGNET ? 24 : displaySize);
+                const iconSize = Math.max(28, displaySize);
                 const useDiamondFrame = pickupId === 'EXP' || pickupId === 'EXP_LARGE' || pickupId === 'BOSS_EXP' || pickupId === 'RESONANCE';
                 ctx.save();
-                ctx.globalAlpha = 0.35;
+                ctx.shadowBlur = Math.max(8, iconSize * 0.28);
+                ctx.shadowColor = displayColor;
+                ctx.globalAlpha = 0.42;
                 ctx.fillStyle = displayColor;
                 ctx.beginPath();
                 if (useDiamondFrame) {
-                    const glowHalf = iconSize * 0.68;
+                    const glowHalf = iconSize * 0.74;
                     ctx.moveTo(this.x, this.y - glowHalf);
                     ctx.lineTo(this.x + glowHalf, this.y);
                     ctx.lineTo(this.x, this.y + glowHalf);
@@ -5596,7 +5621,22 @@ class Pickup {
                 }
                 ctx.fill();
                 ctx.globalAlpha = 1;
+                ctx.shadowBlur = 0;
                 ctx.drawImage(icon, this.x - iconSize / 2, this.y - iconSize / 2, iconSize, iconSize);
+                ctx.strokeStyle = 'rgba(255, 244, 196, 0.82)';
+                ctx.lineWidth = Math.max(1.5, iconSize * 0.055);
+                ctx.beginPath();
+                if (useDiamondFrame) {
+                    const half = iconSize * 0.56;
+                    ctx.moveTo(this.x, this.y - half);
+                    ctx.lineTo(this.x + half, this.y);
+                    ctx.lineTo(this.x, this.y + half);
+                    ctx.lineTo(this.x - half, this.y);
+                    ctx.closePath();
+                } else {
+                    ctx.arc(this.x, this.y, iconSize * 0.52, 0, Math.PI * 2);
+                }
+                ctx.stroke();
                 ctx.restore();
                 return;
             }
@@ -5636,16 +5676,21 @@ class Pickup {
                 ctx.fill();
             }
         } else if (this.type === PICKUP_TYPES.RESONANCE) {
-            // 历史残响保持圆形
+            // 历史残响渲染为菱形，和经验类掉落保持一致识别。
+            const half = this.size / 2;
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size / 2, 0, Math.PI * 2);
+            ctx.moveTo(this.x, this.y - half);
+            ctx.lineTo(this.x + half, this.y);
+            ctx.lineTo(this.x, this.y + half);
+            ctx.lineTo(this.x - half, this.y);
+            ctx.closePath();
             ctx.fill();
             ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 1;
+            ctx.lineWidth = 2;
             ctx.stroke();
         } else {
             // 补给品（白馒头/烤鸡腿/吸铁石）：方形渲染，更大尺寸更明显
-            const half = this.type === PICKUP_TYPES.MAGNET ? 12 : this.size / 2;
+            const half = this.size / 2;
             const x = this.x - half;
             const y = this.y - half;
             ctx.fillRect(x, y, half * 2, half * 2);
@@ -6360,12 +6405,12 @@ class GameManager {
             return; // 不关闭界面，保持升级菜单
         }
 
-        const boxWidth = 200;
-        const boxHeight = 300;
-        const spacing = 50;
+        const boxWidth = 220;
+        const boxHeight = 330;
+        const spacing = 38;
         const totalWidth = 3 * boxWidth + 2 * spacing;
         const startX = (this.canvas.width - totalWidth) / 2;
-        const startY = (this.canvas.height - boxHeight) / 2;
+        const startY = Math.max(172, (this.canvas.height - boxHeight) / 2 + 10);
 
         for (let i = 0; i < 3; i++) {
             const boxX = startX + i * (boxWidth + spacing);
@@ -6388,17 +6433,19 @@ class GameManager {
             return;
         }
         // 点击升级选项 - 双列布局点击检测
-        const startY = 150;
+        const startY = 126;
         const itemHeight = 80;
-        const halfWidth = this.canvas.width / 2;
-        // 必须在卡片行范围内：每列只有 5 张卡片
-        if (y < startY) return;
-        const row = Math.floor((y - startY) / itemHeight);
-        if (row < 0 || row >= 5) return;
-        const col = x < halfWidth ? 0 : 1;
-        const index = col * 5 + row;
-        if (index >= 0 && index < PERK_UPGRADES.length) {
-            this.buyPerk(index);
+        const cardHeight = 68;
+        const boxWidth = (this.canvas.width - 132) / 2;
+        for (let index = 0; index < PERK_UPGRADES.length; index++) {
+            const col = index % 2;
+            const row = Math.floor(index / 2);
+            const baseX = 44 + col * (boxWidth + 44);
+            const cardY = startY + row * itemHeight;
+            if (x >= baseX && x <= baseX + boxWidth && y >= cardY && y <= cardY + cardHeight) {
+                this.buyPerk(index);
+                return;
+            }
         }
     }
 
@@ -8101,14 +8148,31 @@ class GameManager {
     }
 
     // 自动换行绘制文本
-    fillTextWrapped(ctx, text, x, y, maxWidth, lineHeight, align = 'left') {
+    fillTextWrapped(ctx, text, x, y, maxWidth, lineHeight, align = 'left', maxLines = Infinity) {
         const originalAlign = ctx.textAlign;
         ctx.textAlign = align;
         // 如果文本中已有换行符，先拆分
         const paragraphs = text.split('\n');
         let currentY = y;
+        let lineCount = 0;
+
+        const drawLine = (line) => {
+            if (lineCount >= maxLines) return false;
+            let output = line;
+            if (lineCount === maxLines - 1 && maxLines !== Infinity) {
+                while (ctx.measureText(`${output}...`).width > maxWidth && output.length > 1) {
+                    output = output.slice(0, -1);
+                }
+                if (output !== line) output = `${output}...`;
+            }
+            ctx.fillText(output, x, currentY);
+            currentY += lineHeight;
+            lineCount++;
+            return lineCount < maxLines;
+        };
 
         for (const paragraph of paragraphs) {
+            if (lineCount >= maxLines) break;
             if (paragraph === '') {
                 currentY += lineHeight;
                 continue;
@@ -8120,16 +8184,14 @@ class GameManager {
                 const testLine = line + char;
                 const metrics = ctx.measureText(testLine);
                 if (metrics.width > maxWidth && line !== '') {
-                    ctx.fillText(line, x, currentY);
+                    if (!drawLine(line)) break;
                     line = char;
-                    currentY += lineHeight;
                 } else {
                     line = testLine;
                 }
             }
-            if (line !== '') {
-                ctx.fillText(line, x, currentY);
-                currentY += lineHeight;
+            if (line !== '' && lineCount < maxLines) {
+                drawLine(line);
             }
         }
         ctx.textAlign = originalAlign;
@@ -8138,8 +8200,13 @@ class GameManager {
 
     renderPerkUpgrade() {
         const ctx = this.ctx;
-        ctx.fillStyle = '#1a1a1a';
+        const bg = ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+        bg.addColorStop(0, '#11191c');
+        bg.addColorStop(0.55, '#19140f');
+        bg.addColorStop(1, '#08090a');
+        ctx.fillStyle = bg;
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.renderScrollingBackground(ctx, 'rgba(20, 24, 24, 0.35)');
         drawArtUiTexture(ctx, 'menu_panel', this.canvas.width / 2 - 360, 18, 720, 116, 0.68);
 
         ctx.fillStyle = '#ffd36a';
@@ -8152,15 +8219,16 @@ class GameManager {
         ctx.fillText('点击购买永久升级，死亡后保留效果', this.canvas.width / 2, 105);
 
         // 列表 - 双列布局：左列5个，右列5个
-        const startY = 150;
-        const itemHeight = 80;  // 保持原有卡片高度
+        const startY = 126;
+        const itemHeight = 80;
+        const cardHeight = 68;
         PERK_UPGRADES.forEach((perk, index) => {
             // 第一步：计算双列布局参数
-            const col = Math.floor(index / 5); // 0 为左列，1 为右列
-            const row = index % 5;             // 0~4 为垂直行位
+            const col = index % 2;
+            const row = Math.floor(index / 2);
             // 中间留 50px 空隙，两边各留 50px 边距
-            const boxWidth = (this.canvas.width - 150) / 2;
-            const baseX = 50 + col * (boxWidth + 50);
+            const boxWidth = (this.canvas.width - 132) / 2;
+            const baseX = 44 + col * (boxWidth + 44);
             const y = startY + row * itemHeight;
             const level = this.perkLevels[perk.id] || 0;
             const cost = this.getUpgradeCost(level);
@@ -8171,16 +8239,16 @@ class GameManager {
                 this.mouseX >= baseX &&
                 this.mouseX <= baseX + boxWidth &&
                 this.mouseY >= y &&
-                this.mouseY <= y + itemHeight - 10
+                this.mouseY <= y + cardHeight
             );
 
-            const usedCardSkin = drawArtUiTexture(ctx, 'upgrade_card', baseX, y, boxWidth, itemHeight - 10, isHover ? 0.96 : 0.82);
+            const usedCardSkin = drawArtUiTexture(ctx, 'upgrade_card', baseX, y, boxWidth, cardHeight, isHover ? 0.98 : 0.88);
             if (usedCardSkin) {
-                ctx.fillStyle = canAfford ? 'rgba(30, 54, 82, 0.26)' : 'rgba(8, 8, 8, 0.38)';
-                ctx.fillRect(baseX + 8, y + 8, boxWidth - 16, itemHeight - 26);
+                ctx.fillStyle = canAfford ? 'rgba(15, 27, 38, 0.76)' : 'rgba(8, 8, 8, 0.70)';
+                ctx.fillRect(baseX + 8, y + 8, boxWidth - 16, cardHeight - 16);
                 ctx.strokeStyle = isHover ? '#fff1a8' : (canAfford ? 'rgba(184, 134, 11, 0.62)' : 'rgba(120, 120, 120, 0.36)');
                 ctx.lineWidth = isHover ? 3 : 1;
-                ctx.strokeRect(baseX + 2, y + 2, boxWidth - 4, itemHeight - 14);
+                ctx.strokeRect(baseX + 2, y + 2, boxWidth - 4, cardHeight - 4);
             } else {
                 // 背景 - 相对于 baseX，悬停时提亮
                 if (isHover && canAfford) {
@@ -8190,7 +8258,7 @@ class GameManager {
                 } else {
                     ctx.fillStyle = canAfford ? '#2a2a3a' : '#2a2a2a';
                 }
-                ctx.fillRect(baseX, y, boxWidth, itemHeight - 10);
+                ctx.fillRect(baseX, y, boxWidth, cardHeight);
 
                 // 边框 - 悬停时高亮金色
                 if (isHover) {
@@ -8200,62 +8268,53 @@ class GameManager {
                     ctx.strokeStyle = canAfford ? '#4169e1' : '#555';
                     ctx.lineWidth = 2;
                 }
-                ctx.strokeRect(baseX, y, boxWidth, itemHeight - 10);
+                ctx.strokeRect(baseX, y, boxWidth, cardHeight);
             }
 
             // ========== 左侧：文字区域 ==========
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 20px Arial';
-            ctx.textAlign = 'left';
-            ctx.fillText(`${perk.name} (Lv.${level})`, baseX + 20, y + 25);
-
             // ========== 右侧：宽体发光能量轴矩阵 ==========
-            const MAX_COLS = 10;       // 总共 10 根大柱子
-            const SEGMENTS = 10;       // 每根大柱子分为 10 个能量小格
-            const COL_WIDTH = 24;      // 柱子宽度增加接近3倍 (原为10)
-            const COL_GAP = 6;         // 大柱子之间的横向缝隙
-            const SEG_HEIGHT = 4;      // 单个能量小格高度
-            const SPACING = 2;         // 格子之间的纵向微小缝隙
+            const MAX_COLS = 10;
+            const SEGMENTS = 10;
+            const COL_WIDTH = 8;
+            const COL_GAP = 3;
+            const SEG_HEIGHT = 3;
+            const SPACING = 1;
             const totalBarHeight = 10 * (SEG_HEIGHT + SPACING) - SPACING; // 原高度保持 58px
             const totalBarWidth = 10 * (COL_WIDTH + COL_GAP) - COL_GAP;   // 总矩阵宽度 ~294px
 
-            // 核心修复：死死锚定在卡片的右侧减去价格标签的位置，向左移动贴近技能描述
-            // 用户要求：等级竖轴全部右移5px
-            const axisStartX = baseX + boxWidth - totalBarWidth - 250;
-            const axisStartY = y + (itemHeight - 10 - totalBarHeight) / 2;
+            const axisStartX = baseX + boxWidth - totalBarWidth - 24;
+            const axisStartY = y + 28;
             // 文字区域也随之收缩，永远不会再越线
-            const textMaxWidth = axisStartX - (baseX + 20) - 20; // 文本最多铺到矩阵前20像素
-            // ========== 动态解析并分段高亮渲染技能描述 ==========
-            const textX = baseX + 20;
-            const textY = y + 60;
+            const textMaxWidth = axisStartX - (baseX + 18) - 22; // 文本最多铺到矩阵前22像素
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'left';
+            this.fillTextWrapped(ctx, `${perk.name} (Lv.${level})`, baseX + 18, y + 23, textMaxWidth, 18, 'left', 1);
 
-            // 使用贪婪正则提取描述末尾的强化数值：前半部分文本 + 增量数字 + 单位后缀
+            // ========== 动态解析并分段高亮渲染技能描述 ==========
+            const textX = baseX + 18;
+            const textY = y + 42;
+
+            // 使用正则提取描述末尾的强化数值，数值另起一行避免挤出卡片。
             const match = perk.description.match(/^(.*)([+-]\d+(?:\.\d+)?)(.*)$/);
 
             if (match) {
-                // 提取成功：例如 match[1] = "... → 全伤害 ", match[2] = "+0.5", match[3] = "%"
                 const baseText = match[1];
                 const stepValue = parseFloat(match[2]);
                 const unit = match[3];
-                // 核心计算：算出升级到下一级后的总预期加成，并解决浮点数精度乱码
                 const expectedTotal = parseFloat((stepValue * (level + 1)).toFixed(2));
                 const sign = expectedTotal > 0 ? '+' : '';
                 const highlightText = `${sign}${expectedTotal}${unit}`;
-                // 绘制前半段普通灰色文字
                 ctx.fillStyle = '#cccccc';
-                ctx.font = '14px Arial';
-                ctx.fillText(baseText, textX, textY);
-                // 测量前半段占据的宽度，向右顺延画笔位置
-                const baseTextWidth = ctx.measureText(baseText).width;
-                // 绘制后半段高亮预期数值：亮青绿荧光色，加粗大字号，区别极其明显！
+                ctx.font = '13px Arial';
+                this.fillTextWrapped(ctx, baseText.replace(/[→ ]+$/, ''), textX, textY, textMaxWidth, 15, 'left', 1);
                 ctx.fillStyle = '#00ffcc';
-                ctx.font = 'bold 16px "Courier New", Consolas, Arial';
-                ctx.fillText(highlightText, textX + baseTextWidth, textY);
+                ctx.font = 'bold 15px "Courier New", Consolas, Arial';
+                ctx.fillText(`下级 ${highlightText}`, textX, y + 62);
             } else {
-                // 退退回机制：如果没匹配出数字格式，按原来的灰色原样输出
                 ctx.fillStyle = '#cccccc';
-                ctx.font = '14px Arial';
-                this.fillTextWrapped(ctx, perk.description, textX, textY, textMaxWidth, 18);
+                ctx.font = '13px Arial';
+                this.fillTextWrapped(ctx, perk.description, textX, textY, textMaxWidth, 15, 'left', 2);
             }
 
             ctx.save();
@@ -8291,12 +8350,12 @@ class GameManager {
             // 价格：右上角对齐
             ctx.textAlign = 'right';
             ctx.fillStyle = canAfford ? '#ff8c00' : '#666';
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText(`价格：${cost} 残响`, baseX + boxWidth - 20, y + 25);
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText(`价格 ${cost} 残响`, baseX + boxWidth - 20, y + 20);
         });
 
         // 返回按钮
-        this.drawButton(this.canvas.width / 2 - 100, this.canvas.height - 130, 200, 60, '#333', '#ffffff', '返回菜单');
+        this.drawButton(this.canvas.width / 2 - 100, this.canvas.height - 82, 200, 60, '#333', '#ffffff', '返回菜单');
 
         ctx.textAlign = 'left';
     }
@@ -8815,27 +8874,32 @@ class GameManager {
         this.renderPlaying();
 
         // 全屏半透明黑色遮罩
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.78)';
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        drawArtUiTexture(ctx, 'dialog_panel', this.canvas.width / 2 - 380, 54, 760, 620, 0.86);
+        drawArtUiTexture(ctx, 'dialog_panel', this.canvas.width / 2 - 410, 38, 820, 660, 0.9);
+        ctx.fillStyle = 'rgba(6, 12, 18, 0.34)';
+        ctx.fillRect(this.canvas.width / 2 - 360, 92, 720, 540);
 
         // 标题
-        ctx.fillStyle = '#b8860b';
-        ctx.font = 'bold 40px Arial';
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = 'rgba(255, 214, 110, 0.45)';
+        ctx.fillStyle = '#ffd36a';
+        ctx.font = 'bold 34px Arial';
         ctx.textAlign = 'center';
         ctx.fillText(`升级！ 等级 ${this.player.level}`, this.canvas.width / 2, 100);
+        ctx.shadowBlur = 0;
 
         ctx.fillStyle = '#ffffff';
         ctx.font = '20px Arial';
         ctx.fillText('选择一项增益', this.canvas.width / 2, 140);
 
         // 三个选项：屏幕中央横向排列
-        const boxWidth = 200;
-        const boxHeight = 300;
-        const spacing = 50;
+        const boxWidth = 220;
+        const boxHeight = 330;
+        const spacing = 38;
         const totalWidth = 3 * boxWidth + 2 * spacing;
         const startX = (this.canvas.width - totalWidth) / 2;
-        const startY = (this.canvas.height - boxHeight) / 2;
+        const startY = Math.max(172, (this.canvas.height - boxHeight) / 2 + 10);
 
         // 被动技能名称到key的映射
         const skillNameToKey = {
@@ -8878,8 +8942,8 @@ class GameManager {
             const optionSkillKey = option.type === 'passive'
                 ? option.skillKey
                 : skillNameToKey[option.title.split(' ')[0]];
-            const iconY = y + 70;
-            const iconSize = 64;
+            const iconY = y + 82;
+            const iconSize = 72;
             let hasArtIcon = false;
             if (FEATURE_FLAGS.ENABLE_ART_ASSETS && FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS && option.weaponType) {
                 const icon = this.assets?.getWeaponIcon?.(option.weaponType, option.weaponLevel || 1);
@@ -8891,25 +8955,25 @@ class GameManager {
 
             // 技能名称/标题
             ctx.fillStyle = isHover ? '#b8860b' : '#ffffff';
-            ctx.font = 'bold 20px Arial';
+            ctx.font = 'bold 18px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(option.title, x + boxWidth / 2, y + 35);
+            this.fillTextWrapped(ctx, option.title, x + boxWidth / 2, y + 32, boxWidth - 24, 20, 'center', 2);
 
             // 技能描述 - 自动换行
             ctx.fillStyle = '#cccccc';
             ctx.font = '14px Arial';
             // 计算文字起始位置，使用自动换行
             const descX = x + boxWidth / 2;
-            const descY = hasArtIcon ? y + 115 : y + 65;
-            const maxWidth = boxWidth - 20;
-            this.fillTextWrapped(ctx, option.desc, descX, descY, maxWidth, 20, 'center');
+            const descY = hasArtIcon ? y + 132 : y + 82;
+            const maxWidth = boxWidth - 32;
+            this.fillTextWrapped(ctx, option.desc, descX, descY, maxWidth, 19, 'center', 6);
 
             // 如果是被动技能，显示当前局内等级
             const skillKey = optionSkillKey;
             if (option.type === 'passive' && skillKey !== undefined) {
                 const currentLevel = this.player.inGameSkills[skillKey];
                 ctx.fillStyle = '#b8860b';
-                ctx.font = 'bold 28px Arial';
+                ctx.font = 'bold 24px Arial';
                 ctx.textAlign = 'center';
                 ctx.fillText(`LV: ${currentLevel}`, x + boxWidth / 2, y + boxHeight - 30);
             }
