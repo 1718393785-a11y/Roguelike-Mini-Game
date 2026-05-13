@@ -1899,7 +1899,8 @@ class Saber extends Weapon {
         const handX = currentX + forwardX * 9;
         const handY = currentY + forwardY * 9;
         const assetReachRatio = 0.9; // Approximate hilt-to-fire-tip reach inside the square source art.
-        const imageSize = Math.max(56, outerRadius / assetReachRatio);
+        const levelImageScale = level >= 6 ? 1.22 : level >= 5 ? 1.13 : level >= 4 ? 1.08 : level >= 2 ? 1.05 : 1;
+        const imageSize = Math.max(56, outerRadius / assetReachRatio) * levelImageScale;
         const assetForwardAngle = 2.48; // Image vector from ring handle to flame blade direction.
         const swingArc = -0.42 + progress * 0.58;
         const recoil = Math.sin(progress * Math.PI) * 0.07;
@@ -1908,12 +1909,24 @@ class Saber extends Weapon {
         const anchorY = 0.215;
 
         this.drawSaberAssetLevelAura(ctx, currentX, currentY, outerRadius, flameAlpha, level, frame, progress, intensity);
+        if (level >= 6) {
+            this.drawSaberUltimateGhosts(ctx, currentX, currentY, icon, imageSize, assetForwardAngle, anchorX, anchorY, flameAlpha, frame, progress, intensity);
+        }
 
         ctx.save();
         ctx.translate(handX, handY);
         ctx.rotate(rotation);
         ctx.globalAlpha *= flameAlpha * intensity;
         ctx.imageSmoothingEnabled = true;
+        ctx.shadowBlur = level >= 6 ? 34 : level >= 5 ? 24 : level >= 3 ? 18 : 8;
+        ctx.shadowColor = level >= 6
+            ? 'rgba(255, 218, 72, 0.95)'
+            : level >= 5
+                ? 'rgba(255, 38, 24, 0.95)'
+                : level >= 3
+                    ? 'rgba(255, 88, 0, 0.88)'
+                    : 'rgba(255, 190, 42, 0.72)';
+        ctx.filter = this.getSaberLevelFilter(level);
         ctx.drawImage(icon, -imageSize * anchorX, -imageSize * anchorY, imageSize, imageSize);
 
         // Fire motion from the source art: repeated hot edge copies, still pivoting around the fixed hilt.
@@ -1923,7 +1936,12 @@ class Saber extends Weapon {
             const trailRot = -0.035 * (i + 1) - Math.sin(frame * 0.16 + i) * 0.015;
             ctx.save();
             ctx.rotate(trailRot);
-            ctx.globalAlpha = flameAlpha * (0.18 - i * 0.055) * intensity;
+            ctx.globalAlpha = flameAlpha * (level >= 6 ? 0.25 - i * 0.06 : level >= 5 ? 0.22 - i * 0.06 : 0.18 - i * 0.055) * intensity;
+            ctx.filter = level >= 6
+                ? 'saturate(2.2) contrast(1.28) brightness(1.28)'
+                : level >= 5
+                    ? 'saturate(2.1) hue-rotate(-22deg) contrast(1.22) brightness(1.08)'
+                    : this.getSaberLevelFilter(level);
             ctx.drawImage(
                 icon,
                 -imageSize * anchorX * trailScale,
@@ -1934,8 +1952,59 @@ class Saber extends Weapon {
             ctx.restore();
         }
 
+        if (level >= 5) {
+            ctx.globalCompositeOperation = 'screen';
+            ctx.filter = 'none';
+            ctx.strokeStyle = level >= 6
+                ? `rgba(255, 241, 150, ${0.86 * flameAlpha * intensity})`
+                : `rgba(255, 48, 36, ${0.78 * flameAlpha * intensity})`;
+            ctx.lineWidth = Math.max(2.4, imageSize * 0.035);
+            ctx.beginPath();
+            ctx.moveTo(-imageSize * 0.22, imageSize * 0.08);
+            ctx.quadraticCurveTo(imageSize * 0.12, -imageSize * 0.2, imageSize * 0.42, -imageSize * 0.05);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(-imageSize * 0.16, -imageSize * 0.12);
+            ctx.quadraticCurveTo(imageSize * 0.06, imageSize * 0.12, imageSize * 0.35, imageSize * 0.18);
+            ctx.stroke();
+        }
+
         ctx.restore();
         return true;
+    }
+
+    getSaberLevelFilter(level) {
+        if (level >= 6) return 'saturate(2.35) contrast(1.34) brightness(1.26) sepia(0.16)';
+        if (level >= 5) return 'saturate(2.3) hue-rotate(-24deg) contrast(1.28) brightness(1.08)';
+        if (level >= 4) return 'saturate(1.65) contrast(1.16) brightness(1.12) sepia(0.08)';
+        if (level >= 3) return 'saturate(1.85) hue-rotate(-12deg) contrast(1.18) brightness(1.08)';
+        if (level >= 2) return 'saturate(1.42) contrast(1.08) brightness(1.12)';
+        return 'none';
+    }
+
+    drawSaberUltimateGhosts(ctx, currentX, currentY, icon, imageSize, assetForwardAngle, anchorX, anchorY, flameAlpha, frame, progress, intensity) {
+        const spin = Math.sin(frame * 0.08) * 0.04 + progress * 0.18;
+        ctx.save();
+        ctx.translate(currentX, currentY);
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.imageSmoothingEnabled = true;
+        ctx.filter = 'saturate(2.4) contrast(1.3) brightness(1.32) sepia(0.22)';
+        for (let i = 0; i < 4; i++) {
+            const dir = this.aimAngle + i * Math.PI / 2 + spin;
+            const ghostScale = i % 2 === 0 ? 1.08 : 0.96;
+            ctx.save();
+            ctx.rotate(dir - assetForwardAngle);
+            ctx.globalAlpha = flameAlpha * (0.22 - i * 0.018) * intensity;
+            ctx.drawImage(
+                icon,
+                -imageSize * anchorX * ghostScale,
+                -imageSize * anchorY * ghostScale,
+                imageSize * ghostScale,
+                imageSize * ghostScale
+            );
+            ctx.restore();
+        }
+        ctx.restore();
     }
 
     drawSaberAssetLevelAura(ctx, currentX, currentY, outerRadius, flameAlpha, level, frame, progress, intensity) {
@@ -1950,10 +2019,25 @@ class Saber extends Weapon {
         ctx.globalCompositeOperation = 'lighter';
         ctx.lineCap = 'round';
 
+        if (level >= 6) {
+            const halo = ctx.createRadialGradient(0, 0, outerRadius * 0.18, 0, 0, outerRadius * 1.12);
+            halo.addColorStop(0, `rgba(255, 245, 150, ${0.18 * flameAlpha * intensity})`);
+            halo.addColorStop(0.55, `rgba(255, 106, 18, ${0.12 * flameAlpha * intensity})`);
+            halo.addColorStop(1, `rgba(255, 212, 70, 0)`);
+            ctx.fillStyle = halo;
+            ctx.beginPath();
+            ctx.arc(0, 0, outerRadius * 1.12, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
         if (level >= 2) {
             const rangeArc = outerRadius * (level >= 6 ? 1.12 : level >= 4 ? 1.06 : 1);
-            ctx.strokeStyle = `rgba(255, 202, 52, ${0.36 * flameAlpha * intensity})`;
-            ctx.lineWidth = Math.max(4, outerRadius * 0.06);
+            ctx.strokeStyle = level >= 6
+                ? `rgba(255, 238, 132, ${0.62 * flameAlpha * intensity})`
+                : level >= 5
+                    ? `rgba(255, 42, 28, ${0.52 * flameAlpha * intensity})`
+                    : `rgba(255, 202, 52, ${0.42 * flameAlpha * intensity})`;
+            ctx.lineWidth = Math.max(4, outerRadius * (level >= 5 ? 0.075 : 0.06));
             ctx.beginPath();
             ctx.arc(0, 0, rangeArc * 0.98, startAngle, endAngle);
             ctx.stroke();
@@ -1990,10 +2074,15 @@ class Saber extends Weapon {
         if (level >= 5) {
             ctx.save();
             ctx.rotate(Math.PI);
-            ctx.strokeStyle = `rgba(255, 38, 32, ${0.26 * flameAlpha * intensity})`;
-            ctx.lineWidth = Math.max(4, outerRadius * 0.055);
+            ctx.strokeStyle = `rgba(255, 32, 32, ${0.56 * flameAlpha * intensity})`;
+            ctx.lineWidth = Math.max(5, outerRadius * 0.075);
             ctx.beginPath();
-            ctx.arc(0, 0, outerRadius * 0.78, startAngle + 0.18, endAngle - 0.18);
+            ctx.arc(0, 0, outerRadius * 0.9, startAngle + 0.12, endAngle - 0.12);
+            ctx.stroke();
+            ctx.strokeStyle = `rgba(120, 0, 0, ${0.36 * flameAlpha * intensity})`;
+            ctx.lineWidth = Math.max(3, outerRadius * 0.045);
+            ctx.beginPath();
+            ctx.arc(0, 0, outerRadius * 0.66, startAngle + 0.2, endAngle - 0.2);
             ctx.stroke();
             ctx.restore();
         }
