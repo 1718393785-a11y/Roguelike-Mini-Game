@@ -941,18 +941,22 @@ function getDebugEntityId(entity) {
     return entity.__debugEntityId;
 }
 
-function collectMeleeArcShadowHits(originX, originY, aimAngle, radius, halfAngle, candidates, excluded) {
+function collectMeleeArcShadowHits(originX, originY, aimAngle, radius, halfAngle, candidates, excluded, options = {}) {
     const hits = [];
     for (const enemy of candidates) {
         if (excluded?.has(enemy)) continue;
         const dx = enemy.x - originX;
         const dy = enemy.y - originY;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist > radius) continue;
+        const candidateRadius = options.includeCandidateSize ? Math.max(0, enemy.size || enemy.radius || 0) * 0.65 : 0;
+        if (dist > radius + candidateRadius) continue;
         const enemyAngle = Math.atan2(dy, dx);
         let angleDiff = Math.abs(enemyAngle - aimAngle);
         angleDiff = Math.min(angleDiff, 2 * Math.PI - angleDiff);
-        if (angleDiff <= halfAngle) {
+        const anglePadding = options.includeCandidateSize
+            ? Math.min(options.maxAnglePadding || Math.PI / 12, Math.atan2(candidateRadius, Math.max(dist, 1)))
+            : 0;
+        if (angleDiff <= halfAngle + anglePadding) {
             hits.push(getDebugEntityId(enemy));
         }
     }
@@ -1595,6 +1599,12 @@ class Saber extends Weapon {
         }
     }
 
+    getVisualCollisionRadius() {
+        // The art swing is anchored at the player's hand, slightly in front of the body.
+        // Add that forward offset so the hit volume reaches the same visible tip.
+        return this.currentRadius + 12;
+    }
+
     // 每帧都执行：基于当前玩家坐标，重新检测哪些敌人在扇形内
     doCollisionDetection(player, enemies, projectiles) {
         // 强制实时锚定：用玩家**当前帧最新坐标**做原点
@@ -1603,16 +1613,18 @@ class Saber extends Weapon {
 
         // 空间网格优化：只查询扇形半径范围内附近格子的敌人
         const gm = window.gameManager;
-        const nearbyEnemies = gm.queryEnemiesInRange(currentX, currentY, this.currentRadius);
+        const collisionRadius = this.getVisualCollisionRadius();
+        const nearbyEnemies = gm.queryEnemiesInRange(currentX, currentY, collisionRadius + 40);
         const genericShadowEnabled = !!gm.genericWeaponShadow;
         const genericShadowHits = genericShadowEnabled ? collectMeleeArcShadowHits(
             currentX,
             currentY,
             this.aimAngle,
-            this.currentRadius,
+            collisionRadius,
             this.halfAngle,
             nearbyEnemies,
-            this.hitRecords
+            this.hitRecords,
+            { includeCandidateSize: true }
         ) : [];
         const genericHitIdSet = genericShadowEnabled ? new Set(genericShadowHits) : null;
         const legacyHits = [];
@@ -1628,13 +1640,15 @@ class Saber extends Weapon {
             const dx = enemy.x - currentX;
             const dy = enemy.y - currentY;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist > this.currentRadius) continue;
+            const enemyRadius = Math.max(0, enemy.size || enemy.radius || 0) * 0.65;
+            if (dist > collisionRadius + enemyRadius) continue;
 
             // 角度检测
             const enemyAngle = Math.atan2(dy, dx);
             let angleDiff = Math.abs(enemyAngle - this.aimAngle);
             angleDiff = Math.min(angleDiff, 2 * Math.PI - angleDiff);
-            const legacyShouldHit = angleDiff <= this.halfAngle;
+            const anglePadding = Math.min(Math.PI / 12, Math.atan2(enemyRadius, Math.max(dist, 1)));
+            const legacyShouldHit = angleDiff <= this.halfAngle + anglePadding;
             if (legacyShouldHit) {
                 if (genericShadowEnabled) {
                     legacyHits.push(getDebugEntityId(enemy));
@@ -1735,7 +1749,7 @@ class Saber extends Weapon {
             currentX,
             currentY,
             this.aimAngle,
-            this.currentRadius,
+            collisionRadius,
             this.halfAngle,
             enemyProjectiles
         ) : [];
@@ -1749,7 +1763,7 @@ class Saber extends Weapon {
             const dx = proj.x - currentX;
             const dy = proj.y - currentY;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist > this.currentRadius) continue;
+            if (dist > collisionRadius) continue;
 
             const projAngle = Math.atan2(dy, dx);
             let angleDiff = Math.abs(projAngle - this.aimAngle);
