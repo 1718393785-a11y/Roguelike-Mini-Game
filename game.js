@@ -1783,10 +1783,11 @@ class Saber extends Weapon {
         const currentY = player.y;
         const radius = this.currentRadius;
         const alpha = Math.max(0.2, Math.min(1, this.renderTimer / 0.15));
-        const usedArtArc = drawArtEffectTexture(ctx, 'saber_arc', currentX, currentY, radius * 2.45, radius * 2.05, this.aimAngle, alpha, 0.28, 0.5);
         if (FEATURE_FLAGS.ENABLE_SABER_FIRE_ANIMATION) {
-            this.renderFireSlash(ctx, currentX, currentY, radius, alpha, usedArtArc);
+            this.renderFireSlash(ctx, currentX, currentY, radius, alpha);
+            return;
         }
+        const usedArtArc = drawArtEffectTexture(ctx, 'saber_arc', currentX, currentY, radius * 2.45, radius * 2.05, this.aimAngle, alpha, 0.28, 0.5);
         if (usedArtArc) {
             return;
         }
@@ -1816,10 +1817,10 @@ class Saber extends Weapon {
         ctx.restore();
     }
 
-    renderFireSlash(ctx, currentX, currentY, radius, alpha, hasTextureBase) {
+    renderFireSlash(ctx, currentX, currentY, radius, alpha) {
         const frame = GameRuntime.getFrame();
         const pulse = 0.5 + 0.5 * Math.sin(frame * 0.32);
-        const flameAlpha = Math.min(1, alpha * (hasTextureBase ? 0.82 : 1));
+        const flameAlpha = Math.min(1, alpha);
         const innerRadius = radius * 0.34;
         const outerRadius = radius * (1.02 + pulse * 0.08);
         const startAngle = -this.halfAngle * 0.94;
