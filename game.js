@@ -2830,8 +2830,8 @@ class CrossbowArrow {
         this.size = 8; // 碰撞判定尺寸
         this.maxLifetime = 3; // 最多存活3秒
         this.lifetime = 0;
-        this.length = 18; // 箭矢显示长度
-        this.width = 3;  // 箭矢宽度
+        this.length = 38; // 箭矢显示长度
+        this.width = 5;  // 箭矢宽度
         // 穿透：初始可命中数量 = 基础穿透 + 1
         this.remainingPierce = extraPierce + 1;
         // 命中记录：同一个箭头不能重复伤害同一个敌人
@@ -2990,8 +2990,8 @@ class CrossbowArrow {
         const angle = Math.atan2(this.vy, this.vx);
         const endX = this.x + Math.cos(angle) * this.length;
         const endY = this.y + Math.sin(angle) * this.length;
-        const textureWidth = Math.max(this.length * 2.35, 52);
-        const textureHeight = this.hasLightningColumn ? 34 : (this.hasLightningAOE ? 30 : 24);
+        const textureWidth = Math.max(this.length * 3.15, 132);
+        const textureHeight = this.hasLightningColumn ? 58 : (this.hasLightningAOE ? 54 : 50);
         if (drawArtEffectTexture(ctx, 'crossbow_arrow', this.x, this.y, textureWidth, textureHeight, angle, 0.95, 0.1, 0.5)) {
             return;
         }
@@ -3005,6 +3005,17 @@ class CrossbowArrow {
         }
 
         // 绘制锐利的箭矢短线
+        ctx.save();
+        ctx.shadowBlur = this.hasLightningColumn ? 18 : 12;
+        ctx.shadowColor = '#58e7ff';
+        ctx.strokeStyle = 'rgba(64, 220, 255, 0.42)';
+        ctx.lineWidth = this.width + 5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(this.x - Math.cos(angle) * 5, this.y - Math.sin(angle) * 5);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+
         ctx.strokeStyle = strokeColor;
         ctx.lineWidth = this.width;
         ctx.lineCap = 'round';
@@ -3020,7 +3031,7 @@ class CrossbowArrow {
         }
         ctx.fillStyle = fillColor;
         ctx.beginPath();
-        const arrowSize = 5;
+        const arrowSize = 8;
         ctx.moveTo(endX, endY);
         ctx.lineTo(
             endX - Math.cos(angle - 0.5) * arrowSize,
@@ -3032,6 +3043,7 @@ class CrossbowArrow {
         );
         ctx.closePath();
         ctx.fill();
+        ctx.restore();
     }
 }
 
