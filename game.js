@@ -1908,9 +1908,8 @@ class Saber extends Weapon {
         const anchorX = 0.835;
         const anchorY = 0.215;
 
-        this.drawSaberAssetLevelAura(ctx, currentX, currentY, outerRadius, flameAlpha, level, frame, progress, intensity);
-        if (level >= 6) {
-            this.drawSaberUltimateGhosts(ctx, currentX, currentY, icon, imageSize, assetForwardAngle, anchorX, anchorY, flameAlpha, frame, progress, intensity);
+        if (level < 5) {
+            this.drawSaberAssetLevelAura(ctx, currentX, currentY, outerRadius, flameAlpha, level, frame, progress, intensity);
         }
 
         ctx.save();
