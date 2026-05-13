@@ -8086,6 +8086,14 @@ class GameManager {
 
     // ==================== 渲染 ====================
 
+    renderDomBackdrop() {
+        const ctx = this.ctx;
+        this.renderScrollingBackground(ctx, STAGES[this.currentStage]?.name ? '#11191c' : '#101416');
+        if (FEATURE_FLAGS.ENABLE_ART_DEBUG_PREVIEW && this.assets) {
+            this.renderArtWeaponPreview(ctx, this.canvas.width / 2, Math.max(128, this.canvas.height / 2 - 120));
+        }
+    }
+
     renderMainMenu() {
         const ctx = this.ctx;
         const centerX = this.canvas.width / 2;
@@ -8324,6 +8332,41 @@ class GameManager {
                     levelText: currentSkillLevel !== null ? `LV: ${currentSkillLevel}` : '',
                 };
             }),
+            mainMenu: {
+                title: '千里走单骑',
+                subtitle: '穿越时空只为找到你',
+                weaponPreview: ['saber', 'spear', 'crossbow', 'qinggang', 'shield', 'taiping'].map(id => ({
+                    id,
+                    iconSrc: hasArtWeaponIcons ? getDrawableImageSrc(this.assets.getWeaponIcon(id, 1)) : '',
+                })),
+            },
+            perkMenu: {
+                totalResonance: this.totalResonance || 0,
+                perks: PERK_UPGRADES.map((perk, index) => {
+                    const level = this.perkLevels[perk.id] || 0;
+                    const cost = this.getUpgradeCost(level);
+                    const match = perk.description.match(/^(.*)([+-]\d+(?:\.\d+)?)(.*)$/);
+                    let nextText = '';
+                    let description = perk.description;
+                    if (match) {
+                        description = match[1].replace(/[→ ]+$/, '');
+                        const stepValue = parseFloat(match[2]);
+                        const unit = match[3];
+                        const expectedTotal = parseFloat((stepValue * (level + 1)).toFixed(2));
+                        nextText = `下级 ${expectedTotal > 0 ? '+' : ''}${expectedTotal}${unit}`;
+                    }
+                    return {
+                        index,
+                        id: perk.id,
+                        name: perk.name,
+                        description,
+                        level,
+                        cost,
+                        canAfford: (this.totalResonance || 0) >= cost,
+                        nextText,
+                    };
+                }),
+            },
             result: {
                 title: this.gameState === GAME_STATE.VICTORY ? '历史回路已接通' : this.gameState === GAME_STATE.GAME_OVER ? '历史推演失败' : '已暂停',
                 subtitle: this.gameState === GAME_STATE.VICTORY ? '千里走单骑完成' : this.gameState === GAME_STATE.GAME_OVER ? '回到最初的开始吧' : '战斗逻辑已冻结',
@@ -9345,10 +9388,18 @@ class GameManager {
     render(deltaTime) {
         switch (this.gameState) {
             case GAME_STATE.MENU:
-                this.renderMainMenu();
+                if (FEATURE_FLAGS.ENABLE_DOM_MENUS && this.uiBridge) {
+                    this.renderDomBackdrop();
+                } else {
+                    this.renderMainMenu();
+                }
                 break;
             case GAME_STATE.PERK_UPGRADE:
-                this.renderPerkUpgrade();
+                if (FEATURE_FLAGS.ENABLE_DOM_MENUS && this.uiBridge) {
+                    this.renderDomBackdrop();
+                } else {
+                    this.renderPerkUpgrade();
+                }
                 break;
             case GAME_STATE.PLAYING:
                 this.renderPlaying();

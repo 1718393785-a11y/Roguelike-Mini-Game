@@ -15,6 +15,8 @@
             this.root = options.root || document.getElementById('gameUiRoot');
             this.game = null;
             this.lastLevelUpKey = '';
+            this.lastMainKey = '';
+            this.lastPerkKey = '';
             this.lastStatusKey = '';
             this.lastStateClass = '';
         }
@@ -74,6 +76,33 @@
                         </footer>
                     </div>
                 </section>
+                <section class="dom-main-menu" aria-label="主菜单">
+                    <div class="main-panel">
+                        <div class="main-title" data-ui="mainTitle">千里走单骑</div>
+                        <div class="main-subtitle" data-ui="mainSubtitle">穿越时空只为找到你</div>
+                        <div class="main-weapon-preview" data-ui="mainWeaponPreview"></div>
+                        <div class="main-actions">
+                            <button class="main-button main-button-primary" type="button" data-action="start">开始新游戏</button>
+                            <button class="main-button" type="button" data-action="openPerks">局外升级</button>
+                            <button class="main-button main-button-secondary" type="button" data-action="quit">退出</button>
+                        </div>
+                    </div>
+                </section>
+                <section class="dom-perk-menu" aria-label="局外升级">
+                    <div class="perk-panel">
+                        <header class="perk-header">
+                            <div>
+                                <div class="perk-title">历史残响 基因重塑</div>
+                                <div class="perk-subtitle">点击购买永久升级，死亡后保留效果</div>
+                            </div>
+                            <div class="perk-currency">当前残响 <b data-ui="perkCurrency">0</b></div>
+                        </header>
+                        <div class="perk-list" data-ui="perkList"></div>
+                        <footer class="perk-footer">
+                            <button class="menu-button" type="button" data-action="menu">返回主页</button>
+                        </footer>
+                    </div>
+                </section>
                 <section class="dom-menu" role="dialog" aria-modal="true" aria-label="系统菜单">
                     <div class="menu-panel">
                         <div class="menu-kicker" data-ui="menuKicker">SYSTEM</div>
@@ -104,6 +133,12 @@
                 if (action === 'pause') {
                     if (this.game.gameState === 1) this.game.gameState = 2;
                     else if (this.game.gameState === 2) this.game.gameState = 1;
+                } else if (action === 'start') {
+                    this.game.startNewGame?.();
+                } else if (action === 'openPerks') {
+                    this.game.gameState = 6;
+                } else if (action === 'quit') {
+                    window.location.reload();
                 } else if (action === 'home') {
                     this.game.returnToMenu?.();
                 } else if (action === 'resume') {
@@ -135,6 +170,19 @@
                     this.update(this.game);
                 }
             });
+
+            this.root.addEventListener('click', (event) => {
+                const card = event.target.closest('[data-perk-index]');
+                if (!card || !this.game || this.game.gameState !== 6) return;
+                event.preventDefault();
+                event.stopPropagation();
+                const index = Number(card.dataset.perkIndex);
+                if (Number.isInteger(index)) {
+                    this.game.buyPerk(index);
+                    this.lastPerkKey = '';
+                    this.update(this.game);
+                }
+            });
         }
 
         update(game) {
@@ -144,6 +192,8 @@
             this.updateHud(snapshot);
             this.updateStatus(snapshot);
             this.updateLevelUp(snapshot);
+            this.updateMainMenu(snapshot);
+            this.updatePerkMenu(snapshot);
             this.updateMenu(snapshot);
         }
 
@@ -216,6 +266,43 @@
                     </button>
                 `;
             }).join('');
+        }
+
+        updateMainMenu(snapshot) {
+            const main = snapshot.mainMenu || {};
+            const key = JSON.stringify(main);
+            if (key === this.lastMainKey) return;
+            this.lastMainKey = key;
+            this.setText('mainTitle', main.title || '千里走单骑');
+            this.setText('mainSubtitle', main.subtitle || '');
+            const container = this.root.querySelector('[data-ui="mainWeaponPreview"]');
+            if (!container) return;
+            container.innerHTML = (main.weaponPreview || []).map(item => item.iconSrc
+                ? `<img src="${this.escapeAttr(item.iconSrc)}" alt="">`
+                : '<span></span>').join('');
+        }
+
+        updatePerkMenu(snapshot) {
+            const perkMenu = snapshot.perkMenu || {};
+            const key = JSON.stringify(perkMenu);
+            if (key === this.lastPerkKey) return;
+            this.lastPerkKey = key;
+            this.setText('perkCurrency', `${perkMenu.totalResonance || 0}`);
+            const container = this.root.querySelector('[data-ui="perkList"]');
+            if (!container) return;
+            container.innerHTML = (perkMenu.perks || []).map(perk => `
+                <button class="perk-card ${perk.canAfford ? 'can-afford' : ''}" type="button" data-perk-index="${perk.index}">
+                    <div class="perk-card-main">
+                        <div class="perk-name">${this.escape(perk.name)} <span>Lv.${this.escape(String(perk.level))}</span></div>
+                        <div class="perk-desc">${this.escape(perk.description)}</div>
+                        ${perk.nextText ? `<div class="perk-next">${this.escape(perk.nextText)}</div>` : ''}
+                    </div>
+                    <div class="perk-cost">
+                        <span>价格</span>
+                        <b>${this.escape(String(perk.cost))}</b>
+                    </div>
+                </button>
+            `).join('');
         }
 
         updateMenu(snapshot) {
