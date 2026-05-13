@@ -4405,7 +4405,7 @@ class Player {
         // 血量初始化：满血量开局
         this.hp = this.maxHp;
 
-        // 随机选择一把初始武器 Lv.1
+        // 测试默认：百炼环首刀 Lv.5。URL 仍可用 debugInitialWeaponLevel 覆盖。
         const weaponChoices = [
             { type: 'saber', cls: Saber },
             { type: 'spear', cls: Spear },
@@ -4428,9 +4428,9 @@ class Player {
             }
         }
         weapon.level = 1;
-        const forcedWeaponLevel = Number(new URLSearchParams(window.location.search).get('debugInitialWeaponLevel') || 1);
-        if (forcedWeapon && Number.isInteger(forcedWeaponLevel) && forcedWeaponLevel > 1) {
-            const targetLevel = Math.min(forcedWeaponLevel, 6);
+        const initialWeaponLevelParam = Number(new URLSearchParams(window.location.search).get('debugInitialWeaponLevel') || 5);
+        if (Number.isInteger(initialWeaponLevelParam) && initialWeaponLevelParam > 1) {
+            const targetLevel = Math.min(initialWeaponLevelParam, 6);
             for (let lvl = 2; lvl <= targetLevel; lvl++) {
                 if (config[lvl]?.action) {
                     config[lvl].action(weapon);
@@ -4442,7 +4442,7 @@ class Player {
         applyGenericWeaponScalarMigration(weapon);
         this.weapons.push(weapon);
         this.refreshWeapons();
-        console.log('Player Init Stats:', this.modifiers, 'MaxHP:', this.maxHp, `Initial Weapon: ${config.name} Lv1, BaseDmg: ${config.baseDamage}`);
+        console.log('Player Init Stats:', this.modifiers, 'MaxHP:', this.maxHp, `Initial Weapon: ${config.name} Lv${weapon.level}, BaseDmg: ${config.baseDamage}`);
 
     }
 
