@@ -1819,12 +1819,13 @@ class Saber extends Weapon {
 
     renderFireSlash(ctx, currentX, currentY, radius, alpha) {
         const frame = GameRuntime.getFrame();
+        const level = this.level || 1;
         const pulse = 0.5 + 0.5 * Math.sin(frame * 0.32);
         const flameAlpha = Math.min(1, alpha);
-        const innerRadius = radius * 0.34;
-        const outerRadius = radius * (1.02 + pulse * 0.08);
-        const startAngle = -this.halfAngle * 0.94;
-        const endAngle = this.halfAngle * 0.94;
+        const visualHalfAngle = level >= 4 ? Math.max(this.halfAngle, Math.PI / 2) : this.halfAngle;
+        const outerRadius = radius * (1.02 + pulse * 0.08 + (level >= 2 ? 0.06 : 0));
+        const startAngle = -visualHalfAngle * 0.94;
+        const endAngle = visualHalfAngle * 0.94;
 
         ctx.save();
         ctx.translate(currentX, currentY);
@@ -1832,32 +1833,17 @@ class Saber extends Weapon {
         ctx.globalCompositeOperation = 'lighter';
         ctx.lineCap = 'round';
 
-        const gradient = ctx.createRadialGradient(0, 0, innerRadius, 0, 0, outerRadius);
-        gradient.addColorStop(0, `rgba(255, 255, 180, ${0.20 * flameAlpha})`);
-        gradient.addColorStop(0.42, `rgba(255, 156, 20, ${0.52 * flameAlpha})`);
-        gradient.addColorStop(0.72, `rgba(255, 58, 0, ${0.34 * flameAlpha})`);
-        gradient.addColorStop(1, `rgba(18, 180, 70, ${0.18 * flameAlpha})`);
+        if (level >= 4) {
+            this.drawSaberFormation(ctx, outerRadius, visualHalfAngle, flameAlpha, frame);
+        }
 
-        ctx.strokeStyle = gradient;
-        ctx.lineWidth = Math.max(8, radius * 0.18);
-        ctx.beginPath();
-        ctx.arc(0, 0, outerRadius * 0.86, startAngle, endAngle);
-        ctx.stroke();
+        this.drawSaberFlameArc(ctx, outerRadius, startAngle, endAngle, flameAlpha, level, frame, 1);
 
-        ctx.strokeStyle = `rgba(255, 246, 148, ${0.72 * flameAlpha})`;
-        ctx.lineWidth = Math.max(3, radius * 0.06);
-        ctx.beginPath();
-        ctx.arc(0, 0, outerRadius * 0.78, startAngle + 0.08, endAngle - 0.05);
-        ctx.stroke();
-
-        ctx.strokeStyle = `rgba(255, 82, 0, ${0.46 * flameAlpha})`;
-        ctx.lineWidth = Math.max(4, radius * 0.08);
-        for (let i = 0; i < 4; i++) {
-            const offset = (i - 1.5) * 0.08 + Math.sin(frame * 0.18 + i) * 0.035;
-            const arcRadius = outerRadius * (0.62 + i * 0.075);
-            ctx.beginPath();
-            ctx.arc(0, 0, arcRadius, startAngle + 0.13 + offset, endAngle - 0.16 + offset);
-            ctx.stroke();
+        if (level >= 5) {
+            ctx.save();
+            ctx.rotate(Math.PI);
+            this.drawSaberFlameArc(ctx, outerRadius * 0.9, startAngle + 0.16, endAngle - 0.16, flameAlpha * 0.42, level, frame + 19, 0.72);
+            ctx.restore();
         }
 
         const emberCount = 16;
@@ -1877,6 +1863,69 @@ class Saber extends Weapon {
             ctx.fill();
         }
 
+        ctx.restore();
+    }
+
+    drawSaberFlameArc(ctx, outerRadius, startAngle, endAngle, flameAlpha, level, frame, intensity) {
+        const innerRadius = outerRadius * 0.3;
+        const isMolten = level >= 3;
+        const gradient = ctx.createRadialGradient(0, 0, innerRadius, 0, 0, outerRadius);
+        gradient.addColorStop(0, `rgba(255, 255, 190, ${0.18 * flameAlpha * intensity})`);
+        gradient.addColorStop(0.35, `rgba(255, ${level >= 2 ? 190 : 156}, 22, ${0.56 * flameAlpha * intensity})`);
+        gradient.addColorStop(0.66, isMolten
+            ? `rgba(255, 34, 0, ${0.46 * flameAlpha * intensity})`
+            : `rgba(255, 76, 0, ${0.34 * flameAlpha * intensity})`);
+        gradient.addColorStop(1, `rgba(18, 180, 70, ${0.14 * flameAlpha * intensity})`);
+
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = Math.max(8, outerRadius * (level >= 2 ? 0.18 : 0.16)) * intensity;
+        ctx.beginPath();
+        ctx.arc(0, 0, outerRadius * 0.86, startAngle, endAngle);
+        ctx.stroke();
+
+        ctx.strokeStyle = `rgba(255, 250, 168, ${0.78 * flameAlpha * intensity})`;
+        ctx.lineWidth = Math.max(3, outerRadius * 0.052) * intensity;
+        ctx.beginPath();
+        ctx.arc(0, 0, outerRadius * 0.78, startAngle + 0.08, endAngle - 0.05);
+        ctx.stroke();
+
+        const trailCount = level >= 3 ? 5 : 4;
+        for (let i = 0; i < trailCount; i++) {
+            const hot = level >= 3 && i % 2 === 0;
+            ctx.strokeStyle = hot
+                ? `rgba(255, 36, 0, ${0.52 * flameAlpha * intensity})`
+                : `rgba(255, 118, 0, ${0.42 * flameAlpha * intensity})`;
+            ctx.lineWidth = Math.max(3, outerRadius * (hot ? 0.055 : 0.045)) * intensity;
+            const offset = (i - (trailCount - 1) / 2) * 0.075 + Math.sin(frame * 0.18 + i) * 0.035;
+            const arcRadius = outerRadius * (0.58 + i * 0.068);
+            ctx.beginPath();
+            ctx.arc(0, 0, arcRadius, startAngle + 0.13 + offset, endAngle - 0.16 + offset);
+            ctx.stroke();
+        }
+    }
+
+    drawSaberFormation(ctx, outerRadius, halfAngle, flameAlpha, frame) {
+        ctx.save();
+        ctx.strokeStyle = `rgba(255, 206, 76, ${0.28 * flameAlpha})`;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, outerRadius * 0.55, -halfAngle * 0.82, halfAngle * 0.82);
+        ctx.stroke();
+
+        const markCount = 7;
+        for (let i = 0; i < markCount; i++) {
+            const t = markCount === 1 ? 0.5 : i / (markCount - 1);
+            const angle = -halfAngle * 0.72 + halfAngle * 1.44 * t;
+            const r = outerRadius * (0.5 + 0.04 * Math.sin(frame * 0.08 + i));
+            const x = Math.cos(angle) * r;
+            const y = Math.sin(angle) * r;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle + Math.PI / 2);
+            ctx.fillStyle = `rgba(255, 230, 120, ${0.32 * flameAlpha})`;
+            ctx.fillRect(-1.5, -5, 3, 10);
+            ctx.restore();
+        }
         ctx.restore();
     }
 
