@@ -121,6 +121,7 @@
                 if (ok) {
                     this.loaded++;
                 } else {
+                    image.dataset.assetFailed = '1';
                     this.errors.push(`image load failed: ${path}`);
                 }
                 this.publishStatus();
@@ -140,7 +141,12 @@
 
         getWeaponIcon(weaponId, level = 1) {
             const weapon = this.manifest?.weapons?.[weaponId];
-            const entry = weapon?.levels?.[String(Math.max(1, Math.min(6, level)))] || weapon?.levels?.['1'];
+            const safeLevel = Math.max(1, Math.min(6, level));
+            const entry = weapon?.levels?.[String(safeLevel)] || weapon?.levels?.['1'];
+            if (window.FEATURE_FLAGS?.ENABLE_ART_WEAPON_V2) {
+                const v2Src = `generated/weapon-v2/weapons/asset_weapon_${weaponId}_lv${safeLevel}.png`;
+                return this.resolveImageWithFallback(v2Src, entry?.src);
+            }
             return this.resolveImage(entry?.src);
         }
 
@@ -188,7 +194,19 @@
         }
 
         getEffectTexture(effectId) {
-            return this.resolveImage(this.manifest?.effects?.[effectId]?.src);
+            const src = this.manifest?.effects?.[effectId]?.src;
+            if (window.FEATURE_FLAGS?.ENABLE_ART_WEAPON_V2) {
+                const v2Map = {
+                    saber_arc: 'generated/weapon-v2/effects/asset_effect_saber_arc_v2.png',
+                    spear_stab: 'generated/weapon-v2/effects/asset_effect_spear_stab_v2.png',
+                    crossbow_arrow: 'generated/weapon-v2/effects/asset_effect_crossbow_arrow_v2.png',
+                    qinggang_orbit: 'generated/weapon-v2/effects/asset_effect_qinggang_orbit_v2.png',
+                    shield_pulse: 'generated/weapon-v2/effects/asset_effect_shield_pulse_v2.png',
+                    taiping_tornado: 'generated/weapon-v2/effects/asset_effect_taiping_tornado_v2.png',
+                };
+                if (v2Map[effectId]) return this.resolveImageWithFallback(v2Map[effectId], src);
+            }
+            return this.resolveImage(src);
         }
 
         getUiSkin(uiId) {
@@ -201,6 +219,12 @@
             if (this.cache.has(path)) return this.cache.get(path);
             this.loadImage(path);
             return this.cache.get(path) || null;
+        }
+
+        resolveImageWithFallback(src, fallbackSrc) {
+            const image = this.resolveImage(src);
+            if (image && image.dataset.assetFailed !== '1') return image;
+            return this.resolveImage(fallbackSrc);
         }
 
         canDraw(image) {

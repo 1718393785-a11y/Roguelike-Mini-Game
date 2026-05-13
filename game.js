@@ -46,6 +46,7 @@ const FEATURE_FLAGS = {
     ENABLE_ART_UI_SKIN: false,
     ENABLE_ART_PIXI_TEXTURES: false,
     ENABLE_ART_DEBUG_PREVIEW: false,
+    ENABLE_ART_WEAPON_V2: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -110,6 +111,12 @@ if (FEATURE_FLAG_PARAMS.get('artUi') === '1' || FEATURE_FLAG_PARAMS.get('artUISk
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
     FEATURE_FLAGS.ENABLE_ART_UI_SKIN = true;
 }
+if (FEATURE_FLAG_PARAMS.get('weaponArtV2') === '1') {
+    FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
+    FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS = true;
+    FEATURE_FLAGS.ENABLE_ART_EFFECTS = true;
+    FEATURE_FLAGS.ENABLE_ART_WEAPON_V2 = true;
+}
 if (FEATURE_FLAG_PARAMS.get('domUi') === '1' || FEATURE_FLAG_PARAMS.get('uiV2') === '1') {
     FEATURE_FLAGS.ENABLE_DOM_UI = true;
     FEATURE_FLAGS.ENABLE_DOM_HUD = true;
@@ -159,6 +166,7 @@ const ART_FEATURE_FLAGS = [
     'ENABLE_ART_UI_SKIN',
     'ENABLE_ART_PIXI_TEXTURES',
     'ENABLE_ART_DEBUG_PREVIEW',
+    'ENABLE_ART_WEAPON_V2',
 ];
 
 function disableArtFeatures() {

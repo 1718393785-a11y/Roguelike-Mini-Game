@@ -1,0 +1,181 @@
+{
+  "version": "2.0.0",
+  "model": "gpt-image-2",
+  "category": "weapon_art_v2",
+  "targetDirectories": {
+    "icons": "assets/generated/weapon-v2/weapons",
+    "effects": "assets/generated/weapon-v2/effects"
+  },
+  "styleGuide": {
+    "camera": "top-down 45 degree game icon and effect readability",
+    "renderStyle": "2D dark Three Kingdoms fantasy, crisp hand-painted game asset, high contrast edge lighting",
+    "palette": "bronze gold, cyan energy, magenta cyber glyph accents, restrained dark ink texture",
+    "background": "flat solid #00ff00 chroma-key background for later transparent PNG extraction",
+    "constraints": [
+      "512x512 icon source",
+      "single centered object or single centered effect",
+      "no character, no text, no watermark",
+      "large silhouette readable at 48px HUD size",
+      "each level must clearly upgrade from the previous level without changing weapon identity"
+    ],
+    "negativePrompt": "side view, first person, 3D render, cartoon toy, low detail, blurry, noisy background, scenery, text, watermark, human character, multiple unrelated weapons, tiny unreadable object"
+  },
+  "weapons": [
+    {
+      "id": "saber",
+      "name": "百炼环首刀",
+      "identity": "ancient Chinese ring-pommel saber, heavy crescent slash identity",
+      "levelLanguage": [
+        "Lv1: plain forged bronze-steel saber, small warm gold edge",
+        "Lv2: longer blade, brighter orange-gold cutting edge",
+        "Lv3: heated red steel veins and sharper crescent motion hint",
+        "Lv4: full moon slash aura, double-layer gold arc",
+        "Lv5: paired afterimage cuts, red execution glow",
+        "Lv6: legendary Guan-style saber, massive gold-cyan crescent, imperial seal glyphs"
+      ],
+      "levels": [
+        { "level": 1, "output": "assets/generated/weapon-v2/weapons/asset_weapon_saber_lv1.png", "prompt": "Create a 2D game weapon icon, 百炼环首刀 Lv1, ancient Chinese ring-pommel saber, forged bronze steel blade, warm gold edge highlight, subtle dark ink texture, centered object, top-down 45 degree readable silhouette, flat solid #00ff00 background, no text." },
+        { "level": 2, "output": "assets/generated/weapon-v2/weapons/asset_weapon_saber_lv2.png", "prompt": "Create a 2D game weapon icon, 百炼环首刀 Lv2, same ring-pommel saber identity, longer blade, brighter orange-gold cutting edge, small crescent slash trail behind blade, dark Three Kingdoms fantasy polish, flat solid #00ff00 background, no text." },
+        { "level": 3, "output": "assets/generated/weapon-v2/weapons/asset_weapon_saber_lv3.png", "prompt": "Create a 2D game weapon icon, 百炼环首刀 Lv3, same ring-pommel saber identity, heated red steel veins along blade, stronger gold rim light, visible crescent motion hint, crisp hand-painted 2D asset, flat solid #00ff00 background, no text." },
+        { "level": 4, "output": "assets/generated/weapon-v2/weapons/asset_weapon_saber_lv4.png", "prompt": "Create a 2D game weapon icon, 百炼环首刀 Lv4, same saber identity, full moon slash aura wrapping the blade, double-layer gold arc, bronze ring pommel, cyan spark accents, readable at HUD size, flat solid #00ff00 background, no text." },
+        { "level": 5, "output": "assets/generated/weapon-v2/weapons/asset_weapon_saber_lv5.png", "prompt": "Create a 2D game weapon icon, 百炼环首刀 Lv5, same saber identity, paired afterimage cuts crossing behind the blade, red execution glow, golden blade core, high contrast dark ink style, flat solid #00ff00 background, no text." },
+        { "level": 6, "output": "assets/generated/weapon-v2/weapons/asset_weapon_saber_lv6.png", "prompt": "Create a 2D game weapon icon, 百炼环首刀 Lv6 ultimate, legendary Guan-style ring-pommel saber, massive gold-cyan crescent slash halo, imperial seal glyphs floating around blade, powerful but clean silhouette, flat solid #00ff00 background, no text." }
+      ],
+      "effect": {
+        "id": "saber_arc_v2",
+        "output": "assets/generated/weapon-v2/effects/asset_effect_saber_arc_v2.png",
+        "prompt": "Create a 2D top-down weapon attack effect, large crescent saber slash arc, gold core with cyan sharpened outer edge and red execution sparks, transparent-ready chroma key #00ff00 background, no character, no text, centered effect, crisp edge."
+      }
+    },
+    {
+      "id": "spear",
+      "name": "透阵龙胆枪",
+      "identity": "long spear with dragon-scale spearhead and piercing thrust identity",
+      "levelLanguage": [
+        "Lv1: clean steel spear with bronze shaft",
+        "Lv2: longer spearhead and narrow thrust line",
+        "Lv3: blue dragon-scale energy on blade",
+        "Lv4: twin thrust shadows and brighter cyan trail",
+        "Lv5: piercing dragon fang head with armor-break sparks",
+        "Lv6: full dragon-lance silhouette with cyan-gold thrust comet"
+      ],
+      "levels": [
+        { "level": 1, "output": "assets/generated/weapon-v2/weapons/asset_weapon_spear_lv1.png", "prompt": "Create a 2D game weapon icon, 透阵龙胆枪 Lv1, long Chinese spear, clean steel spearhead, bronze shaft, narrow piercing silhouette, top-down 45 degree, dark Three Kingdoms fantasy, flat solid #00ff00 background, no text." },
+        { "level": 2, "output": "assets/generated/weapon-v2/weapons/asset_weapon_spear_lv2.png", "prompt": "Create a 2D game weapon icon, 透阵龙胆枪 Lv2, same long spear identity, larger spearhead, thin cyan thrust line, bronze fittings, readable at small HUD size, flat solid #00ff00 background, no text." },
+        { "level": 3, "output": "assets/generated/weapon-v2/weapons/asset_weapon_spear_lv3.png", "prompt": "Create a 2D game weapon icon, 透阵龙胆枪 Lv3, same spear identity, blue dragon-scale energy on spearhead, silver blade, cyan glow along shaft, crisp hand-painted asset, flat solid #00ff00 background, no text." },
+        { "level": 4, "output": "assets/generated/weapon-v2/weapons/asset_weapon_spear_lv4.png", "prompt": "Create a 2D game weapon icon, 透阵龙胆枪 Lv4, same spear identity, twin thrust shadows behind spear, brighter cyan speed trail, gold hardware, top-down 45 degree game icon, flat solid #00ff00 background, no text." },
+        { "level": 5, "output": "assets/generated/weapon-v2/weapons/asset_weapon_spear_lv5.png", "prompt": "Create a 2D game weapon icon, 透阵龙胆枪 Lv5, same spear identity, dragon fang spearhead, armor-break orange sparks, cyan piercing beam, dark ink Three Kingdoms style, flat solid #00ff00 background, no text." },
+        { "level": 6, "output": "assets/generated/weapon-v2/weapons/asset_weapon_spear_lv6.png", "prompt": "Create a 2D game weapon icon, 透阵龙胆枪 Lv6 ultimate, full dragon-lance silhouette, cyan-gold thrust comet, spectral dragon coils around spearhead, powerful clean silhouette, flat solid #00ff00 background, no text." }
+      ],
+      "effect": {
+        "id": "spear_stab_v2",
+        "output": "assets/generated/weapon-v2/effects/asset_effect_spear_stab_v2.png",
+        "prompt": "Create a 2D top-down weapon attack effect, straight spear thrust beam, cyan-white piercing core, gold sparks, faint dragon-scale trail, flat #00ff00 chroma-key background, no character, no text, crisp directional motion."
+      }
+    },
+    {
+      "id": "crossbow",
+      "name": "霹雳惊弦弓",
+      "identity": "ancient repeating crossbow with lightning bolt arrow identity",
+      "levelLanguage": [
+        "Lv1: compact wooden bronze crossbow",
+        "Lv2: reinforced limbs and small lightning string",
+        "Lv3: charged bolt magazine with purple electricity",
+        "Lv4: twin bolt rails and brighter arcs",
+        "Lv5: storm crossbow with multiple bolt afterimages",
+        "Lv6: thunder engine crossbow, gold-purple lightning halo"
+      ],
+      "levels": [
+        { "level": 1, "output": "assets/generated/weapon-v2/weapons/asset_weapon_crossbow_lv1.png", "prompt": "Create a 2D game weapon icon, 霹雳惊弦弓 Lv1, ancient Chinese repeating crossbow, wood and bronze body, single steel bolt, top-down 45 degree, crisp readable silhouette, flat #00ff00 background, no text." },
+        { "level": 2, "output": "assets/generated/weapon-v2/weapons/asset_weapon_crossbow_lv2.png", "prompt": "Create a 2D game weapon icon, 霹雳惊弦弓 Lv2, same crossbow identity, reinforced bronze limbs, faint cyan lightning string, stronger bolt rail, dark Three Kingdoms fantasy, flat #00ff00 background, no text." },
+        { "level": 3, "output": "assets/generated/weapon-v2/weapons/asset_weapon_crossbow_lv3.png", "prompt": "Create a 2D game weapon icon, 霹雳惊弦弓 Lv3, same repeating crossbow identity, charged bolt magazine, purple electric arcs, gold fittings, readable at 48px, flat #00ff00 background, no text." },
+        { "level": 4, "output": "assets/generated/weapon-v2/weapons/asset_weapon_crossbow_lv4.png", "prompt": "Create a 2D game weapon icon, 霹雳惊弦弓 Lv4, same crossbow identity, twin bolt rails, brighter cyan-purple arcs, compact mechanical details, no background except flat #00ff00, no text." },
+        { "level": 5, "output": "assets/generated/weapon-v2/weapons/asset_weapon_crossbow_lv5.png", "prompt": "Create a 2D game weapon icon, 霹雳惊弦弓 Lv5, same crossbow identity, storm crossbow with multiple bolt afterimages, magenta lightning, bronze gold frame, flat #00ff00 background, no text." },
+        { "level": 6, "output": "assets/generated/weapon-v2/weapons/asset_weapon_crossbow_lv6.png", "prompt": "Create a 2D game weapon icon, 霹雳惊弦弓 Lv6 ultimate, thunder engine repeating crossbow, gold-purple lightning halo, charged bolt cluster, strong silhouette, flat #00ff00 background, no text." }
+      ],
+      "effect": {
+        "id": "crossbow_arrow_v2",
+        "output": "assets/generated/weapon-v2/effects/asset_effect_crossbow_arrow_v2.png",
+        "prompt": "Create a 2D top-down projectile effect, lightning crossbow bolt in flight, gold arrowhead, purple-cyan electric tail, sharp directional motion, flat #00ff00 chroma-key background, no character, no text."
+      }
+    },
+    {
+      "id": "qinggang",
+      "name": "青釭·游龙剑",
+      "identity": "cyan flying sword orbiting weapon, elegant blade and circular motion identity",
+      "levelLanguage": [
+        "Lv1: single cyan sword",
+        "Lv2: brighter blade with small orbit ring",
+        "Lv3: twin sword afterimage",
+        "Lv4: four-point orbit glyph",
+        "Lv5: dragon-scale flying sword array",
+        "Lv6: six sword orbit formation with cyan dragon halo"
+      ],
+      "levels": [
+        { "level": 1, "output": "assets/generated/weapon-v2/weapons/asset_weapon_qinggang_lv1.png", "prompt": "Create a 2D game weapon icon, 青釭·游龙剑 Lv1, elegant cyan ancient flying sword, silver blade, blue-green glow, top-down 45 degree, centered object, flat #00ff00 background, no text." },
+        { "level": 2, "output": "assets/generated/weapon-v2/weapons/asset_weapon_qinggang_lv2.png", "prompt": "Create a 2D game weapon icon, 青釭·游龙剑 Lv2, same cyan flying sword identity, brighter blade, small circular orbit ring behind sword, crisp dark fantasy asset, flat #00ff00 background, no text." },
+        { "level": 3, "output": "assets/generated/weapon-v2/weapons/asset_weapon_qinggang_lv3.png", "prompt": "Create a 2D game weapon icon, 青釭·游龙剑 Lv3, same flying sword identity, twin sword afterimage, cyan ink energy trail, silver-gold guard, readable at small size, flat #00ff00 background, no text." },
+        { "level": 4, "output": "assets/generated/weapon-v2/weapons/asset_weapon_qinggang_lv4.png", "prompt": "Create a 2D game weapon icon, 青釭·游龙剑 Lv4, same flying sword identity, four-point orbit glyph, cyan circular sword array hint, magenta rune accents, flat #00ff00 background, no text." },
+        { "level": 5, "output": "assets/generated/weapon-v2/weapons/asset_weapon_qinggang_lv5.png", "prompt": "Create a 2D game weapon icon, 青釭·游龙剑 Lv5, same sword identity, dragon-scale flying sword array, multiple elegant blade echoes, cyan energy, gold trim, flat #00ff00 background, no text." },
+        { "level": 6, "output": "assets/generated/weapon-v2/weapons/asset_weapon_qinggang_lv6.png", "prompt": "Create a 2D game weapon icon, 青釭·游龙剑 Lv6 ultimate, six sword orbit formation, cyan dragon halo, luminous silver blades arranged in a clean circle, powerful readable silhouette, flat #00ff00 background, no text." }
+      ],
+      "effect": {
+        "id": "qinggang_orbit_v2",
+        "output": "assets/generated/weapon-v2/effects/asset_effect_qinggang_orbit_v2.png",
+        "prompt": "Create a 2D top-down orbit effect, six cyan flying sword trails forming a circular orbit, dragon-scale energy ring, transparent-ready flat #00ff00 background, no character, no text, clean center."
+      }
+    },
+    {
+      "id": "shield",
+      "name": "八门金锁盾",
+      "identity": "ancient tactical shield and golden formation pulse identity",
+      "levelLanguage": [
+        "Lv1: bronze square shield",
+        "Lv2: stronger gold rim and gate rune",
+        "Lv3: cyan defensive pulse",
+        "Lv4: eight-gate formation ring",
+        "Lv5: shield wall with red-gold fire edge",
+        "Lv6: legendary eight-gate golden lock array"
+      ],
+      "levels": [
+        { "level": 1, "output": "assets/generated/weapon-v2/weapons/asset_weapon_shield_lv1.png", "prompt": "Create a 2D game weapon icon, 八门金锁盾 Lv1, ancient bronze square shield, simple gold rim, subtle battle scratches, top-down readable icon, flat #00ff00 background, no text." },
+        { "level": 2, "output": "assets/generated/weapon-v2/weapons/asset_weapon_shield_lv2.png", "prompt": "Create a 2D game weapon icon, 八门金锁盾 Lv2, same shield identity, stronger gold rim, single gate rune carved in center, dark Three Kingdoms fantasy, flat #00ff00 background, no text." },
+        { "level": 3, "output": "assets/generated/weapon-v2/weapons/asset_weapon_shield_lv3.png", "prompt": "Create a 2D game weapon icon, 八门金锁盾 Lv3, same bronze shield identity, cyan defensive pulse around shield, gold rivets, readable at HUD size, flat #00ff00 background, no text." },
+        { "level": 4, "output": "assets/generated/weapon-v2/weapons/asset_weapon_shield_lv4.png", "prompt": "Create a 2D game weapon icon, 八门金锁盾 Lv4, same shield identity, eight-gate formation ring behind shield, cyan and gold runes, strong centered silhouette, flat #00ff00 background, no text." },
+        { "level": 5, "output": "assets/generated/weapon-v2/weapons/asset_weapon_shield_lv5.png", "prompt": "Create a 2D game weapon icon, 八门金锁盾 Lv5, same shield identity, shield wall feeling, red-gold fire edge, bronze plates, defensive aura, flat #00ff00 background, no text." },
+        { "level": 6, "output": "assets/generated/weapon-v2/weapons/asset_weapon_shield_lv6.png", "prompt": "Create a 2D game weapon icon, 八门金锁盾 Lv6 ultimate, legendary eight-gate golden lock array, massive ornate shield, cyan-gold circular formation, commanding defensive silhouette, flat #00ff00 background, no text." }
+      ],
+      "effect": {
+        "id": "shield_pulse_v2",
+        "output": "assets/generated/weapon-v2/effects/asset_effect_shield_pulse_v2.png",
+        "prompt": "Create a 2D top-down defensive pulse effect, eight-gate golden formation ring expanding outward, cyan inner shield wave, red-gold fire edge accents, flat #00ff00 chroma-key background, no character, no text."
+      }
+    },
+    {
+      "id": "taiping",
+      "name": "太平要术·风火残页",
+      "identity": "ancient talisman scroll page with wind-fire spell identity",
+      "levelLanguage": [
+        "Lv1: torn yellow talisman page",
+        "Lv2: bronze frame and small ember glyphs",
+        "Lv3: wind swirl and fire script",
+        "Lv4: larger storm-fire scroll aura",
+        "Lv5: burning spell pages orbiting",
+        "Lv6: apocalyptic wind-fire tome fragment with golden spell storm"
+      ],
+      "levels": [
+        { "level": 1, "output": "assets/generated/weapon-v2/weapons/asset_weapon_taiping_lv1.png", "prompt": "Create a 2D game weapon icon, 太平要术·风火残页 Lv1, torn yellow talisman page, ancient ink spell marks, small ember glow, centered object, flat #00ff00 background, no text." },
+        { "level": 2, "output": "assets/generated/weapon-v2/weapons/asset_weapon_taiping_lv2.png", "prompt": "Create a 2D game weapon icon, 太平要术·风火残页 Lv2, same talisman page identity, bronze frame corners, small ember glyphs, subtle wind curl, flat #00ff00 background, no text." },
+        { "level": 3, "output": "assets/generated/weapon-v2/weapons/asset_weapon_taiping_lv3.png", "prompt": "Create a 2D game weapon icon, 太平要术·风火残页 Lv3, same spell page identity, visible wind swirl and fire script, gold-red runes, dark ink fantasy, flat #00ff00 background, no text." },
+        { "level": 4, "output": "assets/generated/weapon-v2/weapons/asset_weapon_taiping_lv4.png", "prompt": "Create a 2D game weapon icon, 太平要术·风火残页 Lv4, same talisman identity, larger storm-fire scroll aura, cyan wind and orange flame, readable at HUD size, flat #00ff00 background, no text." },
+        { "level": 5, "output": "assets/generated/weapon-v2/weapons/asset_weapon_taiping_lv5.png", "prompt": "Create a 2D game weapon icon, 太平要术·风火残页 Lv5, same spell page identity, burning spell pages orbiting one central scroll fragment, gold sparks, magenta seal glyphs, flat #00ff00 background, no text." },
+        { "level": 6, "output": "assets/generated/weapon-v2/weapons/asset_weapon_taiping_lv6.png", "prompt": "Create a 2D game weapon icon, 太平要术·风火残页 Lv6 ultimate, apocalyptic wind-fire tome fragment, golden spell storm, cyan tornado and red-orange fire fused, clean powerful silhouette, flat #00ff00 background, no text." }
+      ],
+      "effect": {
+        "id": "taiping_tornado_v2",
+        "output": "assets/generated/weapon-v2/effects/asset_effect_taiping_tornado_v2.png",
+        "prompt": "Create a 2D top-down area effect, wind-fire tornado spell, cyan spiral wind core with red-orange flame ribbons and gold talisman sparks, flat #00ff00 chroma-key background, no character, no text."
+      }
+    }
+  ]
+}

@@ -21,6 +21,7 @@ export const FEATURE_FLAGS = {
   ENABLE_DESTRUCTIBLE_PROPS: false,
   ENABLE_LARGE_MAP_CAMERA: false,
   ENABLE_SCROLLING_BACKGROUND: false,
+  ENABLE_ART_WEAPON_V2: false,
 } as const;
 
 export type FeatureFlagName = keyof typeof FEATURE_FLAGS;
