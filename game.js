@@ -47,6 +47,7 @@ const FEATURE_FLAGS = {
     ENABLE_ART_PIXI_TEXTURES: false,
     ENABLE_ART_DEBUG_PREVIEW: false,
     ENABLE_ART_WEAPON_V2: false,
+    ENABLE_SABER_FIRE_ANIMATION: false,
 };
 
 const FEATURE_FLAG_PARAMS = new URLSearchParams(window.location.search);
@@ -106,6 +107,7 @@ if (FEATURE_FLAG_PARAMS.get('artTiles') === '1') {
 if (FEATURE_FLAG_PARAMS.get('artEffects') === '1') {
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
     FEATURE_FLAGS.ENABLE_ART_EFFECTS = true;
+    FEATURE_FLAGS.ENABLE_SABER_FIRE_ANIMATION = true;
 }
 if (FEATURE_FLAG_PARAMS.get('artUi') === '1' || FEATURE_FLAG_PARAMS.get('artUISkin') === '1') {
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
@@ -116,7 +118,9 @@ if (FEATURE_FLAG_PARAMS.get('weaponArtV2') === '1') {
     FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS = true;
     FEATURE_FLAGS.ENABLE_ART_EFFECTS = true;
     FEATURE_FLAGS.ENABLE_ART_WEAPON_V2 = true;
+    FEATURE_FLAGS.ENABLE_SABER_FIRE_ANIMATION = true;
 }
+if (FEATURE_FLAG_PARAMS.get('saberFire') === '1') FEATURE_FLAGS.ENABLE_SABER_FIRE_ANIMATION = true;
 if (FEATURE_FLAG_PARAMS.get('domUi') === '1' || FEATURE_FLAG_PARAMS.get('uiV2') === '1') {
     FEATURE_FLAGS.ENABLE_DOM_UI = true;
     FEATURE_FLAGS.ENABLE_DOM_HUD = true;
@@ -167,6 +171,7 @@ const ART_FEATURE_FLAGS = [
     'ENABLE_ART_PIXI_TEXTURES',
     'ENABLE_ART_DEBUG_PREVIEW',
     'ENABLE_ART_WEAPON_V2',
+    'ENABLE_SABER_FIRE_ANIMATION',
 ];
 
 function disableArtFeatures() {
@@ -1778,7 +1783,11 @@ class Saber extends Weapon {
         const currentY = player.y;
         const radius = this.currentRadius;
         const alpha = Math.max(0.2, Math.min(1, this.renderTimer / 0.15));
-        if (drawArtEffectTexture(ctx, 'saber_arc', currentX, currentY, radius * 2.45, radius * 2.05, this.aimAngle, alpha, 0.28, 0.5)) {
+        const usedArtArc = drawArtEffectTexture(ctx, 'saber_arc', currentX, currentY, radius * 2.45, radius * 2.05, this.aimAngle, alpha, 0.28, 0.5);
+        if (FEATURE_FLAGS.ENABLE_SABER_FIRE_ANIMATION) {
+            this.renderFireSlash(ctx, currentX, currentY, radius, alpha, usedArtArc);
+        }
+        if (usedArtArc) {
             return;
         }
 
@@ -1803,6 +1812,69 @@ class Saber extends Weapon {
         ctx.strokeStyle = 'rgba(255, 215, 0, 0.8)';
         ctx.lineWidth = 3;
         ctx.stroke();
+
+        ctx.restore();
+    }
+
+    renderFireSlash(ctx, currentX, currentY, radius, alpha, hasTextureBase) {
+        const frame = GameRuntime.getFrame();
+        const pulse = 0.5 + 0.5 * Math.sin(frame * 0.32);
+        const flameAlpha = Math.min(1, alpha * (hasTextureBase ? 0.82 : 1));
+        const innerRadius = radius * 0.34;
+        const outerRadius = radius * (1.02 + pulse * 0.08);
+        const startAngle = -this.halfAngle * 0.94;
+        const endAngle = this.halfAngle * 0.94;
+
+        ctx.save();
+        ctx.translate(currentX, currentY);
+        ctx.rotate(this.aimAngle);
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineCap = 'round';
+
+        const gradient = ctx.createRadialGradient(0, 0, innerRadius, 0, 0, outerRadius);
+        gradient.addColorStop(0, `rgba(255, 255, 180, ${0.20 * flameAlpha})`);
+        gradient.addColorStop(0.42, `rgba(255, 156, 20, ${0.52 * flameAlpha})`);
+        gradient.addColorStop(0.72, `rgba(255, 58, 0, ${0.34 * flameAlpha})`);
+        gradient.addColorStop(1, `rgba(18, 180, 70, ${0.18 * flameAlpha})`);
+
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = Math.max(8, radius * 0.18);
+        ctx.beginPath();
+        ctx.arc(0, 0, outerRadius * 0.86, startAngle, endAngle);
+        ctx.stroke();
+
+        ctx.strokeStyle = `rgba(255, 246, 148, ${0.72 * flameAlpha})`;
+        ctx.lineWidth = Math.max(3, radius * 0.06);
+        ctx.beginPath();
+        ctx.arc(0, 0, outerRadius * 0.78, startAngle + 0.08, endAngle - 0.05);
+        ctx.stroke();
+
+        ctx.strokeStyle = `rgba(255, 82, 0, ${0.46 * flameAlpha})`;
+        ctx.lineWidth = Math.max(4, radius * 0.08);
+        for (let i = 0; i < 4; i++) {
+            const offset = (i - 1.5) * 0.08 + Math.sin(frame * 0.18 + i) * 0.035;
+            const arcRadius = outerRadius * (0.62 + i * 0.075);
+            ctx.beginPath();
+            ctx.arc(0, 0, arcRadius, startAngle + 0.13 + offset, endAngle - 0.16 + offset);
+            ctx.stroke();
+        }
+
+        const emberCount = 16;
+        for (let i = 0; i < emberCount; i++) {
+            const seed = i * 12.9898;
+            const drift = (frame * 0.035 + i * 0.137) % 1;
+            const angle = startAngle + (endAngle - startAngle) * ((i / emberCount + drift * 0.28) % 1);
+            const sparkRadius = outerRadius * (0.45 + ((Math.sin(seed) + 1) * 0.25)) + drift * radius * 0.18;
+            const sparkSize = 1.6 + ((Math.cos(seed * 1.7) + 1) * 1.8);
+            const x = Math.cos(angle) * sparkRadius;
+            const y = Math.sin(angle) * sparkRadius;
+            ctx.fillStyle = i % 3 === 0
+                ? `rgba(255, 245, 120, ${0.88 * flameAlpha})`
+                : `rgba(255, 102, 0, ${0.72 * flameAlpha})`;
+            ctx.beginPath();
+            ctx.ellipse(x, y, sparkSize * 1.4, sparkSize * 0.72, angle, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
         ctx.restore();
     }
@@ -3978,7 +4050,7 @@ class Player {
         ];
         const forcedWeaponType = new URLSearchParams(window.location.search).get('debugInitialWeapon');
         const forcedWeapon = weaponChoices.find(choice => choice.type === forcedWeaponType);
-        const picked = forcedWeapon || weaponChoices[Math.floor(GameRuntime.random() * weaponChoices.length)];
+        const picked = forcedWeapon || weaponChoices[0];
         const config = WEAPON_UPGRADES[picked.type];
 
         // 直接使用纯净的基础伤害，所有乘区计算交给攻击判定瞬间

@@ -22,6 +22,7 @@ export const FEATURE_FLAGS = {
   ENABLE_LARGE_MAP_CAMERA: false,
   ENABLE_SCROLLING_BACKGROUND: false,
   ENABLE_ART_WEAPON_V2: false,
+  ENABLE_SABER_FIRE_ANIMATION: false,
 } as const;
 
 export type FeatureFlagName = keyof typeof FEATURE_FLAGS;
