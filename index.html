@@ -11,8 +11,9 @@
     <script>
         (function () {
             const isGitHubPages = window.location.hostname.endsWith('github.io')
+            const isLocalDev = ['127.0.0.1', 'localhost', '::1'].includes(window.location.hostname)
             const params = new URLSearchParams(window.location.search)
-            const hasArtParam = [
+            const artKeys = [
                 'artAssets',
                 'artWeaponIcons',
                 'artSkillIcons',
@@ -27,10 +28,25 @@
                 'artUISkin',
                 'artHud',
                 'artPreview'
-            ].some(key => params.has(key))
+            ]
+            const devKeys = [
+                'domUi',
+                'audio',
+                'stateMusic',
+                'domWeaponCd',
+                'pickupMerge',
+                'aiTuning',
+                'qinqiPhantoms',
+                'ENABLE_LARGE_MAP_CAMERA',
+                'ENABLE_GAME_SETTINGS',
+                'ENABLE_WEAPON_COOLDOWN_HUD'
+            ]
+            const hasArtParam = artKeys.some(key => params.has(key))
+            const hasDevParam = devKeys.some(key => params.has(key))
 
-            if (!isGitHubPages || hasArtParam) return
+            if ((!isGitHubPages && !isLocalDev) || (hasArtParam && hasDevParam)) return
 
+            if (!params.has('seed')) params.set('seed', '12345')
             params.set('artA1A2', '1')
             params.set('artEnemies', '1')
             params.set('artPlayer', '1')
@@ -38,6 +54,18 @@
             params.set('artEffects', '1')
             params.set('artUi', '1')
             params.set('artHud', '1')
+            if (isLocalDev) {
+                params.set('domUi', '1')
+                params.set('audio', '1')
+                params.set('stateMusic', '1')
+                params.set('domWeaponCd', '1')
+                params.set('pickupMerge', '1')
+                params.set('aiTuning', '1')
+                params.set('qinqiPhantoms', '1')
+                params.set('ENABLE_LARGE_MAP_CAMERA', '1')
+                params.set('ENABLE_GAME_SETTINGS', '1')
+                params.set('ENABLE_WEAPON_COOLDOWN_HUD', '1')
+            }
             window.location.replace(`${window.location.pathname}?${params.toString()}${window.location.hash}`)
         })()
     </script>
