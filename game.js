@@ -1838,11 +1838,13 @@ class Saber extends Weapon {
         }
 
         this.drawSaberFlameArc(ctx, outerRadius, startAngle, endAngle, flameAlpha, level, frame, 1);
+        this.drawSaberBlade(ctx, outerRadius, flameAlpha, level, frame, 1);
 
         if (level >= 5) {
             ctx.save();
             ctx.rotate(Math.PI);
             this.drawSaberFlameArc(ctx, outerRadius * 0.9, startAngle + 0.16, endAngle - 0.16, flameAlpha * 0.42, level, frame + 19, 0.72);
+            this.drawSaberBlade(ctx, outerRadius * 0.84, flameAlpha * 0.24, level, frame + 19, 0.58);
             ctx.restore();
         }
 
@@ -1861,6 +1863,81 @@ class Saber extends Weapon {
             ctx.beginPath();
             ctx.ellipse(x, y, sparkSize * 1.4, sparkSize * 0.72, angle, 0, Math.PI * 2);
             ctx.fill();
+        }
+
+        ctx.restore();
+    }
+
+    drawSaberBlade(ctx, outerRadius, flameAlpha, level, frame, intensity) {
+        const swing = Math.sin(frame * 0.22) * 0.035;
+        const length = outerRadius * (0.72 + (level >= 2 ? 0.08 : 0));
+        const width = Math.max(9, outerRadius * 0.13) * intensity;
+        const hiltX = outerRadius * 0.12;
+        const bladeStart = outerRadius * 0.28;
+        const bladeTip = length;
+
+        ctx.save();
+        ctx.rotate(swing);
+        ctx.globalCompositeOperation = 'source-over';
+
+        ctx.shadowBlur = 12 * intensity;
+        ctx.shadowColor = level >= 3 ? 'rgba(255, 74, 0, 0.85)' : 'rgba(255, 190, 52, 0.8)';
+
+        const bladeGradient = ctx.createLinearGradient(bladeStart, -width, bladeTip, width);
+        bladeGradient.addColorStop(0, `rgba(88, 64, 42, ${0.82 * flameAlpha})`);
+        bladeGradient.addColorStop(0.28, `rgba(255, 238, 188, ${0.94 * flameAlpha})`);
+        bladeGradient.addColorStop(0.62, `rgba(230, 232, 226, ${0.96 * flameAlpha})`);
+        bladeGradient.addColorStop(1, `rgba(255, ${level >= 3 ? 120 : 206}, 58, ${0.92 * flameAlpha})`);
+
+        ctx.fillStyle = bladeGradient;
+        ctx.beginPath();
+        ctx.moveTo(bladeStart, -width * 0.52);
+        ctx.quadraticCurveTo(outerRadius * 0.54, -width * 1.32, bladeTip, -width * 0.18);
+        ctx.quadraticCurveTo(outerRadius * 0.66, width * 0.72, bladeStart, width * 0.58);
+        ctx.quadraticCurveTo(bladeStart + width * 0.8, 0, bladeStart, -width * 0.52);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = `rgba(255, 244, 198, ${0.9 * flameAlpha})`;
+        ctx.lineWidth = Math.max(1.6, width * 0.12);
+        ctx.stroke();
+
+        ctx.strokeStyle = level >= 3
+            ? `rgba(255, 76, 0, ${0.74 * flameAlpha})`
+            : `rgba(255, 209, 74, ${0.68 * flameAlpha})`;
+        ctx.lineWidth = Math.max(1.4, width * 0.1);
+        ctx.beginPath();
+        ctx.moveTo(bladeStart + width * 0.6, width * 0.12);
+        ctx.quadraticCurveTo(outerRadius * 0.58, width * 0.38, bladeTip - width * 0.8, -width * 0.08);
+        ctx.stroke();
+
+        // Guard and ring-pommel hilt, kept small so it reads as one swung saber, not a second weapon.
+        ctx.fillStyle = `rgba(82, 50, 28, ${0.92 * flameAlpha})`;
+        ctx.fillRect(hiltX - width * 0.9, -width * 0.18, width * 1.9, width * 0.36);
+        ctx.strokeStyle = `rgba(255, 202, 78, ${0.95 * flameAlpha})`;
+        ctx.lineWidth = Math.max(2, width * 0.16);
+        ctx.beginPath();
+        ctx.moveTo(hiltX + width * 0.7, -width * 0.72);
+        ctx.lineTo(hiltX + width * 1.25, width * 0.72);
+        ctx.moveTo(hiltX + width * 0.04, -width * 0.62);
+        ctx.lineTo(hiltX - width * 0.45, width * 0.62);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(hiltX - width * 1.18, 0, width * 0.38, 0, Math.PI * 2);
+        ctx.stroke();
+
+        if (level >= 3) {
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.strokeStyle = `rgba(255, 92, 0, ${0.52 * flameAlpha})`;
+            ctx.lineWidth = Math.max(1.2, width * 0.08);
+            for (let i = 0; i < 3; i++) {
+                const x = bladeStart + (bladeTip - bladeStart) * (0.26 + i * 0.18);
+                ctx.beginPath();
+                ctx.moveTo(x, -width * 0.25);
+                ctx.quadraticCurveTo(x + width * 0.75, Math.sin(frame * 0.15 + i) * width * 0.18, x + width * 1.5, width * 0.22);
+                ctx.stroke();
+            }
         }
 
         ctx.restore();
