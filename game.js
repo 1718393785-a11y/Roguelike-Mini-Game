@@ -1526,6 +1526,7 @@ class Saber extends Weapon {
         this.comboInterval = getWeaponJsonParam('saber', 'comboInterval', 0.15); // 连击段数之间的间隔（秒），快速前后交替
         this.active = false;      // 是否正在连击进行中（控制渲染显示）
         this.renderTimer = 0;     // 特效渲染停留计时器
+        this.renderDuration = 0.22; // 单次挥刀动画时长
     }
 
     attack(player, enemies, specialAreas) {
@@ -1552,7 +1553,7 @@ class Saber extends Weapon {
 
                 // 每次挥出刀，刷新残影停留时间，并确保渲染开启
                 this.active = true;
-                this.renderTimer = 0.15; // 画面停留 0.15 秒
+                this.renderTimer = this.renderDuration;
 
                 if (this.comboRemaining > 0) {
                     this.comboTimer = this.comboInterval; // 重置间隔，等待下一段
@@ -1782,7 +1783,7 @@ class Saber extends Weapon {
         const currentX = player.x;
         const currentY = player.y;
         const radius = this.currentRadius;
-        const alpha = Math.max(0.2, Math.min(1, this.renderTimer / 0.15));
+        const alpha = 1;
         if (FEATURE_FLAGS.ENABLE_SABER_FIRE_ANIMATION) {
             this.renderFireSlash(ctx, currentX, currentY, radius, alpha);
             return;
@@ -1826,6 +1827,11 @@ class Saber extends Weapon {
         const outerRadius = radius * (1.02 + pulse * 0.08 + (level >= 2 ? 0.06 : 0));
         const startAngle = -visualHalfAngle * 0.94;
         const endAngle = visualHalfAngle * 0.94;
+        const progress = 1 - Math.max(0, Math.min(1, this.renderTimer / this.renderDuration));
+
+        if (this.drawSaberAssetSwing(ctx, currentX, currentY, outerRadius, flameAlpha, level, frame, progress, 1)) {
+            return;
+        }
 
         ctx.save();
         ctx.translate(currentX, currentY);
@@ -1866,6 +1872,53 @@ class Saber extends Weapon {
         }
 
         ctx.restore();
+    }
+
+    drawSaberAssetSwing(ctx, currentX, currentY, outerRadius, flameAlpha, level, frame, progress, intensity) {
+        const assets = window.gameManager?.assets || window.assetRuntime;
+        if (!FEATURE_FLAGS.ENABLE_ART_ASSETS || !FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS || !assets?.getWeaponIcon) return false;
+        const icon = assets.getWeaponIcon('saber', Math.max(1, Math.min(6, level)));
+        if (!assets.canDraw?.(icon)) return false;
+
+        const forwardX = Math.cos(this.aimAngle);
+        const forwardY = Math.sin(this.aimAngle);
+        const handX = currentX + forwardX * 9;
+        const handY = currentY + forwardY * 9;
+        const imageSize = outerRadius * (2.25 + (level >= 2 ? 0.16 : 0));
+        const assetForwardAngle = 2.48; // Image vector from ring handle to flame blade direction.
+        const swingArc = -0.42 + progress * 0.58;
+        const recoil = Math.sin(progress * Math.PI) * 0.07;
+        const rotation = this.aimAngle - assetForwardAngle + swingArc + recoil;
+        const anchorX = 0.835;
+        const anchorY = 0.215;
+
+        ctx.save();
+        ctx.translate(handX, handY);
+        ctx.rotate(rotation);
+        ctx.globalAlpha *= flameAlpha * intensity;
+        ctx.imageSmoothingEnabled = true;
+        ctx.drawImage(icon, -imageSize * anchorX, -imageSize * anchorY, imageSize, imageSize);
+
+        // Fire motion from the source art: repeated hot edge copies, still pivoting around the fixed hilt.
+        ctx.globalCompositeOperation = 'lighter';
+        for (let i = 0; i < 2; i++) {
+            const trailScale = 1 + 0.035 * (i + 1);
+            const trailRot = -0.035 * (i + 1) - Math.sin(frame * 0.16 + i) * 0.015;
+            ctx.save();
+            ctx.rotate(trailRot);
+            ctx.globalAlpha = flameAlpha * (0.18 - i * 0.055) * intensity;
+            ctx.drawImage(
+                icon,
+                -imageSize * anchorX * trailScale,
+                -imageSize * anchorY * trailScale,
+                imageSize * trailScale,
+                imageSize * trailScale
+            );
+            ctx.restore();
+        }
+
+        ctx.restore();
+        return true;
     }
 
     drawSaberBlade(ctx, outerRadius, flameAlpha, level, frame, intensity) {
