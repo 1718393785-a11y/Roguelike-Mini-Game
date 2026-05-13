@@ -5533,17 +5533,17 @@ class Pickup {
         this.expValue = expValue;
         // 不同类型不同大小
         if (type === PICKUP_TYPES.MAGNET) {
-            this.size = 46; // 吸铁石更大更醒目
+            this.size = 16; // 约为玩家尺寸的 1/2
         } else if (type === PICKUP_TYPES.CHICKEN) {
-            this.size = 44; // 烤鸡腿比馒头稍大
+            this.size = 15;
         } else if (type === PICKUP_TYPES.BUN) {
-            this.size = 40;
+            this.size = 14;
         } else if (type === PICKUP_TYPES.RESONANCE) {
-            this.size = 36;
+            this.size = 13;
         } else if (type === PICKUP_TYPES.BOSS_EXP) {
-            this.size = 48;
+            this.size = 18;
         } else {
-            this.size = 30; // 默认大小
+            this.size = 12; // 约为玩家尺寸的 1/3
         }
         this.color = type.color;
         this.basePickupRadius = 50;
@@ -5684,13 +5684,13 @@ class Pickup {
             if (this.expValue > 1 && this.expValue <= 10) {
                 // 1 < 容量 <= 10
                 displayColor = '#ff8c00';
-                displaySize = 36;
+                displaySize = 14;
             } else if (this.expValue > 10) {
                 // 容量 > 10
                 displayColor = '#ff0000';
-                displaySize = 44;
+                displaySize = 16;
             } else {
-                displaySize = 30;
+                displaySize = 12;
             }
         }
 
@@ -5698,7 +5698,7 @@ class Pickup {
             const pickupId = this.getArtPickupId();
             const icon = pickupId ? assets.getPickupIcon(pickupId) : null;
             if (assets.canDraw(icon)) {
-                const iconSize = Math.max(38, displaySize * 1.15);
+                const iconSize = displaySize;
                 const useDiamondFrame = pickupId === 'EXP' || pickupId === 'EXP_LARGE' || pickupId === 'BOSS_EXP' || pickupId === 'RESONANCE';
                 ctx.save();
                 ctx.shadowBlur = Math.max(8, iconSize * 0.28);
@@ -9564,7 +9564,10 @@ class GameManager {
             track = 'result';
         }
 
-        if (track === this.activeMusicTrack) return;
+        if (track === this.activeMusicTrack) {
+            if (track && window.audioManager?.currentMusic !== track) playGameMusic(track);
+            return;
+        }
         this.activeMusicTrack = track;
         if (track) playGameMusic(track);
         else stopGameMusic();

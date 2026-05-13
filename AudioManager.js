@@ -33,6 +33,7 @@
             this.musicNodes = [];
             this.currentMusic = '';
             this.pendingMusic = '';
+            this.musicInterval = 0;
             this.lastPlayedAt = new Map();
             this.unlocked = false;
             this.platformResolver = null;
@@ -214,11 +215,16 @@
             this.musicNodes = nodes;
             this.currentMusic = name;
             this.pendingMusic = '';
+            this.startMusicPulse(name);
             this.publishStatus();
             return true;
         }
 
         stopMusic(fadeSeconds = 0.25) {
+            if (this.musicInterval) {
+                window.clearInterval(this.musicInterval);
+                this.musicInterval = 0;
+            }
             if (this.musicNodes.length === 0) {
                 this.currentMusic = '';
                 return;
@@ -243,10 +249,49 @@
             this.publishStatus();
         }
 
+        startMusicPulse(name) {
+            if (this.musicInterval) window.clearInterval(this.musicInterval);
+            let step = 0;
+            this.playMusicPulse(name, step++);
+            this.musicInterval = window.setInterval(() => {
+                if (!this.enabled || this.muted || this.currentMusic !== name) return;
+                this.playMusicPulse(name, step++);
+            }, 620);
+        }
+
+        playMusicPulse(name, step) {
+            const context = this.ensureContext();
+            if (!context || context.state === 'suspended') return false;
+            const profile = this.getMusicProfile(name);
+            const note = profile.motif[step % profile.motif.length];
+            const start = context.currentTime;
+            const bus = this.busGains.get('music') || this.masterGain;
+            const gain = context.createGain();
+            gain.gain.setValueAtTime(0.0001, start);
+            gain.gain.exponentialRampToValueAtTime(profile.pulseGain, start + 0.025);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.42);
+            gain.connect(bus);
+
+            const osc = context.createOscillator();
+            osc.type = profile.pulseType;
+            osc.frequency.setValueAtTime(note, start);
+            osc.connect(gain);
+            osc.start(start);
+            osc.stop(start + 0.44);
+            window.setTimeout(() => {
+                try { osc.disconnect(); } catch {}
+                try { gain.disconnect(); } catch {}
+            }, 560);
+            return true;
+        }
+
         getMusicProfile(name) {
             const profiles = {
                 menu: {
-                    gain: 0.18,
+                    gain: 0.24,
+                    pulseGain: 0.18,
+                    pulseType: 'triangle',
+                    motif: [220, 277.18, 329.63, 277.18, 246.94, 220],
                     layers: [
                         { type: 'sine', frequency: 110, gain: 0.42 },
                         { type: 'triangle', frequency: 220, gain: 0.22 },
@@ -254,7 +299,10 @@
                     ],
                 },
                 levelup: {
-                    gain: 0.20,
+                    gain: 0.26,
+                    pulseGain: 0.22,
+                    pulseType: 'sine',
+                    motif: [329.63, 392, 493.88, 587.33, 493.88, 392],
                     layers: [
                         { type: 'triangle', frequency: 196, gain: 0.32 },
                         { type: 'sine', frequency: 392, gain: 0.20 },
@@ -262,7 +310,10 @@
                     ],
                 },
                 result: {
-                    gain: 0.19,
+                    gain: 0.25,
+                    pulseGain: 0.18,
+                    pulseType: 'triangle',
+                    motif: [146.83, 174.61, 220, 196, 174.61, 146.83],
                     layers: [
                         { type: 'sine', frequency: 73.42, gain: 0.45 },
                         { type: 'triangle', frequency: 146.83, gain: 0.24 },
@@ -276,8 +327,15 @@
         bindUnlockEvents() {
             const unlock = () => {
                 this.unlocked = true;
-                this.ensureContext()?.resume?.().catch(() => {});
-                if (this.pendingMusic) this.playMusic(this.pendingMusic);
+                const context = this.ensureContext();
+                const resume = context?.resume?.();
+                if (resume && typeof resume.then === 'function') {
+                    resume.then(() => {
+                        if (this.pendingMusic) this.playMusic(this.pendingMusic);
+                    }).catch(() => {});
+                } else if (this.pendingMusic) {
+                    this.playMusic(this.pendingMusic);
+                }
             };
             window.addEventListener('pointerdown', unlock, { passive: true });
             window.addEventListener('keydown', unlock, { passive: true });
