@@ -25,6 +25,12 @@ const FEATURE_FLAGS = {
     ENABLE_DOM_HUD: false,
     ENABLE_DOM_LEVELUP: false,
     ENABLE_DOM_MENUS: false,
+    ENABLE_STATE_MUSIC: false,
+    ENABLE_DOM_WEAPON_COOLDOWN_PANEL: false,
+    ENABLE_EXP_PICKUP_MERGE: false,
+    ENABLE_AI_BEHAVIOR_TUNING: false,
+    ENABLE_QINQI_PHANTOMS: false,
+    ENABLE_EFFECT_MODULES_V2: false,
     ENABLE_DESTRUCTIBLE_PROPS: false,
     ENABLE_LARGE_MAP_CAMERA: false,
     ENABLE_SCROLLING_BACKGROUND: false,
@@ -109,6 +115,7 @@ if (FEATURE_FLAG_PARAMS.get('domUi') === '1' || FEATURE_FLAG_PARAMS.get('uiV2') 
     FEATURE_FLAGS.ENABLE_DOM_HUD = true;
     FEATURE_FLAGS.ENABLE_DOM_LEVELUP = true;
     FEATURE_FLAGS.ENABLE_DOM_MENUS = true;
+    FEATURE_FLAGS.ENABLE_DOM_WEAPON_COOLDOWN_PANEL = true;
 }
 if (FEATURE_FLAG_PARAMS.get('domHud') === '1') {
     FEATURE_FLAGS.ENABLE_DOM_UI = true;
@@ -125,6 +132,19 @@ if (FEATURE_FLAG_PARAMS.get('domMenus') === '1') {
 if (FEATURE_FLAG_PARAMS.get('audio') === '1') {
     FEATURE_FLAGS.ENABLE_AUDIO_MANAGER = true;
 }
+if (FEATURE_FLAG_PARAMS.get('stateMusic') === '1') {
+    FEATURE_FLAGS.ENABLE_AUDIO_MANAGER = true;
+    FEATURE_FLAGS.ENABLE_STATE_MUSIC = true;
+}
+if (FEATURE_FLAG_PARAMS.get('domWeaponCd') === '1') {
+    FEATURE_FLAGS.ENABLE_DOM_UI = true;
+    FEATURE_FLAGS.ENABLE_DOM_HUD = true;
+    FEATURE_FLAGS.ENABLE_DOM_WEAPON_COOLDOWN_PANEL = true;
+}
+if (FEATURE_FLAG_PARAMS.get('pickupMerge') === '1') FEATURE_FLAGS.ENABLE_EXP_PICKUP_MERGE = true;
+if (FEATURE_FLAG_PARAMS.get('aiTuning') === '1') FEATURE_FLAGS.ENABLE_AI_BEHAVIOR_TUNING = true;
+if (FEATURE_FLAG_PARAMS.get('qinqiPhantoms') === '1') FEATURE_FLAGS.ENABLE_QINQI_PHANTOMS = true;
+if (FEATURE_FLAG_PARAMS.get('effectModulesV2') === '1') FEATURE_FLAGS.ENABLE_EFFECT_MODULES_V2 = true;
 
 const ART_FEATURE_FLAGS = [
     'ENABLE_ART_ASSETS',
@@ -171,6 +191,17 @@ function getNumericGameSetting(path, fallback) {
 function playGameSound(name, volume = 1) {
     if (!FEATURE_FLAGS.ENABLE_AUDIO_MANAGER || !window.audioManager) return false;
     return window.audioManager.play(name, volume);
+}
+
+function playGameMusic(trackName) {
+    if (!FEATURE_FLAGS.ENABLE_AUDIO_MANAGER || !FEATURE_FLAGS.ENABLE_STATE_MUSIC || !window.audioManager) return false;
+    return window.audioManager.playMusic?.(trackName) ?? false;
+}
+
+function stopGameMusic() {
+    if (!FEATURE_FLAGS.ENABLE_AUDIO_MANAGER || !FEATURE_FLAGS.ENABLE_STATE_MUSIC || !window.audioManager) return false;
+    window.audioManager.stopMusic?.();
+    return true;
 }
 
 function getDrawableImageSrc(image) {
@@ -4875,6 +4906,29 @@ class WoodenOxEnemy extends Enemy {
             return true;
         }
 
+        if (FEATURE_FLAGS.ENABLE_AI_BEHAVIOR_TUNING) {
+            const gm = window.gameManager;
+            this.escapeTimer -= deltaTime;
+            this.directionChangeTimer -= deltaTime;
+            if (this.directionChangeTimer <= 0) {
+                this.dirAngle = GameRuntime.random() * Math.PI * 2;
+                this.directionChangeTimer = 0.9 + GameRuntime.random() * 0.8;
+            }
+
+            this.x += Math.cos(this.dirAngle) * this.speed * 1.35 * deltaTime;
+            this.y += Math.sin(this.dirAngle) * this.speed * 1.35 * deltaTime;
+
+            const margin = 120;
+            const left = gm.getViewportLeft() - margin;
+            const right = gm.getViewportLeft() + gm.canvas.width + margin;
+            const top = gm.getViewportTop() - margin;
+            const bottom = gm.getViewportTop() + gm.canvas.height + margin;
+            if (this.x < left || this.x > right || this.y < top || this.y > bottom || this.escapeTimer <= -4) {
+                return false;
+            }
+            return true;
+        }
+
         // 倒计时结束 → 离场阶段：快速向上飞出屏幕
         if (this.escapeTimer <= 0) {
             this.y -= this.speed * 2 * deltaTime;
@@ -4946,8 +5000,10 @@ class ArcherEnemy extends Enemy {
         const dy = py - this.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
+        const preferredRange = FEATURE_FLAGS.ENABLE_AI_BEHAVIOR_TUNING ? 300 : this.preferredRange;
+
         // 核心修改：彻底砍掉“远离玩家”的恶心逻辑
-        if (dist > this.preferredRange) {
+        if (dist > preferredRange) {
             // 在射程外 → 乖乖向玩家走近
             if (dist > 0) {
                 this.x += (dx / dist) * this.speed * deltaTime;
@@ -4976,6 +5032,7 @@ class ArcherEnemy extends Enemy {
         const dx = px - this.x;
         const dy = py - this.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist <= 0) return;
         const dirX = dx / dist;
         const dirY = dy / dist;
         // 直线飞行，方向不变，不追踪玩家，使用基础 Projectile 类
@@ -5050,7 +5107,7 @@ class Boss extends Enemy {
         this.ability = stageData.bossAbility;
         this.isBoss = true;
         this.abilityTimer = 0;
-        this.abilityCooldown = 3;
+        this.abilityCooldown = FEATURE_FLAGS.ENABLE_AI_BEHAVIOR_TUNING ? 4 : 3;
         this.halfHealthTriggered = false;
         this.invulnerableOnce = false;
         this.knockbackResist = 1.0; // Boss完全免疫击退
@@ -5296,9 +5353,16 @@ class Boss extends Enemy {
             const y = this.y + Math.sin(angle) * dist;
             const phantom = new Boss(STAGES[i], i, { enableAffixes: false });
             const dynamicHp = Math.floor((STAGES[i].bossHp / 3) * hpMultiplier);
+            phantom.x = x;
+            phantom.y = y;
             phantom.hp = dynamicHp;
             phantom.maxHp = dynamicHp;
             phantom.size = 30;
+            phantom.isBoss = false;
+            phantom.isElite = true;
+            phantom.isQinqiPhantom = true;
+            phantom.ability = 'none';
+            phantom.color = ['#59f2a9', '#b56cff', '#5fb2ff', '#ff6b48'][i];
             gm.enemies.push(phantom);
         }
     }
@@ -5469,17 +5533,17 @@ class Pickup {
         this.expValue = expValue;
         // 不同类型不同大小
         if (type === PICKUP_TYPES.MAGNET) {
-            this.size = 36; // 吸铁石更大更醒目
+            this.size = 46; // 吸铁石更大更醒目
         } else if (type === PICKUP_TYPES.CHICKEN) {
-            this.size = 34; // 烤鸡腿比馒头稍大
+            this.size = 44; // 烤鸡腿比馒头稍大
         } else if (type === PICKUP_TYPES.BUN) {
-            this.size = 30;
+            this.size = 40;
         } else if (type === PICKUP_TYPES.RESONANCE) {
-            this.size = 28;
+            this.size = 36;
         } else if (type === PICKUP_TYPES.BOSS_EXP) {
-            this.size = 38;
+            this.size = 48;
         } else {
-            this.size = 24; // 默认大小
+            this.size = 30; // 默认大小
         }
         this.color = type.color;
         this.basePickupRadius = 50;
@@ -5620,13 +5684,13 @@ class Pickup {
             if (this.expValue > 1 && this.expValue <= 10) {
                 // 1 < 容量 <= 10
                 displayColor = '#ff8c00';
-                displaySize = 28;
+                displaySize = 36;
             } else if (this.expValue > 10) {
                 // 容量 > 10
                 displayColor = '#ff0000';
-                displaySize = 34;
+                displaySize = 44;
             } else {
-                displaySize = 24;
+                displaySize = 30;
             }
         }
 
@@ -5634,7 +5698,7 @@ class Pickup {
             const pickupId = this.getArtPickupId();
             const icon = pickupId ? assets.getPickupIcon(pickupId) : null;
             if (assets.canDraw(icon)) {
-                const iconSize = Math.max(28, displaySize);
+                const iconSize = Math.max(38, displaySize * 1.15);
                 const useDiamondFrame = pickupId === 'EXP' || pickupId === 'EXP_LARGE' || pickupId === 'BOSS_EXP' || pickupId === 'RESONANCE';
                 ctx.save();
                 ctx.shadowBlur = Math.max(8, iconSize * 0.28);
@@ -6104,6 +6168,7 @@ class GameManager {
         this.swarmedMinutes = new Set(); // 记录已触发潮汐波的分钟节点
         this.isVictory = false;
         this.hitstopTimer = 0; // 顿帧定时器：打击感卡肉效果
+        this.activeMusicTrack = '';
 
         // 启动主循环
         this.gameLoop = this.gameLoop.bind(this);
@@ -6853,13 +6918,20 @@ class GameManager {
                 phantom.hp = phantom.maxHp;
                 phantom.size = 30;
                 phantom.color = 'rgba(128, 0, 128, 0.7)';
+                if (FEATURE_FLAGS.ENABLE_QINQI_PHANTOMS) {
+                    phantom.isQinqiPhantom = true;
+                    phantom.ability = 'none';
+                    phantom.color = ['#59f2a9', '#b56cff', '#5fb2ff', '#ff6b48'][i];
+                }
 
                 // 降级防跳关
                 phantom.isBoss = false;
                 phantom.isElite = true;
                 this.enemies.push(phantom);
             }
-            boss.ability = 'none';
+            if (!FEATURE_FLAGS.ENABLE_QINQI_PHANTOMS) {
+                boss.ability = 'none';
+            }
         }
 
         this.enemies.push(boss);
@@ -7143,14 +7215,14 @@ class GameManager {
 
             if (currentExpCount < MAX_EXP_PICKUPS) {
                 // 未达上限：正常生成新经验珠（容量=1）
-                this.pickups.push(new Pickup(x, y, PICKUP_TYPES.EXP, 1));
+                this.addExpPickup(x, y, 1);
             } else {
                 // 已达上限：找到第一个现存经验珠（存活最久的），隔空注能
                 if (firstExp) {
                     firstExp.expValue += 1;
                 } else {
                     // 极端情况：找不到就还是生成
-                    this.pickups.push(new Pickup(x, y, PICKUP_TYPES.EXP, 1));
+                    this.addExpPickup(x, y, 1);
                 }
             }
         } else if (roll < 0.95) {
@@ -7166,6 +7238,26 @@ class GameManager {
                 this.pickups.push(new Pickup(x + (i - 1) * 15, y, PICKUP_TYPES.RESONANCE));
             }
         }
+    }
+
+    addExpPickup(x, y, value = 1) {
+        if (FEATURE_FLAGS.ENABLE_EXP_PICKUP_MERGE) {
+            const mergeRadiusSq = 30 * 30;
+            for (const pickup of this.pickups) {
+                if (pickup.type !== PICKUP_TYPES.EXP) continue;
+                const dx = pickup.x - x;
+                const dy = pickup.y - y;
+                if (dx * dx + dy * dy <= mergeRadiusSq) {
+                    pickup.expValue += value;
+                    pickup.x = (pickup.x + x) / 2;
+                    pickup.y = (pickup.y + y) / 2;
+                    return pickup;
+                }
+            }
+        }
+        const pickup = new Pickup(x, y, PICKUP_TYPES.EXP, value);
+        this.pickups.push(pickup);
+        return pickup;
     }
 
     // ========== 新增：统一的敌人死亡处理逻辑 ==========
@@ -8302,6 +8394,21 @@ class GameManager {
                 level: weapon.level || 1,
                 iconSrc: hasArtWeaponIcons ? getDrawableImageSrc(this.assets.getWeaponIcon(weapon.type, weapon.level || 1)) : '',
             })),
+            weaponCooldowns: (this.activeWeapons || []).map(weapon => {
+                const cooldown = Math.max(0.1, weapon.lastCooldown || weapon.baseAttackInterval || 1);
+                const remaining = Math.max(0, Math.min(cooldown, weapon.timer || 0));
+                const readyRatio = 1 - remaining / cooldown;
+                return {
+                    type: weapon.type,
+                    name: weaponNames[weapon.type] || weapon.type,
+                    level: weapon.level || 1,
+                    remaining,
+                    cooldown,
+                    ready: remaining <= 0.001,
+                    readyRatio,
+                    iconSrc: hasArtWeaponIcons ? getDrawableImageSrc(this.assets.getWeaponIcon(weapon.type, weapon.level || 1)) : '',
+                };
+            }),
             skills: skillInfos.map(info => {
                 const level = player.inGameSkills?.[info.key] || 0;
                 const metaLevel = player.metaSkills?.[info.key] || 0;
@@ -8542,6 +8649,7 @@ class GameManager {
 
     renderWeaponCooldownHUD(ctx) {
         if (!FEATURE_FLAGS.ENABLE_WEAPON_COOLDOWN_HUD) return;
+        if (FEATURE_FLAGS.ENABLE_DOM_WEAPON_COOLDOWN_PANEL && this.uiBridge) return;
         const weapons = this.activeWeapons || [];
         if (weapons.length === 0) return;
         const colors = ['#00ff99', '#4da3ff', '#ffd34d', '#ff6b6b', '#c77dff', '#ff9f43'];
@@ -9436,7 +9544,30 @@ class GameManager {
                 this.renderCutscene(deltaTime);
                 break;
         }
+        this.updateStateMusic();
         this.uiBridge?.update(this);
+    }
+
+    updateStateMusic() {
+        if (!FEATURE_FLAGS.ENABLE_STATE_MUSIC) return;
+        let track = '';
+        if (
+            this.gameState === GAME_STATE.MENU ||
+            this.gameState === GAME_STATE.PERK_UPGRADE ||
+            this.gameState === GAME_STATE.PAUSED ||
+            this.uiBridge?.settingsOpen
+        ) {
+            track = 'menu';
+        } else if (this.gameState === GAME_STATE.LEVEL_UP) {
+            track = 'levelup';
+        } else if (this.gameState === GAME_STATE.GAME_OVER || this.gameState === GAME_STATE.VICTORY) {
+            track = 'result';
+        }
+
+        if (track === this.activeMusicTrack) return;
+        this.activeMusicTrack = track;
+        if (track) playGameMusic(track);
+        else stopGameMusic();
     }
 
     handleLevelUpKey(key) {

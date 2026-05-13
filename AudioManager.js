@@ -30,6 +30,9 @@
             this.sounds = new Map(Object.entries(DEFAULT_SOUNDS));
             this.registeredElements = new Map();
             this.active = [];
+            this.musicNodes = [];
+            this.currentMusic = '';
+            this.pendingMusic = '';
             this.lastPlayedAt = new Map();
             this.unlocked = false;
             this.platformResolver = null;
@@ -102,6 +105,7 @@
         setMuted(muted) {
             this.muted = Boolean(muted);
             if (this.muted) this.stopAll();
+            if (this.muted) this.stopMusic();
             this.updateBusVolumes();
             this.saveSettings();
             this.publishStatus();
@@ -176,10 +180,104 @@
             this.publishStatus();
         }
 
+        playMusic(name) {
+            if (!this.enabled || this.muted || !name) return false;
+            if (this.currentMusic === name && this.musicNodes.length > 0) return true;
+            const context = this.ensureContext();
+            if (!context) return false;
+            if (context.state === 'suspended' && !this.unlocked) {
+                this.pendingMusic = name;
+                return false;
+            }
+            if (context.state === 'suspended' && this.unlocked) context.resume().catch(() => {});
+            this.stopMusic(0.18);
+            const profile = this.getMusicProfile(name);
+            const start = context.currentTime;
+            const bus = this.busGains.get('music') || this.masterGain;
+            const output = context.createGain();
+            output.gain.setValueAtTime(0.0001, start);
+            output.gain.exponentialRampToValueAtTime(profile.gain, start + 0.75);
+            output.connect(bus);
+
+            const nodes = [output];
+            for (const layer of profile.layers) {
+                const osc = context.createOscillator();
+                const gain = context.createGain();
+                osc.type = layer.type;
+                osc.frequency.setValueAtTime(layer.frequency, start);
+                gain.gain.value = layer.gain;
+                osc.connect(gain);
+                gain.connect(output);
+                osc.start(start);
+                nodes.push(osc, gain);
+            }
+            this.musicNodes = nodes;
+            this.currentMusic = name;
+            this.pendingMusic = '';
+            this.publishStatus();
+            return true;
+        }
+
+        stopMusic(fadeSeconds = 0.25) {
+            if (this.musicNodes.length === 0) {
+                this.currentMusic = '';
+                return;
+            }
+            const context = this.context;
+            const output = this.musicNodes[0];
+            if (context && output?.gain) {
+                const now = context.currentTime;
+                output.gain.cancelScheduledValues(now);
+                output.gain.setValueAtTime(Math.max(0.0001, output.gain.value), now);
+                output.gain.exponentialRampToValueAtTime(0.0001, now + fadeSeconds);
+            }
+            const nodes = this.musicNodes;
+            window.setTimeout(() => {
+                for (const node of nodes) {
+                    try { node.stop?.(); } catch {}
+                    try { node.disconnect?.(); } catch {}
+                }
+            }, fadeSeconds * 1000 + 80);
+            this.musicNodes = [];
+            this.currentMusic = '';
+            this.publishStatus();
+        }
+
+        getMusicProfile(name) {
+            const profiles = {
+                menu: {
+                    gain: 0.18,
+                    layers: [
+                        { type: 'sine', frequency: 110, gain: 0.42 },
+                        { type: 'triangle', frequency: 220, gain: 0.22 },
+                        { type: 'sine', frequency: 330, gain: 0.10 },
+                    ],
+                },
+                levelup: {
+                    gain: 0.20,
+                    layers: [
+                        { type: 'triangle', frequency: 196, gain: 0.32 },
+                        { type: 'sine', frequency: 392, gain: 0.20 },
+                        { type: 'sine', frequency: 588, gain: 0.14 },
+                    ],
+                },
+                result: {
+                    gain: 0.19,
+                    layers: [
+                        { type: 'sine', frequency: 73.42, gain: 0.45 },
+                        { type: 'triangle', frequency: 146.83, gain: 0.24 },
+                        { type: 'sine', frequency: 220, gain: 0.12 },
+                    ],
+                },
+            };
+            return profiles[name] || profiles.menu;
+        }
+
         bindUnlockEvents() {
             const unlock = () => {
                 this.unlocked = true;
                 this.ensureContext()?.resume?.().catch(() => {});
+                if (this.pendingMusic) this.playMusic(this.pendingMusic);
             };
             window.addEventListener('pointerdown', unlock, { passive: true });
             window.addEventListener('keydown', unlock, { passive: true });
@@ -386,6 +484,7 @@
                 active: this.active.length,
                 sounds: this.sounds.size,
                 registeredFiles: this.registeredElements.size,
+                music: this.currentMusic,
                 mode: this.registeredElements.size > 0 ? 'file-or-synthetic' : 'synthetic',
             };
         }

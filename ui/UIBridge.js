@@ -19,6 +19,7 @@
             this.lastPerkKey = '';
             this.lastStatusKey = '';
             this.lastStateClass = '';
+            this.lastWeaponCooldownKey = '';
             this.settingsOpen = false;
         }
 
@@ -64,6 +65,7 @@
                         <strong data-ui="bossBannerTitle"></strong>
                         <span data-ui="bossBannerDesc"></span>
                     </div>
+                    <div class="weapon-cd-panel" data-ui="weaponCooldownPanel" aria-label="武器冷却"></div>
                     <div class="low-hp-vignette"></div>
                 </div>
                 <section class="dom-levelup" role="dialog" aria-modal="true" aria-label="升级选择">
@@ -256,6 +258,7 @@
             const snapshot = game.getUiSnapshot();
             this.applyState(snapshot);
             this.updateHud(snapshot);
+            this.updateWeaponCooldowns(snapshot);
             this.updateStatus(snapshot);
             this.updateLevelUp(snapshot);
             this.updateMainMenu(snapshot);
@@ -301,6 +304,42 @@
             this.setText('weaponCount', `${snapshot.weapons.length}/6`);
             this.renderRows('weaponList', snapshot.weapons, false);
             this.renderRows('skillList', snapshot.skills, true);
+        }
+
+        updateWeaponCooldowns(snapshot) {
+            const container = this.root.querySelector('[data-ui="weaponCooldownPanel"]');
+            if (!container) return;
+            const weapons = snapshot.weaponCooldowns || [];
+            container.hidden = weapons.length === 0;
+            if (weapons.length === 0) {
+                container.innerHTML = '';
+                this.lastWeaponCooldownKey = '';
+                return;
+            }
+            const structureKey = weapons.map(weapon => `${weapon.type}:${weapon.level}:${weapon.iconSrc}`).join('|');
+            if (structureKey !== this.lastWeaponCooldownKey) {
+                this.lastWeaponCooldownKey = structureKey;
+                container.innerHTML = weapons.map((weapon, index) => {
+                    const icon = weapon.iconSrc
+                        ? `<img src="${this.escapeAttr(weapon.iconSrc)}" alt="">`
+                        : `<span>${this.escape((weapon.name || '?').slice(0, 1))}</span>`;
+                    return `
+                        <div class="weapon-cd-card" data-cd-index="${index}">
+                            <div class="weapon-cd-icon">${icon}</div>
+                            <div class="weapon-cd-mask"></div>
+                            <div class="weapon-cd-border"></div>
+                            <b>Lv.${this.escape(String(weapon.level || 1))}</b>
+                        </div>
+                    `;
+                }).join('');
+            }
+            weapons.forEach((weapon, index) => {
+                const card = container.querySelector(`[data-cd-index="${index}"]`);
+                if (!card) return;
+                const readyPct = Math.max(0, Math.min(100, Math.round((weapon.readyRatio || 0) * 100)));
+                card.style.setProperty('--ready', String(readyPct));
+                card.classList.toggle('is-ready', !!weapon.ready);
+            });
         }
 
         updateLevelUp(snapshot) {

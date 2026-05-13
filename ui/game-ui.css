@@ -25,6 +25,7 @@
 
 .game-ui-root button {
     font: inherit;
+    overflow-wrap: anywhere;
 }
 
 .dom-hud {
@@ -173,6 +174,8 @@
     color: var(--ui-text);
     font-size: 15px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .level-text {
@@ -267,6 +270,82 @@
     margin-top: 4px;
     color: #ff9382;
     font-size: 13px;
+}
+
+.weapon-cd-panel {
+    position: absolute;
+    right: 18px;
+    bottom: 18px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 58px;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.weapon-cd-panel[hidden] {
+    display: none;
+}
+
+.weapon-cd-card {
+    position: relative;
+    width: 58px;
+    height: 58px;
+    overflow: hidden;
+    border-radius: 8px;
+    background:
+        radial-gradient(circle at 50% 22%, rgba(255, 211, 106, 0.16), transparent 42%),
+        linear-gradient(180deg, rgba(17, 17, 18, 0.95), rgba(3, 3, 4, 0.96));
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.42), inset 0 0 14px rgba(255, 211, 106, 0.10);
+}
+
+.weapon-cd-icon {
+    position: absolute;
+    inset: 7px;
+    display: grid;
+    place-items: center;
+    color: #ffe99a;
+    font-weight: 900;
+    font-size: 18px;
+}
+
+.weapon-cd-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.weapon-cd-mask {
+    position: absolute;
+    inset: 0;
+    height: calc((100 - var(--ready, 0)) * 1%);
+    background: rgba(0, 0, 0, 0.66);
+    backdrop-filter: grayscale(0.8);
+    transition: height 80ms linear;
+}
+
+.weapon-cd-border {
+    position: absolute;
+    inset: 0;
+    border: 2px solid #9f6f00;
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgba(255, 245, 168, 0.26);
+}
+
+.weapon-cd-card.is-ready .weapon-cd-border {
+    border-color: #ffe16a;
+    box-shadow: 0 0 14px rgba(255, 211, 106, 0.48), inset 0 0 0 1px rgba(255, 255, 220, 0.55);
+}
+
+.weapon-cd-card b {
+    position: absolute;
+    right: 4px;
+    bottom: 3px;
+    padding: 1px 4px;
+    border-radius: 4px;
+    color: #fff7cf;
+    background: rgba(0, 0, 0, 0.64);
+    font: 800 10px/1.25 Consolas, "Courier New", monospace;
 }
 
 .low-hp-vignette {
@@ -705,6 +784,7 @@
     color: #fff7cf;
     background: linear-gradient(180deg, rgba(44, 54, 58, 0.96), rgba(10, 15, 19, 0.96));
     cursor: pointer;
+    white-space: normal;
 }
 
 .menu-button:hover {
@@ -722,8 +802,12 @@
     padding: 26px 30px 24px;
     border: 1px solid var(--ui-border);
     background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
         radial-gradient(circle at 50% 0%, rgba(255, 211, 106, 0.12), transparent 34%),
-        linear-gradient(180deg, rgba(11, 22, 29, 0.96), rgba(5, 9, 12, 0.94));
+        radial-gradient(circle at 82% 78%, rgba(69, 240, 255, 0.10), transparent 32%),
+        linear-gradient(180deg, rgba(14, 25, 30, 0.97), rgba(5, 9, 12, 0.95));
+    background-size: 22px 22px, 22px 22px, auto, auto, auto;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55), inset 0 0 42px rgba(69, 240, 255, 0.07);
 }
 
@@ -753,6 +837,9 @@
 }
 
 .levelup-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     min-height: 322px;
     padding: 18px 16px 16px;
     border: 1px solid rgba(255, 211, 106, 0.50);
@@ -795,6 +882,10 @@
     font-size: 18px;
     line-height: 1.25;
     overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .levelup-card-desc {
@@ -802,6 +893,10 @@
     color: rgba(244, 247, 244, 0.78);
     font-size: 14px;
     line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .levelup-card-level {
@@ -844,7 +939,19 @@
 
     .hud-actions {
         top: auto;
-        bottom: 14px;
+        bottom: 84px;
+    }
+
+    .weapon-cd-panel {
+        right: 12px;
+        bottom: 12px;
+        grid-auto-columns: 50px;
+        gap: 7px;
+    }
+
+    .weapon-cd-card {
+        width: 50px;
+        height: 50px;
     }
 
     .levelup-panel {
