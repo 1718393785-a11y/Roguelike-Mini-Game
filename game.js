@@ -2830,7 +2830,7 @@ class CrossbowArrow {
         this.size = 8; // 碰撞判定尺寸
         this.maxLifetime = 3; // 最多存活3秒
         this.lifetime = 0;
-        this.length = 38; // 箭矢显示长度
+        this.length = 24; // 箭矢显示长度
         this.width = 5;  // 箭矢宽度
         // 穿透：初始可命中数量 = 基础穿透 + 1
         this.remainingPierce = extraPierce + 1;
@@ -2990,8 +2990,8 @@ class CrossbowArrow {
         const angle = Math.atan2(this.vy, this.vx);
         const endX = this.x + Math.cos(angle) * this.length;
         const endY = this.y + Math.sin(angle) * this.length;
-        const textureWidth = Math.max(this.length * 3.15, 132);
-        const textureHeight = this.hasLightningColumn ? 58 : (this.hasLightningAOE ? 54 : 50);
+        const textureWidth = Math.max(this.length * 2.45, 68);
+        const textureHeight = this.hasLightningColumn ? 40 : (this.hasLightningAOE ? 36 : 32);
         if (drawArtEffectTexture(ctx, 'crossbow_arrow', this.x, this.y, textureWidth, textureHeight, angle, 0.95, 0.1, 0.5)) {
             return;
         }
