@@ -1907,6 +1907,8 @@ class Saber extends Weapon {
         const anchorX = 0.835;
         const anchorY = 0.215;
 
+        this.drawSaberAssetLevelAura(ctx, currentX, currentY, outerRadius, flameAlpha, level, frame, progress, intensity);
+
         ctx.save();
         ctx.translate(handX, handY);
         ctx.rotate(rotation);
@@ -1934,6 +1936,86 @@ class Saber extends Weapon {
 
         ctx.restore();
         return true;
+    }
+
+    drawSaberAssetLevelAura(ctx, currentX, currentY, outerRadius, flameAlpha, level, frame, progress, intensity) {
+        const swingPower = Math.sin(progress * Math.PI);
+        const visualHalfAngle = level >= 4 ? Math.max(this.halfAngle, Math.PI / 2) : this.halfAngle;
+        const startAngle = -visualHalfAngle * (level >= 4 ? 0.95 : 0.82);
+        const endAngle = visualHalfAngle * (level >= 4 ? 0.95 : 0.82);
+
+        ctx.save();
+        ctx.translate(currentX, currentY);
+        ctx.rotate(this.aimAngle);
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineCap = 'round';
+
+        if (level >= 2) {
+            const rangeArc = outerRadius * (level >= 6 ? 1.12 : level >= 4 ? 1.06 : 1);
+            ctx.strokeStyle = `rgba(255, 202, 52, ${0.36 * flameAlpha * intensity})`;
+            ctx.lineWidth = Math.max(4, outerRadius * 0.06);
+            ctx.beginPath();
+            ctx.arc(0, 0, rangeArc * 0.98, startAngle, endAngle);
+            ctx.stroke();
+        }
+
+        if (level >= 3) {
+            const moltenAlpha = flameAlpha * (0.34 + swingPower * 0.22) * intensity;
+            ctx.strokeStyle = `rgba(255, 54, 0, ${moltenAlpha})`;
+            ctx.lineWidth = Math.max(5, outerRadius * 0.075);
+            ctx.beginPath();
+            ctx.arc(0, 0, outerRadius * 0.8, startAngle + 0.1, endAngle - 0.1);
+            ctx.stroke();
+
+            for (let i = 0; i < 7; i++) {
+                const t = (i + 0.5) / 7;
+                const a = startAngle + (endAngle - startAngle) * t + Math.sin(frame * 0.18 + i) * 0.04;
+                const r = outerRadius * (0.5 + 0.34 * t);
+                ctx.fillStyle = `rgba(255, ${i % 2 ? 128 : 226}, 24, ${0.46 * flameAlpha * intensity})`;
+                ctx.beginPath();
+                ctx.ellipse(Math.cos(a) * r, Math.sin(a) * r, 3.5, 1.6, a, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        if (level >= 4) {
+            this.drawSaberFormation(ctx, outerRadius * 1.04, visualHalfAngle, flameAlpha * 1.15, frame);
+            ctx.strokeStyle = `rgba(255, 234, 134, ${0.3 * flameAlpha * intensity})`;
+            ctx.lineWidth = Math.max(2, outerRadius * 0.026);
+            ctx.beginPath();
+            ctx.arc(0, 0, outerRadius * 0.58, -Math.PI * 0.88, Math.PI * 0.88);
+            ctx.stroke();
+        }
+
+        if (level >= 5) {
+            ctx.save();
+            ctx.rotate(Math.PI);
+            ctx.strokeStyle = `rgba(255, 38, 32, ${0.26 * flameAlpha * intensity})`;
+            ctx.lineWidth = Math.max(4, outerRadius * 0.055);
+            ctx.beginPath();
+            ctx.arc(0, 0, outerRadius * 0.78, startAngle + 0.18, endAngle - 0.18);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        if (level >= 6) {
+            const burstAlpha = flameAlpha * (0.22 + swingPower * 0.18) * intensity;
+            for (let i = 0; i < 8; i++) {
+                const a = i * Math.PI / 4 + Math.sin(frame * 0.08) * 0.02;
+                const inner = outerRadius * 0.28;
+                const outer = outerRadius * (0.86 + (i % 2) * 0.13);
+                ctx.strokeStyle = i % 2 === 0
+                    ? `rgba(255, 238, 146, ${burstAlpha})`
+                    : `rgba(255, 96, 24, ${burstAlpha * 0.72})`;
+                ctx.lineWidth = Math.max(3, outerRadius * 0.038);
+                ctx.beginPath();
+                ctx.moveTo(Math.cos(a) * inner, Math.sin(a) * inner);
+                ctx.lineTo(Math.cos(a) * outer, Math.sin(a) * outer);
+                ctx.stroke();
+            }
+        }
+
+        ctx.restore();
     }
 
     drawSaberBlade(ctx, outerRadius, flameAlpha, level, frame, intensity) {
