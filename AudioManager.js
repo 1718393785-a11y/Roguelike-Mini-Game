@@ -3,6 +3,10 @@
         playerHit: { bus: 'sfx', type: 'hit', volume: 0.72, duration: 0.16, frequency: 120, maxInstances: 3, cooldown: 70, priority: 80 },
         weaponSlash: { bus: 'sfx', type: 'slash', volume: 0.36, duration: 0.10, frequency: 460, maxInstances: 4, cooldown: 45, priority: 35 },
         weaponShoot: { bus: 'sfx', type: 'shoot', volume: 0.32, duration: 0.10, frequency: 640, maxInstances: 4, cooldown: 45, priority: 35 },
+        enemyDeath: { bus: 'sfx', type: 'enemyDeath', volume: 0.28, duration: 0.14, frequency: 180, maxInstances: 4, cooldown: 55, priority: 30 },
+        bossDefeat: { bus: 'alert', type: 'bossDefeat', volume: 0.82, duration: 0.95, frequency: 180, maxInstances: 1, cooldown: 900, priority: 100 },
+        pickup: { bus: 'sfx', type: 'pickup', volume: 0.24, duration: 0.09, frequency: 760, maxInstances: 3, cooldown: 38, priority: 25 },
+        pickupRare: { bus: 'sfx', type: 'pickupRare', volume: 0.45, duration: 0.22, frequency: 920, maxInstances: 2, cooldown: 120, priority: 45 },
         levelUp: { bus: 'ui', type: 'levelUp', volume: 0.82, duration: 0.55, frequency: 520, maxInstances: 1, cooldown: 260, priority: 90 },
         bossAppear: { bus: 'alert', type: 'boss', volume: 0.88, duration: 0.95, frequency: 88, maxInstances: 1, cooldown: 800, priority: 100 },
         victory: { bus: 'ui', type: 'victory', volume: 0.88, duration: 1.1, frequency: 440, maxInstances: 1, cooldown: 1000, priority: 100 },
@@ -244,6 +248,25 @@
                 case 'hit':
                     addOsc('square', base, 0.38, 0, duration);
                     addOsc('sawtooth', base * 0.5, 0.22, 0, duration * 0.7);
+                    break;
+                case 'enemyDeath': {
+                    const osc = addOsc('triangle', base, 0.22, 0, duration);
+                    osc.frequency.exponentialRampToValueAtTime(Math.max(55, base * 0.45), start + duration);
+                    break;
+                }
+                case 'bossDefeat':
+                    addOsc('sawtooth', base, 0.34, 0, duration * 0.8);
+                    addOsc('triangle', base * 0.5, 0.26, 0.08, duration * 0.78);
+                    addOsc('sine', base * 1.5, 0.18, 0.28, duration * 0.5);
+                    break;
+                case 'pickup': {
+                    const osc = addOsc('sine', base, 0.18, 0, duration);
+                    osc.frequency.exponentialRampToValueAtTime(base * 1.7, start + duration);
+                    break;
+                }
+                case 'pickupRare':
+                    addOsc('triangle', base, 0.20, 0, duration * 0.45);
+                    addOsc('sine', base * 1.5, 0.16, duration * 0.28, duration * 0.55);
                     break;
                 case 'shoot': {
                     const osc = addOsc('square', base, 0.22, 0, duration);

@@ -299,6 +299,120 @@
     display: grid;
 }
 
+.dom-menu {
+    position: absolute;
+    inset: 0;
+    display: none;
+    place-items: center;
+    pointer-events: auto;
+    background:
+        radial-gradient(circle at 50% 35%, rgba(69, 240, 255, 0.10), transparent 34%),
+        rgba(0, 0, 0, 0.72);
+}
+
+.game-ui-root.is-paused .dom-menu,
+.game-ui-root.is-game-over .dom-menu,
+.game-ui-root.is-victory .dom-menu {
+    display: grid;
+}
+
+.game-ui-root.is-paused .dom-hud,
+.game-ui-root.is-game-over .dom-hud,
+.game-ui-root.is-victory .dom-hud {
+    opacity: 0.20;
+}
+
+.menu-panel {
+    width: min(620px, calc(100vw - 42px));
+    padding: 30px;
+    border: 1px solid var(--ui-border);
+    background:
+        linear-gradient(135deg, rgba(255, 211, 106, 0.10), transparent 28%),
+        linear-gradient(180deg, rgba(10, 19, 26, 0.96), rgba(4, 8, 11, 0.94));
+    box-shadow: 0 26px 90px rgba(0, 0, 0, 0.58), inset 0 0 40px rgba(69, 240, 255, 0.07);
+    text-align: center;
+}
+
+.menu-kicker {
+    color: var(--ui-cyan);
+    font: 700 12px/1 Consolas, "Courier New", monospace;
+    letter-spacing: 2px;
+}
+
+.menu-title {
+    margin-top: 12px;
+    color: var(--ui-gold);
+    font-weight: 900;
+    font-size: clamp(32px, 5vw, 54px);
+    line-height: 1.05;
+    text-shadow: 0 0 18px rgba(255, 211, 106, 0.36);
+}
+
+.game-ui-root.is-game-over .menu-title {
+    color: var(--ui-red);
+    text-shadow: 0 0 18px rgba(255, 91, 91, 0.42);
+}
+
+.game-ui-root.is-victory .menu-title {
+    color: #61ffd6;
+    text-shadow: 0 0 18px rgba(97, 255, 214, 0.40);
+}
+
+.menu-subtitle {
+    margin-top: 10px;
+    color: var(--ui-muted);
+    font-size: 17px;
+}
+
+.menu-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 26px;
+}
+
+.menu-stats span {
+    padding: 12px 8px;
+    border: 1px solid rgba(255, 211, 106, 0.22);
+    background: rgba(0, 0, 0, 0.24);
+    color: var(--ui-muted);
+    font-size: 12px;
+}
+
+.menu-stats b {
+    display: block;
+    margin-top: 6px;
+    color: var(--ui-text);
+    font: 800 18px/1.1 Consolas, "Courier New", monospace;
+}
+
+.menu-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.menu-button {
+    min-width: 132px;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid rgba(255, 211, 106, 0.64);
+    color: #fff7cf;
+    background: linear-gradient(180deg, rgba(44, 54, 58, 0.96), rgba(10, 15, 19, 0.96));
+    cursor: pointer;
+}
+
+.menu-button:hover {
+    border-color: #fff1a8;
+    transform: translateY(-1px);
+}
+
+.menu-button-secondary {
+    color: var(--ui-muted);
+}
+
 .levelup-panel {
     width: min(900px, calc(100vw - 40px));
     min-height: 560px;

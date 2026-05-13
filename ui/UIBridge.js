@@ -74,6 +74,24 @@
                         </footer>
                     </div>
                 </section>
+                <section class="dom-menu" role="dialog" aria-modal="true" aria-label="系统菜单">
+                    <div class="menu-panel">
+                        <div class="menu-kicker" data-ui="menuKicker">SYSTEM</div>
+                        <div class="menu-title" data-ui="menuTitle">已暂停</div>
+                        <div class="menu-subtitle" data-ui="menuSubtitle">战斗逻辑已冻结</div>
+                        <div class="menu-stats">
+                            <span>存活时间<b data-ui="menuTime">0:00</b></span>
+                            <span>本局等级<b data-ui="menuLevel">1</b></span>
+                            <span>本局残响<b data-ui="menuRunResonance">0</b></span>
+                            <span>累计残响<b data-ui="menuTotalResonance">0</b></span>
+                        </div>
+                        <div class="menu-actions">
+                            <button class="menu-button" type="button" data-action="resume">继续</button>
+                            <button class="menu-button" type="button" data-action="restart">重启时空</button>
+                            <button class="menu-button menu-button-secondary" type="button" data-action="menu">返回主页</button>
+                        </div>
+                    </div>
+                </section>
             `;
         }
 
@@ -87,6 +105,12 @@
                     if (this.game.gameState === 1) this.game.gameState = 2;
                     else if (this.game.gameState === 2) this.game.gameState = 1;
                 } else if (action === 'home') {
+                    this.game.returnToMenu?.();
+                } else if (action === 'resume') {
+                    if (this.game.gameState === 2) this.game.gameState = 1;
+                } else if (action === 'restart') {
+                    this.game.restartGame?.();
+                } else if (action === 'menu') {
                     this.game.returnToMenu?.();
                 } else if (action === 'reroll') {
                     const player = this.game.player;
@@ -120,6 +144,7 @@
             this.updateHud(snapshot);
             this.updateStatus(snapshot);
             this.updateLevelUp(snapshot);
+            this.updateMenu(snapshot);
         }
 
         applyState(snapshot) {
@@ -191,6 +216,24 @@
                     </button>
                 `;
             }).join('');
+        }
+
+        updateMenu(snapshot) {
+            const result = snapshot.result || {};
+            this.setText('menuTitle', result.title || '');
+            this.setText('menuSubtitle', result.subtitle || '');
+            this.setText('menuTime', result.time || '0:00');
+            this.setText('menuLevel', `${result.level || 1}`);
+            this.setText('menuRunResonance', `${result.runResonance || 0}`);
+            this.setText('menuTotalResonance', `${result.totalResonance || 0}`);
+            const kicker = snapshot.gameState === 5 ? 'VICTORY'
+                : snapshot.gameState === 4 ? 'GAME OVER'
+                    : 'PAUSED';
+            this.setText('menuKicker', kicker);
+            const resume = this.root.querySelector('[data-action="resume"]');
+            if (resume) resume.hidden = snapshot.gameState !== 2;
+            const restart = this.root.querySelector('[data-action="restart"]');
+            if (restart) restart.hidden = snapshot.gameState === 5;
         }
 
         renderRows(target, rows, isSkill) {

@@ -108,6 +108,7 @@ if (FEATURE_FLAG_PARAMS.get('domUi') === '1' || FEATURE_FLAG_PARAMS.get('uiV2') 
     FEATURE_FLAGS.ENABLE_DOM_UI = true;
     FEATURE_FLAGS.ENABLE_DOM_HUD = true;
     FEATURE_FLAGS.ENABLE_DOM_LEVELUP = true;
+    FEATURE_FLAGS.ENABLE_DOM_MENUS = true;
 }
 if (FEATURE_FLAG_PARAMS.get('domHud') === '1') {
     FEATURE_FLAGS.ENABLE_DOM_UI = true;
@@ -116,6 +117,10 @@ if (FEATURE_FLAG_PARAMS.get('domHud') === '1') {
 if (FEATURE_FLAG_PARAMS.get('domLevelUp') === '1') {
     FEATURE_FLAGS.ENABLE_DOM_UI = true;
     FEATURE_FLAGS.ENABLE_DOM_LEVELUP = true;
+}
+if (FEATURE_FLAG_PARAMS.get('domMenus') === '1') {
+    FEATURE_FLAGS.ENABLE_DOM_UI = true;
+    FEATURE_FLAGS.ENABLE_DOM_MENUS = true;
 }
 if (FEATURE_FLAG_PARAMS.get('audio') === '1') {
     FEATURE_FLAGS.ENABLE_AUDIO_MANAGER = true;
@@ -572,6 +577,9 @@ class Weapon {
         if (this.timer <= 0) {
             // 开火
             this.attack(player, enemies, projectiles, specialAreas);
+            if (enemies.length > 0) {
+                playGameSound(this.type === 'crossbow' ? 'weaponShoot' : 'weaponSlash', 0.82);
+            }
             // 开火后瞬间重置CD：即时计算当前总减免
             const globalCDR = player.modifiers.cooldownMulti || 0;
             const actualCD = Math.max(0.1, this.baseAttackInterval * (1 - globalCDR));
@@ -7162,6 +7170,7 @@ class GameManager {
 
     // ========== 新增：统一的敌人死亡处理逻辑 ==========
     handleEnemyDeath(enemy, index) {
+        playGameSound(enemy.isBoss || enemy.isLevelBoss || enemy.isFinalBoss ? 'bossDefeat' : 'enemyDeath', enemy.isBoss || enemy.isLevelBoss || enemy.isFinalBoss ? 0.9 : 0.42);
         // 可破坏物（木箱）走专属掉落逻辑
         if (enemy.isProp) {
             this.lightningEffects.push(new PropBreakEffect(enemy.x, enemy.y, enemy.size * 2.25));
@@ -7960,6 +7969,7 @@ class GameManager {
             pickup.update(deltaTime, this.player);
             // 检查是否已经吸到玩家身边
             if (pickup.checkPickup(this.player)) {
+                playGameSound(pickup.type === PICKUP_TYPES.MAGNET ? 'pickupRare' : 'pickup', 0.55);
                 pickup.onPickup(this);
                 this.pickups.splice(i, 1);
             }
@@ -8314,6 +8324,14 @@ class GameManager {
                     levelText: currentSkillLevel !== null ? `LV: ${currentSkillLevel}` : '',
                 };
             }),
+            result: {
+                title: this.gameState === GAME_STATE.VICTORY ? '历史回路已接通' : this.gameState === GAME_STATE.GAME_OVER ? '历史推演失败' : '已暂停',
+                subtitle: this.gameState === GAME_STATE.VICTORY ? '千里走单骑完成' : this.gameState === GAME_STATE.GAME_OVER ? '回到最初的开始吧' : '战斗逻辑已冻结',
+                time: `${minutes}:${seconds.toString().padStart(2, '0')}`,
+                level: player.level || 1,
+                runResonance: this.currentResonance || 0,
+                totalResonance: this.totalResonance || 0,
+            },
         };
     }
 
@@ -9336,7 +9354,11 @@ class GameManager {
                 this.renderPlaying();
                 break;
             case GAME_STATE.PAUSED:
-                this.renderPaused();
+                if (FEATURE_FLAGS.ENABLE_DOM_MENUS && this.uiBridge) {
+                    this.renderPlaying();
+                } else {
+                    this.renderPaused();
+                }
                 break;
             case GAME_STATE.LEVEL_UP:
                 if (FEATURE_FLAGS.ENABLE_DOM_LEVELUP && this.uiBridge) {
@@ -9346,10 +9368,18 @@ class GameManager {
                 }
                 break;
             case GAME_STATE.GAME_OVER:
-                this.renderGameOver();
+                if (FEATURE_FLAGS.ENABLE_DOM_MENUS && this.uiBridge) {
+                    this.renderPlaying();
+                } else {
+                    this.renderGameOver();
+                }
                 break;
             case GAME_STATE.VICTORY:
-                this.renderVictory();
+                if (FEATURE_FLAGS.ENABLE_DOM_MENUS && this.uiBridge) {
+                    this.renderPlaying();
+                } else {
+                    this.renderVictory();
+                }
                 break;
             case GAME_STATE.CUTSCENE:
                 this.renderCutscene(deltaTime);
