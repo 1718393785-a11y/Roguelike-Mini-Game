@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>千里走单骑 - 基线保护</title>
+    <title>千里走单骑</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="ui/game-ui.css">
     <script>
         (function () {
             const isGitHubPages = window.location.hostname.endsWith('github.io')
@@ -49,9 +50,11 @@
         </div>
     </div>
     <canvas id="gameCanvas"></canvas>
+    <div id="gameUiRoot" class="game-ui-root" aria-live="polite"></div>
     <script src="GameSettings.js"></script>
     <script src="AudioManager.js"></script>
     <script src="AssetRuntime.js"></script>
+    <script src="ui/UIBridge.js"></script>
     <script src="game.js"></script>
 </body>
 </html>

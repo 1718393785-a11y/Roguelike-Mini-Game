@@ -21,6 +21,10 @@ const FEATURE_FLAGS = {
     ENABLE_GAME_SETTINGS: false,
     ENABLE_WEAPON_COOLDOWN_HUD: false,
     ENABLE_AUDIO_MANAGER: false,
+    ENABLE_DOM_UI: false,
+    ENABLE_DOM_HUD: false,
+    ENABLE_DOM_LEVELUP: false,
+    ENABLE_DOM_MENUS: false,
     ENABLE_DESTRUCTIBLE_PROPS: false,
     ENABLE_LARGE_MAP_CAMERA: false,
     ENABLE_SCROLLING_BACKGROUND: false,
@@ -100,6 +104,22 @@ if (FEATURE_FLAG_PARAMS.get('artUi') === '1' || FEATURE_FLAG_PARAMS.get('artUISk
     FEATURE_FLAGS.ENABLE_ART_ASSETS = true;
     FEATURE_FLAGS.ENABLE_ART_UI_SKIN = true;
 }
+if (FEATURE_FLAG_PARAMS.get('domUi') === '1' || FEATURE_FLAG_PARAMS.get('uiV2') === '1') {
+    FEATURE_FLAGS.ENABLE_DOM_UI = true;
+    FEATURE_FLAGS.ENABLE_DOM_HUD = true;
+    FEATURE_FLAGS.ENABLE_DOM_LEVELUP = true;
+}
+if (FEATURE_FLAG_PARAMS.get('domHud') === '1') {
+    FEATURE_FLAGS.ENABLE_DOM_UI = true;
+    FEATURE_FLAGS.ENABLE_DOM_HUD = true;
+}
+if (FEATURE_FLAG_PARAMS.get('domLevelUp') === '1') {
+    FEATURE_FLAGS.ENABLE_DOM_UI = true;
+    FEATURE_FLAGS.ENABLE_DOM_LEVELUP = true;
+}
+if (FEATURE_FLAG_PARAMS.get('audio') === '1') {
+    FEATURE_FLAGS.ENABLE_AUDIO_MANAGER = true;
+}
 
 const ART_FEATURE_FLAGS = [
     'ENABLE_ART_ASSETS',
@@ -146,6 +166,11 @@ function getNumericGameSetting(path, fallback) {
 function playGameSound(name, volume = 1) {
     if (!FEATURE_FLAGS.ENABLE_AUDIO_MANAGER || !window.audioManager) return false;
     return window.audioManager.play(name, volume);
+}
+
+function getDrawableImageSrc(image) {
+    if (!image || !window.assetRuntime?.canDraw?.(image)) return '';
+    return image.currentSrc || image.src || '';
 }
 
 function drawArtEffectTexture(ctx, effectId, x, y, width, height, angle = 0, alpha = 1, anchorX = 0.5, anchorY = 0.5) {
@@ -6036,6 +6061,7 @@ class GameManager {
         if (FEATURE_FLAGS.ENABLE_AUDIO_MANAGER && window.audioManager) {
             window.audioManager.configure({ enabled: true });
         }
+        this.uiBridge = FEATURE_FLAGS.ENABLE_DOM_UI && window.UIBridge ? new window.UIBridge() : null;
 
         // 加载局外升级（从localStorage）
         this.loadPersistentData();
@@ -6059,6 +6085,7 @@ class GameManager {
         // 按键状态
         this.keys = {};
         this.bindEvents();
+        this.uiBridge?.mount(this);
 
         // 游戏状态 - 正常启动：显示主菜单
         this.gameState = GAME_STATE.MENU;
@@ -8198,6 +8225,98 @@ class GameManager {
         return currentY; // 返回绘制结束后的Y坐标
     }
 
+    getUiSnapshot() {
+        const player = this.player || {};
+        const stageIndex = Number.isInteger(this.currentStage) ? this.currentStage : 0;
+        const stage = STAGES[stageIndex] || STAGES[0];
+        const hasBoss = Array.isArray(this.enemies) && this.enemies.some(e => e.isBoss || e.isLevelBoss);
+        const minutes = Math.floor((this.gameTime || 0) / 60);
+        const seconds = Math.floor((this.gameTime || 0) % 60);
+        const hp = Math.max(0, Math.ceil(player.hp || 0));
+        const maxHp = Math.max(1, Math.ceil(player.maxHp || 1));
+        const exp = Math.max(0, player.exp || 0);
+        const expToNextLevel = Math.max(1, player.expToNextLevel || 1);
+        const weaponNames = {
+            saber: '百炼环首刀',
+            spear: '透阵龙胆枪',
+            crossbow: '霹雳惊弦弓',
+            qinggang: '青釭·游龙剑',
+            shield: '八门金锁盾',
+            fist: '因果律偏转臂铠',
+            taiping: '太平要术·风火残页',
+        };
+        const skillInfos = [
+            { key: 'SPEED', name: '绝影无痕' },
+            { key: 'DAMAGE', name: '陷阵杀气' },
+            { key: 'COOLDOWN', name: '迅雷风烈' },
+            { key: 'MAGNET', name: '摸金秘术' },
+            { key: 'MAXHP', name: '虎卫霸体' },
+            { key: 'AREA', name: '气吞山河' },
+            { key: 'REGEN', name: '青囊秘卷' },
+            { key: 'EXP', name: '天命所归' },
+            { key: 'RESONANCE', name: '历史共鸣' },
+            { key: 'ARMOR', name: '不动如山' },
+        ];
+        const hasArtWeaponIcons = FEATURE_FLAGS.ENABLE_ART_ASSETS && FEATURE_FLAGS.ENABLE_ART_WEAPON_ICONS && this.assets;
+        const hasArtSkillIcons = FEATURE_FLAGS.ENABLE_ART_ASSETS && FEATURE_FLAGS.ENABLE_ART_SKILL_ICONS && this.assets;
+        return {
+            gameState: this.gameState,
+            level: player.level || 1,
+            hp,
+            maxHp,
+            hpPct: hp / maxHp,
+            exp,
+            expToNextLevel,
+            expPct: Math.min(1, exp / expToNextLevel),
+            lowHp: hp > 0 && hp / maxHp <= 0.25,
+            stageText: `${stage.name} ${stageIndex + 1}/${STAGES.length}`,
+            bossText: hasBoss ? stage.boss : '清小怪中',
+            bossName: stage.boss,
+            bossActive: hasBoss,
+            stageDescription: stage.description,
+            waveText: `第 ${Math.floor((this.gameTime || 0) / 60) + 1} 波`,
+            timeText: `生存时间 ${minutes}:${seconds.toString().padStart(2, '0')}`,
+            resonance: this.currentResonance || 0,
+            rerolls: player.rerolls || 0,
+            weapons: (player.weapons || []).map(weapon => ({
+                type: weapon.type,
+                name: weaponNames[weapon.type] || weapon.type,
+                level: weapon.level || 1,
+                iconSrc: hasArtWeaponIcons ? getDrawableImageSrc(this.assets.getWeaponIcon(weapon.type, weapon.level || 1)) : '',
+            })),
+            skills: skillInfos.map(info => {
+                const level = player.inGameSkills?.[info.key] || 0;
+                const metaLevel = player.metaSkills?.[info.key] || 0;
+                const totalLevel = level + metaLevel * 0.05;
+                return {
+                    key: info.key,
+                    name: info.name,
+                    level,
+                    levelText: totalLevel.toFixed(1),
+                    iconSrc: hasArtSkillIcons ? getDrawableImageSrc(this.assets.getSkillIcon(info.key)) : '',
+                };
+            }),
+            levelUpOptions: (this.levelUpOptions || []).map(option => {
+                let iconSrc = '';
+                if (FEATURE_FLAGS.ENABLE_ART_ASSETS && option.weaponType && this.assets) {
+                    iconSrc = getDrawableImageSrc(this.assets.getWeaponIcon(option.weaponType, option.weaponLevel || 1));
+                } else if (FEATURE_FLAGS.ENABLE_ART_ASSETS && option.skillKey && this.assets) {
+                    iconSrc = getDrawableImageSrc(this.assets.getSkillIcon(option.skillKey));
+                }
+                const currentSkillLevel = option.type === 'passive' && option.skillKey
+                    ? player.inGameSkills?.[option.skillKey] || 0
+                    : null;
+                return {
+                    type: option.type,
+                    title: option.title,
+                    desc: option.desc,
+                    iconSrc,
+                    levelText: currentSkillLevel !== null ? `LV: ${currentSkillLevel}` : '',
+                };
+            }),
+        };
+    }
+
     renderPerkUpgrade() {
         const ctx = this.ctx;
         const bg = ctx.createLinearGradient(0, 0, 0, this.canvas.height);
@@ -8611,6 +8730,10 @@ class GameManager {
             ctx.strokeStyle = `rgba(255, 0, 0, ${0.2 + pulse * 0.3})`;
             ctx.lineWidth = 8 + pulse * 4;
             ctx.strokeRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+
+        if (FEATURE_FLAGS.ENABLE_DOM_HUD && this.uiBridge) {
+            return;
         }
 
         // ========== 玩家血条（左上角） ==========
@@ -9216,7 +9339,11 @@ class GameManager {
                 this.renderPaused();
                 break;
             case GAME_STATE.LEVEL_UP:
-                this.renderLevelUpMenu();
+                if (FEATURE_FLAGS.ENABLE_DOM_LEVELUP && this.uiBridge) {
+                    this.renderPlaying();
+                } else {
+                    this.renderLevelUpMenu();
+                }
                 break;
             case GAME_STATE.GAME_OVER:
                 this.renderGameOver();
@@ -9228,6 +9355,7 @@ class GameManager {
                 this.renderCutscene(deltaTime);
                 break;
         }
+        this.uiBridge?.update(this);
     }
 
     handleLevelUpKey(key) {

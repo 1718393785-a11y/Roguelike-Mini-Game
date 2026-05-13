@@ -1,0 +1,451 @@
+:root {
+    --ui-gold: #ffd36a;
+    --ui-gold-dim: #b8860b;
+    --ui-cyan: #45f0ff;
+    --ui-red: #ff5b5b;
+    --ui-panel: rgba(9, 17, 23, 0.82);
+    --ui-border: rgba(255, 211, 106, 0.55);
+    --ui-text: #f4f7f4;
+    --ui-muted: rgba(244, 247, 244, 0.68);
+}
+
+.game-ui-root {
+    position: fixed;
+    inset: 0;
+    z-index: 8;
+    pointer-events: none;
+    color: var(--ui-text);
+    font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+    letter-spacing: 0;
+}
+
+.game-ui-root[hidden] {
+    display: none;
+}
+
+.game-ui-root button {
+    font: inherit;
+}
+
+.dom-hud {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 160ms ease;
+}
+
+.game-ui-root.is-playing .dom-hud,
+.game-ui-root.is-paused .dom-hud,
+.game-ui-root.is-level-up .dom-hud {
+    opacity: 1;
+}
+
+.game-ui-root.is-level-up .dom-hud {
+    opacity: 0.24;
+}
+
+.hud-cluster {
+    position: absolute;
+    border: 1px solid var(--ui-border);
+    background:
+        linear-gradient(135deg, rgba(255, 211, 106, 0.10), transparent 30%),
+        linear-gradient(180deg, rgba(10, 19, 26, 0.88), rgba(4, 8, 11, 0.72));
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.38), inset 0 0 28px rgba(69, 240, 255, 0.06);
+    backdrop-filter: blur(4px);
+}
+
+.hud-left {
+    left: 14px;
+    top: 12px;
+    width: min(288px, calc(100vw - 28px));
+    padding: 12px;
+}
+
+.hud-top {
+    left: 50%;
+    top: 10px;
+    width: min(520px, calc(100vw - 360px));
+    min-width: 280px;
+    transform: translateX(-50%);
+    padding: 8px 14px 10px;
+    text-align: center;
+}
+
+.hud-right {
+    right: 14px;
+    top: 54px;
+    width: 218px;
+    max-height: calc(100vh - 78px);
+    padding: 12px;
+    overflow: hidden;
+}
+
+.hud-actions {
+    position: absolute;
+    right: 14px;
+    top: 12px;
+    display: flex;
+    gap: 8px;
+    pointer-events: auto;
+}
+
+.hud-button,
+.levelup-reroll {
+    min-width: 74px;
+    min-height: 34px;
+    padding: 0 14px;
+    border: 1px solid rgba(255, 211, 106, 0.6);
+    color: var(--ui-text);
+    background: linear-gradient(180deg, rgba(34, 45, 50, 0.94), rgba(9, 13, 17, 0.94));
+    box-shadow: inset 0 0 16px rgba(255, 211, 106, 0.08), 0 6px 18px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+}
+
+.hud-button:hover,
+.levelup-reroll:hover {
+    border-color: #fff1a8;
+    color: #fff7cf;
+}
+
+.hud-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 5px;
+    font-size: 13px;
+    color: var(--ui-muted);
+}
+
+.hud-label strong {
+    color: var(--ui-text);
+    font-size: 15px;
+}
+
+.meter {
+    position: relative;
+    height: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(0, 0, 0, 0.58);
+}
+
+.meter-fill {
+    position: absolute;
+    inset: 2px auto 2px 2px;
+    width: calc(var(--pct, 0) * 1%);
+    max-width: calc(100% - 4px);
+    transition: width 90ms linear;
+}
+
+.meter-hp .meter-fill {
+    background: linear-gradient(90deg, #1cc95f, #9dff7a);
+}
+
+.meter-exp .meter-fill {
+    background: linear-gradient(90deg, #2674ff, #55f0ff);
+}
+
+.hud-left.is-low .meter-hp .meter-fill {
+    background: linear-gradient(90deg, #b8122b, #ff915e);
+}
+
+.hud-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px 12px;
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.hud-stat-grid span {
+    color: var(--ui-muted);
+}
+
+.hud-stat-grid b {
+    display: block;
+    margin-top: 2px;
+    color: var(--ui-text);
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.level-text {
+    color: var(--ui-gold);
+    font-weight: 800;
+    font-size: 18px;
+    line-height: 1.2;
+    text-shadow: 0 0 12px rgba(255, 211, 106, 0.35);
+}
+
+.time-text {
+    margin-top: 6px;
+    color: var(--ui-muted);
+    font-size: 13px;
+}
+
+.status-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 7px;
+    color: var(--ui-gold);
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.status-list {
+    display: grid;
+    gap: 5px;
+    margin-bottom: 12px;
+}
+
+.status-row {
+    display: grid;
+    grid-template-columns: 22px 1fr auto;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    color: var(--ui-text);
+    font-size: 12px;
+}
+
+.status-row.is-muted {
+    opacity: 0.42;
+}
+
+.status-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    background: rgba(0, 0, 0, 0.36);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.status-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.status-level {
+    color: var(--ui-muted);
+    font-family: Consolas, "Courier New", monospace;
+}
+
+.boss-banner {
+    position: absolute;
+    left: 50%;
+    top: 82px;
+    width: min(520px, calc(100vw - 420px));
+    min-width: 300px;
+    transform: translateX(-50%);
+    padding: 12px 22px;
+    border: 1px solid rgba(255, 85, 85, 0.62);
+    background: linear-gradient(90deg, rgba(78, 10, 16, 0.18), rgba(20, 8, 12, 0.86), rgba(78, 10, 16, 0.18));
+    box-shadow: 0 0 28px rgba(255, 77, 77, 0.18);
+    text-align: center;
+}
+
+.boss-banner[hidden] {
+    display: none;
+}
+
+.boss-banner strong {
+    display: block;
+    color: #ffef9a;
+    font-size: 18px;
+}
+
+.boss-banner span {
+    display: block;
+    margin-top: 4px;
+    color: #ff9382;
+    font-size: 13px;
+}
+
+.low-hp-vignette {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    box-shadow: inset 0 0 0 14px rgba(255, 0, 0, 0.0), inset 0 0 140px rgba(255, 0, 0, 0.0);
+    transition: opacity 140ms ease;
+}
+
+.game-ui-root.is-low-hp .low-hp-vignette {
+    opacity: 1;
+    animation: lowHpPulse 780ms ease-in-out infinite alternate;
+}
+
+@keyframes lowHpPulse {
+    from {
+        box-shadow: inset 0 0 0 10px rgba(170, 0, 0, 0.34), inset 0 0 110px rgba(170, 0, 0, 0.16);
+    }
+    to {
+        box-shadow: inset 0 0 0 28px rgba(255, 0, 0, 0.42), inset 0 0 170px rgba(255, 0, 0, 0.26);
+    }
+}
+
+.dom-levelup {
+    position: absolute;
+    inset: 0;
+    display: none;
+    place-items: center;
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.70);
+}
+
+.game-ui-root.is-level-up .dom-levelup {
+    display: grid;
+}
+
+.levelup-panel {
+    width: min(900px, calc(100vw - 40px));
+    min-height: 560px;
+    padding: 26px 30px 24px;
+    border: 1px solid var(--ui-border);
+    background:
+        radial-gradient(circle at 50% 0%, rgba(255, 211, 106, 0.12), transparent 34%),
+        linear-gradient(180deg, rgba(11, 22, 29, 0.96), rgba(5, 9, 12, 0.94));
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55), inset 0 0 42px rgba(69, 240, 255, 0.07);
+}
+
+.levelup-header {
+    text-align: center;
+}
+
+.levelup-title {
+    color: var(--ui-gold);
+    font-weight: 900;
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1.05;
+    text-shadow: 0 0 18px rgba(255, 211, 106, 0.42);
+}
+
+.levelup-subtitle {
+    margin-top: 8px;
+    color: var(--ui-muted);
+    font-size: 16px;
+}
+
+.levelup-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 26px;
+}
+
+.levelup-card {
+    min-height: 322px;
+    padding: 18px 16px 16px;
+    border: 1px solid rgba(255, 211, 106, 0.50);
+    background:
+        linear-gradient(180deg, rgba(255, 211, 106, 0.06), transparent 24%),
+        rgba(8, 16, 22, 0.82);
+    color: var(--ui-text);
+    cursor: pointer;
+    box-shadow: inset 0 0 24px rgba(69, 240, 255, 0.05);
+    text-align: center;
+}
+
+.levelup-card:hover {
+    border-color: #fff1a8;
+    transform: translateY(-2px);
+}
+
+.levelup-icon {
+    width: 74px;
+    height: 74px;
+    margin: 8px auto 14px;
+    display: grid;
+    place-items: center;
+    color: var(--ui-cyan);
+    font-size: 38px;
+    border: 1px solid rgba(69, 240, 255, 0.36);
+    background: radial-gradient(circle, rgba(69, 240, 255, 0.18), rgba(0, 0, 0, 0.28));
+}
+
+.levelup-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.levelup-card-title {
+    min-height: 48px;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 18px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.levelup-card-desc {
+    margin-top: 12px;
+    color: rgba(244, 247, 244, 0.78);
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.levelup-card-level {
+    margin-top: 18px;
+    color: var(--ui-gold);
+    font-weight: 900;
+    font-size: 22px;
+}
+
+.levelup-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 22px;
+}
+
+.levelup-reroll[disabled] {
+    opacity: 0.45;
+    cursor: default;
+}
+
+@media (max-width: 920px) {
+    .hud-right {
+        display: none;
+    }
+
+    .hud-top {
+        width: min(420px, calc(100vw - 190px));
+    }
+}
+
+@media (max-width: 760px) {
+    .hud-left {
+        width: calc(100vw - 28px);
+    }
+
+    .hud-top {
+        top: 94px;
+        width: calc(100vw - 28px);
+    }
+
+    .hud-actions {
+        top: auto;
+        bottom: 14px;
+    }
+
+    .levelup-panel {
+        max-height: calc(100vh - 28px);
+        overflow: auto;
+        min-height: 0;
+    }
+
+    .levelup-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .game-ui-root *,
+    .game-ui-root *::before,
+    .game-ui-root *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}
