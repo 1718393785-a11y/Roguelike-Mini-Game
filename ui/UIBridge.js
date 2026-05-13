@@ -19,6 +19,7 @@
             this.lastPerkKey = '';
             this.lastStatusKey = '';
             this.lastStateClass = '';
+            this.settingsOpen = false;
         }
 
         mount(game) {
@@ -50,6 +51,7 @@
                     </section>
                     <div class="hud-actions">
                         <button class="hud-button" type="button" data-action="home">主页</button>
+                        <button class="hud-button" type="button" data-action="openSettings">设置</button>
                         <button class="hud-button" type="button" data-action="pause">暂停</button>
                     </div>
                     <aside class="hud-cluster hud-right">
@@ -84,6 +86,7 @@
                         <div class="main-actions">
                             <button class="main-button main-button-primary" type="button" data-action="start">开始新游戏</button>
                             <button class="main-button" type="button" data-action="openPerks">局外升级</button>
+                            <button class="main-button" type="button" data-action="openSettings">音频设置</button>
                             <button class="main-button main-button-secondary" type="button" data-action="quit">退出</button>
                         </div>
                     </div>
@@ -117,7 +120,50 @@
                         <div class="menu-actions">
                             <button class="menu-button" type="button" data-action="resume">继续</button>
                             <button class="menu-button" type="button" data-action="restart">重启时空</button>
+                            <button class="menu-button" type="button" data-action="openSettings">音频设置</button>
                             <button class="menu-button menu-button-secondary" type="button" data-action="menu">返回主页</button>
+                        </div>
+                    </div>
+                </section>
+                <section class="dom-settings" role="dialog" aria-modal="true" aria-label="音频设置">
+                    <div class="settings-panel">
+                        <header class="settings-header">
+                            <div>
+                                <div class="settings-title">音频设置</div>
+                                <div class="settings-subtitle" data-ui="audioModeText">Synthetic audio</div>
+                            </div>
+                            <button class="settings-close" type="button" data-action="closeSettings" aria-label="关闭">×</button>
+                        </header>
+                        <div class="settings-list">
+                            <label class="settings-row">
+                                <span>总音量</span>
+                                <input type="range" min="0" max="1" step="0.01" data-audio-volume="master">
+                                <b data-ui="audioMasterValue">70%</b>
+                            </label>
+                            <label class="settings-row">
+                                <span>战斗音效</span>
+                                <input type="range" min="0" max="1" step="0.01" data-audio-volume="sfx">
+                                <b data-ui="audioSfxValue">55%</b>
+                            </label>
+                            <label class="settings-row">
+                                <span>背景音乐</span>
+                                <input type="range" min="0" max="1" step="0.01" data-audio-volume="music">
+                                <b data-ui="audioMusicValue">32%</b>
+                            </label>
+                            <label class="settings-row">
+                                <span>界面音效</span>
+                                <input type="range" min="0" max="1" step="0.01" data-audio-volume="ui">
+                                <b data-ui="audioUiValue">72%</b>
+                            </label>
+                            <label class="settings-row">
+                                <span>警告音效</span>
+                                <input type="range" min="0" max="1" step="0.01" data-audio-volume="alert">
+                                <b data-ui="audioAlertValue">78%</b>
+                            </label>
+                        </div>
+                        <div class="settings-actions">
+                            <button class="menu-button" type="button" data-action="muteAudio">静音</button>
+                            <button class="menu-button" type="button" data-action="testAudio">测试音效</button>
                         </div>
                     </div>
                 </section>
@@ -139,6 +185,19 @@
                     this.game.gameState = 6;
                 } else if (action === 'quit') {
                     window.location.reload();
+                } else if (action === 'openSettings') {
+                    this.settingsOpen = true;
+                    this.root.classList.add('is-settings-open');
+                    this.updateAudioSettings();
+                } else if (action === 'closeSettings') {
+                    this.settingsOpen = false;
+                    this.root.classList.remove('is-settings-open');
+                } else if (action === 'muteAudio') {
+                    window.audioManager?.toggleMuted?.();
+                    this.updateAudioSettings();
+                } else if (action === 'testAudio') {
+                    window.audioManager?.play?.('levelUp', 0.8);
+                    this.updateAudioSettings();
                 } else if (action === 'home') {
                     this.game.returnToMenu?.();
                 } else if (action === 'resume') {
@@ -183,6 +242,13 @@
                     this.update(this.game);
                 }
             });
+
+            this.root.addEventListener('input', (event) => {
+                const slider = event.target.closest('[data-audio-volume]');
+                if (!slider || !window.audioManager) return;
+                window.audioManager.setVolume?.(slider.dataset.audioVolume, Number(slider.value));
+                this.updateAudioSettings();
+            });
         }
 
         update(game) {
@@ -195,6 +261,7 @@
             this.updateMainMenu(snapshot);
             this.updatePerkMenu(snapshot);
             this.updateMenu(snapshot);
+            this.updateAudioSettings();
         }
 
         applyState(snapshot) {
@@ -321,6 +388,29 @@
             if (resume) resume.hidden = snapshot.gameState !== 2;
             const restart = this.root.querySelector('[data-action="restart"]');
             if (restart) restart.hidden = snapshot.gameState === 5;
+        }
+
+        updateAudioSettings() {
+            const audio = window.audioManager;
+            if (!audio?.getSettings) return;
+            const settings = audio.getSettings();
+            const status = window.__AUDIO_STATUS__ || {};
+            const values = {
+                master: settings.masterVolume,
+                sfx: settings.sfxVolume,
+                music: settings.musicVolume,
+                ui: settings.uiVolume,
+                alert: settings.alertVolume,
+            };
+            for (const [name, value] of Object.entries(values)) {
+                const slider = this.root.querySelector(`[data-audio-volume="${name}"]`);
+                if (slider && document.activeElement !== slider) slider.value = String(value);
+                const labelKey = `audio${name.charAt(0).toUpperCase()}${name.slice(1)}Value`;
+                this.setText(labelKey, `${Math.round(value * 100)}%`);
+            }
+            this.setText('audioModeText', `${status.mode || 'synthetic'} · ${status.sounds || 0} sounds · ${status.active || 0} active`);
+            const mute = this.root.querySelector('[data-action="muteAudio"]');
+            if (mute) mute.textContent = settings.muted ? '取消静音' : '静音';
         }
 
         renderRows(target, rows, isSkill) {

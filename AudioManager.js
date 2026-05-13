@@ -22,6 +22,7 @@
             this.musicVolume = 0.32;
             this.uiVolume = 0.72;
             this.alertVolume = 0.78;
+            this.muted = false;
             this.maxGlobalInstances = 18;
             this.context = null;
             this.masterGain = null;
@@ -32,12 +33,14 @@
             this.lastPlayedAt = new Map();
             this.unlocked = false;
             this.platformResolver = null;
+            this.loadSettings();
             this.bindUnlockEvents();
             this.publishStatus();
         }
 
         configure(options = {}) {
             if (typeof options.enabled === 'boolean') this.enabled = options.enabled;
+            if (typeof options.muted === 'boolean') this.muted = options.muted;
             if (Number.isFinite(options.masterVolume)) this.masterVolume = options.masterVolume;
             if (Number.isFinite(options.sfxVolume)) this.sfxVolume = options.sfxVolume;
             if (Number.isFinite(options.musicVolume)) this.musicVolume = options.musicVolume;
@@ -52,6 +55,61 @@
             }
             this.updateBusVolumes();
             this.publishStatus();
+        }
+
+        loadSettings() {
+            try {
+                const raw = localStorage.getItem('qlzdq_audio_settings');
+                if (!raw) return;
+                const saved = JSON.parse(raw);
+                if (typeof saved.muted === 'boolean') this.muted = saved.muted;
+                if (Number.isFinite(saved.masterVolume)) this.masterVolume = this.clamp(saved.masterVolume);
+                if (Number.isFinite(saved.sfxVolume)) this.sfxVolume = this.clamp(saved.sfxVolume);
+                if (Number.isFinite(saved.musicVolume)) this.musicVolume = this.clamp(saved.musicVolume);
+                if (Number.isFinite(saved.uiVolume)) this.uiVolume = this.clamp(saved.uiVolume);
+                if (Number.isFinite(saved.alertVolume)) this.alertVolume = this.clamp(saved.alertVolume);
+            } catch {}
+        }
+
+        saveSettings() {
+            try {
+                localStorage.setItem('qlzdq_audio_settings', JSON.stringify(this.getSettings()));
+            } catch {}
+        }
+
+        getSettings() {
+            return {
+                muted: this.muted,
+                masterVolume: this.masterVolume,
+                sfxVolume: this.sfxVolume,
+                musicVolume: this.musicVolume,
+                uiVolume: this.uiVolume,
+                alertVolume: this.alertVolume,
+            };
+        }
+
+        setVolume(name, value) {
+            const normalized = this.clamp(Number(value));
+            const key = `${name}Volume`;
+            if (!['masterVolume', 'sfxVolume', 'musicVolume', 'uiVolume', 'alertVolume'].includes(key)) return false;
+            this[key] = normalized;
+            this.updateBusVolumes();
+            this.saveSettings();
+            this.publishStatus();
+            return true;
+        }
+
+        setMuted(muted) {
+            this.muted = Boolean(muted);
+            if (this.muted) this.stopAll();
+            this.updateBusVolumes();
+            this.saveSettings();
+            this.publishStatus();
+        }
+
+        toggleMuted() {
+            this.setMuted(!this.muted);
+            return this.muted;
         }
 
         register(name, audioElementOrConfig) {
@@ -87,7 +145,7 @@
         }
 
         play(name, volume = 1, options = {}) {
-            if (!this.enabled) return false;
+            if (!this.enabled || this.muted) return false;
             const sound = { ...(this.sounds.get(name) || {}), ...options };
             const now = performance.now();
             const cooldown = Number.isFinite(sound.cooldown) ? sound.cooldown : 0;
@@ -145,7 +203,7 @@
         }
 
         updateBusVolumes() {
-            if (this.masterGain) this.masterGain.gain.value = this.masterVolume;
+            if (this.masterGain) this.masterGain.gain.value = this.muted ? 0 : this.masterVolume;
             const values = {
                 sfx: this.sfxVolume,
                 music: this.musicVolume,
@@ -323,6 +381,7 @@
         publishStatus() {
             global.__AUDIO_STATUS__ = {
                 enabled: this.enabled,
+                muted: this.muted,
                 unlocked: this.unlocked,
                 active: this.active.length,
                 sounds: this.sounds.size,

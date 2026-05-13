@@ -322,7 +322,8 @@
 }
 
 .dom-main-menu,
-.dom-perk-menu {
+.dom-perk-menu,
+.dom-settings {
     position: absolute;
     inset: 0;
     display: none;
@@ -335,6 +336,10 @@
 
 .game-ui-root.is-menu .dom-main-menu,
 .game-ui-root.is-perk-upgrade .dom-perk-menu {
+    display: grid;
+}
+
+.game-ui-root.is-settings-open .dom-settings {
     display: grid;
 }
 
@@ -544,6 +549,80 @@
     display: flex;
     justify-content: center;
     margin-top: 16px;
+}
+
+.settings-panel {
+    width: min(540px, calc(100vw - 34px));
+    padding: 22px;
+    border: 1px solid var(--ui-border);
+    background:
+        linear-gradient(135deg, rgba(69, 240, 255, 0.08), transparent 30%),
+        linear-gradient(180deg, rgba(10, 19, 26, 0.98), rgba(4, 8, 11, 0.96));
+    box-shadow: 0 26px 90px rgba(0, 0, 0, 0.64), inset 0 0 44px rgba(69, 240, 255, 0.07);
+}
+
+.settings-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 211, 106, 0.22);
+}
+
+.settings-title {
+    color: var(--ui-gold);
+    font-weight: 900;
+    font-size: 30px;
+    line-height: 1;
+}
+
+.settings-subtitle {
+    margin-top: 8px;
+    color: var(--ui-muted);
+    font-size: 13px;
+}
+
+.settings-close {
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 211, 106, 0.36);
+    color: var(--ui-text);
+    background: rgba(0, 0, 0, 0.22);
+    cursor: pointer;
+}
+
+.settings-list {
+    display: grid;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.settings-row {
+    display: grid;
+    grid-template-columns: 82px minmax(0, 1fr) 48px;
+    align-items: center;
+    gap: 12px;
+    color: var(--ui-muted);
+    font-size: 14px;
+}
+
+.settings-row input[type="range"] {
+    width: 100%;
+    accent-color: var(--ui-cyan);
+}
+
+.settings-row b {
+    color: var(--ui-text);
+    font-family: Consolas, "Courier New", monospace;
+    text-align: right;
+}
+
+.settings-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 22px;
 }
 
 .menu-panel {
@@ -797,6 +876,14 @@
 
     .menu-stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .settings-row {
+        grid-template-columns: 1fr 48px;
+    }
+
+    .settings-row span {
+        grid-column: 1 / -1;
     }
 }
 
