@@ -1884,7 +1884,8 @@ class Saber extends Weapon {
         const forwardY = Math.sin(this.aimAngle);
         const handX = currentX + forwardX * 9;
         const handY = currentY + forwardY * 9;
-        const imageSize = outerRadius * (2.25 + (level >= 2 ? 0.16 : 0));
+        const assetReachRatio = 0.9; // Approximate hilt-to-fire-tip reach inside the square source art.
+        const imageSize = Math.max(56, outerRadius / assetReachRatio);
         const assetForwardAngle = 2.48; // Image vector from ring handle to flame blade direction.
         const swingArc = -0.42 + progress * 0.58;
         const recoil = Math.sin(progress * Math.PI) * 0.07;
