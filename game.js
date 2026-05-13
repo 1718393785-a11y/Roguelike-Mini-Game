@@ -4416,7 +4416,7 @@ class Player {
         // 血量初始化：满血量开局
         this.hp = this.maxHp;
 
-        // 默认初始武器：霹雳惊弦弓 Lv.1。URL 仍可用 debugInitialWeapon/debugInitialWeaponLevel 覆盖。
+        // 测试默认初始武器：霹雳惊弦弓 Lv.5。URL 仍可用 debugInitialWeapon/debugInitialWeaponLevel 覆盖。
         const weaponChoices = [
             { type: 'saber', cls: Saber },
             { type: 'spear', cls: Spear },
@@ -4439,7 +4439,7 @@ class Player {
             }
         }
         weapon.level = 1;
-        const initialWeaponLevelParam = Number(new URLSearchParams(window.location.search).get('debugInitialWeaponLevel') || 1);
+        const initialWeaponLevelParam = Number(new URLSearchParams(window.location.search).get('debugInitialWeaponLevel') || 5);
         if (Number.isInteger(initialWeaponLevelParam) && initialWeaponLevelParam > 1) {
             const targetLevel = Math.min(initialWeaponLevelParam, 6);
             for (let lvl = 2; lvl <= targetLevel; lvl++) {
