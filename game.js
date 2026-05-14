@@ -2959,6 +2959,11 @@ class CrossbowArrow {
             gameManager.lightningEffects.push(new LightningColumnEffect(enemy.x, enemy.y, effectiveRadius, 3.0));
             gameManager.lightningEffects.push(new LightningChainEffect(enemy.x, enemy.y, chainTargets, effectiveRadius, 'column'));
             gameManager.lightningEffects.push(new RootCircleEffect(enemy.x, enemy.y, effectiveRadius));
+            gameManager.damageLightningChainTargets(chainTargets, resolvedDamage * 0.5, this.hitRecords, {
+                type: 'crossbow',
+                effect: 'lightning_chain_damage',
+                level: this.weaponLevel
+            });
             if (resolvedIsLastHit) {
                 // 全屏眩晕所有敌人在半径内
                 gameManager.stunEnemiesInRadius(enemy.x, enemy.y, effectiveRadius, 1.0, {
@@ -3161,7 +3166,7 @@ class LightningChainEffect {
         ctx.lineJoin = 'round';
         ctx.shadowBlur = this.mode === 'column' ? 18 : 12;
         ctx.shadowColor = 'rgba(210, 70, 255, 0.9)';
-        for (let pass = 0; pass < 3; pass++) {
+        for (let pass = 0; pass < 4; pass++) {
             ctx.beginPath();
             for (let i = 0; i < points.length; i++) {
                 const p = points[i];
@@ -3169,11 +3174,14 @@ class LightningChainEffect {
                 else ctx.lineTo(p.x, p.y);
             }
             if (pass === 0) {
-                ctx.strokeStyle = `rgba(255, 185, 50, ${alpha * 0.52})`;
-                ctx.lineWidth = 6 * widthScale;
+                ctx.strokeStyle = `rgba(255, 185, 50, ${alpha * 0.58})`;
+                ctx.lineWidth = 8.5 * widthScale;
             } else if (pass === 1) {
-                ctx.strokeStyle = `rgba(188, 58, 255, ${alpha * 0.82})`;
-                ctx.lineWidth = 3.2 * widthScale;
+                ctx.strokeStyle = `rgba(172, 42, 255, ${alpha * 0.92})`;
+                ctx.lineWidth = 5.2 * widthScale;
+            } else if (pass === 2) {
+                ctx.strokeStyle = `rgba(70, 205, 255, ${alpha * 0.72})`;
+                ctx.lineWidth = 2.4 * widthScale;
             } else {
                 ctx.strokeStyle = `rgba(255, 245, 255, ${alpha})`;
                 ctx.lineWidth = 1.2 * widthScale;
@@ -7219,7 +7227,40 @@ class GameManager {
                 return getDebugEntityId(a) - getDebugEntityId(b);
             })
             .slice(0, maxTargets)
-            .map(enemy => ({ x: enemy.x, y: enemy.y }));
+            .map(enemy => ({ enemy, x: enemy.x, y: enemy.y }));
+    }
+
+    damageLightningChainTargets(targets, damage, excludeHitSet = new Set(), behaviorMeta = null) {
+        if (!Array.isArray(targets) || targets.length === 0 || damage <= 0) return;
+        const uniqueTargets = new Map();
+        for (const target of targets) {
+            const enemy = target?.enemy;
+            if (!enemy || enemy.hp <= 0 || excludeHitSet.has(enemy)) continue;
+            uniqueTargets.set(getDebugEntityId(enemy), enemy);
+        }
+        const chainHits = [];
+        for (const enemy of uniqueTargets.values()) {
+            enemy.hp -= damage;
+            chainHits.push(getDebugEntityId(enemy));
+            if (enemy.hp <= 0) {
+                const index = this.enemies.indexOf(enemy);
+                if (index >= 0) {
+                    this.handleEnemyDeath(enemy, index);
+                }
+            }
+        }
+        if (this.genericWeaponShadow && behaviorMeta && chainHits.length > 0) {
+            const sortedHits = chainHits.sort((a, b) => a - b);
+            this.genericWeaponShadow.recordBehaviorSample({
+                type: behaviorMeta.type,
+                effect: behaviorMeta.effect,
+                level: behaviorMeta.level,
+                genericHits: sortedHits,
+                legacyHits: sortedHits,
+                genericState: { damage },
+                legacyState: { damage }
+            });
+        }
     }
 
     // 范围伤害：对圆心半径内所有敌人造成伤害，跳过已经被当前箭矢命中的敌人
