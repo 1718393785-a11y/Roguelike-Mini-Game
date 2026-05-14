@@ -2605,6 +2605,7 @@ class Spear extends Weapon {
             const alpha = stab.lifeTimer / 0.25 * 0.9;
             const visualLength = effectiveLength * 1.18;
             const visualWidth = Math.max(86, effectiveWidth * 4.8);
+            const spearTextureAngleOffset = Math.atan2(visualWidth, visualLength);
             if (drawArtEffectTexture(
                 ctx,
                 'spear_stab',
@@ -2612,9 +2613,9 @@ class Spear extends Weapon {
                 y,
                 visualLength,
                 visualWidth,
-                Math.atan2(dirY, dirX),
+                Math.atan2(dirY, dirX) + spearTextureAngleOffset,
                 alpha,
-                0.18,
+                0.28,
                 0.5,
                 this.level
             )) {
