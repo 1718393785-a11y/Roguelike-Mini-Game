@@ -2662,16 +2662,16 @@ class Spear extends Weapon {
             const spearTextureAngleOffset = Math.PI / 4;
             const spearAnchorX = this.level <= 4 ? 0.44 : 0.28;
             const spearAnchorY = this.level <= 4 ? 0.58 : 0.5;
-            if (this.level === 1) {
-                this.renderLv1Trail(ctx, x, y, spearAngle, visualLength, visualWidth, alpha * 0.95);
-            }
+            const spearLeadOffset = this.level <= 4 ? visualLength * 0.16 : 0;
+            const renderX = x + dirX * spearLeadOffset;
+            const renderY = y + dirY * spearLeadOffset;
             if (drawArtWeaponAttackTexture(
                 ctx,
                 'spear',
                 this.level,
                 'primary',
-                x,
-                y,
+                renderX,
+                renderY,
                 visualLength,
                 visualWidth,
                 spearAngle + spearTextureAngleOffset,
@@ -2684,8 +2684,8 @@ class Spear extends Weapon {
             if (drawArtEffectTexture(
                 ctx,
                 'spear_stab',
-                x,
-                y,
+                renderX,
+                renderY,
                 visualLength,
                 visualWidth,
                 spearAngle + spearTextureAngleOffset,
