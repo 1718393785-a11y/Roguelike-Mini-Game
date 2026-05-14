@@ -2663,6 +2663,22 @@ class Spear extends Weapon {
             if (this.level === 1) {
                 this.renderLv1Trail(ctx, x, y, spearAngle, visualLength, visualWidth, alpha * 0.95);
             }
+            if (drawArtWeaponAttackTexture(
+                ctx,
+                'spear',
+                this.level,
+                'primary',
+                x,
+                y,
+                visualLength,
+                visualWidth,
+                spearAngle + spearTextureAngleOffset,
+                alpha,
+                0.28,
+                0.5
+            )) {
+                continue;
+            }
             if (drawArtEffectTexture(
                 ctx,
                 'spear_stab',
