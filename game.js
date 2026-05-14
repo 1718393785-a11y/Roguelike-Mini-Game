@@ -2588,6 +2588,59 @@ class Spear extends Weapon {
         }
     }
 
+    renderLv1Trail(ctx, x, y, angle, visualLength, visualWidth, alpha) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        ctx.globalAlpha *= Math.max(0, Math.min(1, alpha));
+
+        const trailLength = visualLength * 0.74;
+        const trailWidth = visualWidth * 0.34;
+        const startX = -visualLength * 0.22;
+        const endX = trailLength;
+
+        const core = ctx.createLinearGradient(startX, 0, endX, 0);
+        core.addColorStop(0, 'rgba(182, 230, 255, 0)');
+        core.addColorStop(0.18, 'rgba(165, 225, 255, 0.26)');
+        core.addColorStop(0.72, 'rgba(118, 198, 255, 0.68)');
+        core.addColorStop(1, 'rgba(255, 255, 255, 0.94)');
+        ctx.fillStyle = core;
+        ctx.beginPath();
+        ctx.moveTo(startX, -trailWidth * 0.52);
+        ctx.quadraticCurveTo(visualLength * 0.28, -trailWidth * 0.86, endX, -trailWidth * 0.16);
+        ctx.lineTo(endX, trailWidth * 0.16);
+        ctx.quadraticCurveTo(visualLength * 0.26, trailWidth * 0.78, startX, trailWidth * 0.52);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = 'rgba(158, 220, 255, 0.76)';
+        ctx.strokeStyle = 'rgba(198, 236, 255, 0.7)';
+        ctx.lineWidth = Math.max(1.8, visualWidth * 0.045);
+        ctx.lineCap = 'round';
+        for (let i = 0; i < 3; i++) {
+            const offset = (i - 1) * trailWidth * 0.26;
+            ctx.beginPath();
+            ctx.moveTo(startX + visualLength * 0.06, offset);
+            ctx.quadraticCurveTo(visualLength * (0.34 + i * 0.04), offset * 0.36, endX - visualLength * 0.08, offset * 0.2);
+            ctx.stroke();
+        }
+
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = 'rgba(230, 247, 255, 0.36)';
+        ctx.lineWidth = Math.max(1.2, visualWidth * 0.03);
+        ctx.beginPath();
+        ctx.moveTo(startX + visualLength * 0.01, -trailWidth * 0.72);
+        ctx.quadraticCurveTo(visualLength * 0.22, -trailWidth * 1.06, visualLength * 0.46, -trailWidth * 0.62);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(startX + visualLength * 0.04, trailWidth * 0.74);
+        ctx.quadraticCurveTo(visualLength * 0.28, trailWidth * 1.04, visualLength * 0.54, trailWidth * 0.6);
+        ctx.stroke();
+
+        ctx.restore();
+    }
+
     render(ctx, player) {
         if (this.activeStabs.length === 0) return;
         const areaMul = 1 + (player.modifiers.areaMulti || 0);
@@ -2605,7 +2658,11 @@ class Spear extends Weapon {
             const alpha = stab.lifeTimer / 0.25 * 0.9;
             const visualLength = effectiveLength * 1.18;
             const visualWidth = Math.max(86, effectiveWidth * 4.8);
+            const spearAngle = Math.atan2(dirY, dirX);
             const spearTextureAngleOffset = Math.atan2(visualWidth, visualLength);
+            if (this.level === 1) {
+                this.renderLv1Trail(ctx, x, y, spearAngle, visualLength, visualWidth, alpha * 0.95);
+            }
             if (drawArtEffectTexture(
                 ctx,
                 'spear_stab',
@@ -2613,7 +2670,7 @@ class Spear extends Weapon {
                 y,
                 visualLength,
                 visualWidth,
-                Math.atan2(dirY, dirX) + spearTextureAngleOffset,
+                spearAngle + spearTextureAngleOffset,
                 alpha,
                 0.28,
                 0.5,
