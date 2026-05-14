@@ -2951,17 +2951,19 @@ class CrossbowArrow {
             });
         }
 
-        // 触发闪电特效
-        if (this.hasLightningColumn && resolvedIsLastHit) {
+        // 触发闪电特效：Lv6 每次命中都展示天雷，结算强化仍只在穿透耗尽/命中Boss时生效
+        if (this.hasLightningColumn) {
             // Lv6 终极：毁灭雷柱
             const effectiveRadius = resolvedLightningRadius || 120 * areaMul;
             gameManager.lightningEffects.push(new LightningColumnEffect(enemy.x, enemy.y, effectiveRadius, 3.0));
-            // 全屏眩晕所有敌人在半径内
-            gameManager.stunEnemiesInRadius(enemy.x, enemy.y, effectiveRadius, 1.0, {
-                type: 'crossbow',
-                effect: 'lightning_column_stun',
-                level: this.weaponLevel
-            });
+            if (resolvedIsLastHit) {
+                // 全屏眩晕所有敌人在半径内
+                gameManager.stunEnemiesInRadius(enemy.x, enemy.y, effectiveRadius, 1.0, {
+                    type: 'crossbow',
+                    effect: 'lightning_column_stun',
+                    level: this.weaponLevel
+                });
+            }
         } else if (this.hasLightningAOE) {
             // Lv5 普通：小范围AOE 50%伤害
             const effectiveRadius = resolvedLightningRadius || 60 * areaMul;
