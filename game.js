@@ -3654,17 +3654,56 @@ class QinggangSword extends Weapon {
         const effectiveLength = this.swordLength * areaMul;
         const effectiveHalfWidth = this.swordHalfWidth * areaMul;
         const maxOrbitRadius = Math.max(...orbitConfigs.map(orbit => orbit.radius));
-        const textureSize = (maxOrbitRadius + effectiveLength) * 2.35;
-        if (drawArtEffectTexture(ctx, 'qinggang_orbit', player.x, player.y, textureSize, textureSize, this.baseAngle, 0.86, 0.5, 0.5, this.level)) {
-            return;
+
+        if (this.level >= 5) {
+            const auraAlpha = this.level >= 6 ? 0.34 : 0.22;
+            const pulse = 0.5 + 0.5 * Math.sin(GameRuntime.frame * 0.08);
+            ctx.save();
+            ctx.globalAlpha *= auraAlpha;
+            ctx.lineWidth = this.level >= 6 ? 3 : 2;
+            ctx.strokeStyle = this.level >= 6 ? 'rgba(82, 238, 255, 0.72)' : 'rgba(255, 48, 88, 0.62)';
+            ctx.shadowBlur = this.level >= 6 ? 22 : 16;
+            ctx.shadowColor = this.level >= 6 ? 'rgba(74, 224, 255, 0.85)' : 'rgba(255, 42, 88, 0.72)';
+            for (const orbit of orbitConfigs) {
+                ctx.beginPath();
+                ctx.arc(player.x, player.y, orbit.radius * (0.98 + pulse * 0.04), 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            if (this.level >= 6) {
+                ctx.strokeStyle = 'rgba(255, 210, 88, 0.55)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(player.x, player.y, maxOrbitRadius * (0.78 + pulse * 0.05), 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            ctx.restore();
         }
 
-        for (const orbit of orbitConfigs) {
+        const renderOrbitConfigs = [...orbitConfigs].sort((a, b) => b.radius - a.radius);
+        for (const orbit of renderOrbitConfigs) {
             for (let i = 0; i < orbit.count; i++) {
                 const currentAngle = orbit.baseAngle + (Math.PI * 2 / orbit.count) * i;
                 const actualAngle = currentAngle * orbit.direction;
                 const actualX = player.x + Math.cos(actualAngle) * orbit.radius;
                 const actualY = player.y + Math.sin(actualAngle) * orbit.radius;
+                const visualScale = [0, 0.92, 1.0, 1.08, 1.18, 1.28, 1.38][Math.max(1, Math.min(6, this.level))] || 1;
+                const orbitVisualScale = this.level >= 6 && orbit.radius < maxOrbitRadius ? 0.72 : 1;
+                const swordHeight = effectiveLength * 2.25 * visualScale * orbitVisualScale;
+                const swordWidth = Math.max(effectiveHalfWidth * 7.2, swordHeight * 0.44);
+                const usedArtSword = drawArtEffectTexture(
+                    ctx,
+                    'qinggang_orbit',
+                    actualX,
+                    actualY,
+                    swordWidth,
+                    swordHeight,
+                    actualAngle + Math.PI / 2,
+                    this.level >= 6 ? 0.98 : 0.93,
+                    0.5,
+                    0.5,
+                    this.level
+                );
+                if (usedArtSword) continue;
 
                 ctx.save();
                 ctx.translate(actualX, actualY);
