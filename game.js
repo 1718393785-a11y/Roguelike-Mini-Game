@@ -3655,35 +3655,144 @@ class QinggangSword extends Weapon {
         const effectiveHalfWidth = this.swordHalfWidth * areaMul;
         const maxOrbitRadius = Math.max(...orbitConfigs.map(orbit => orbit.radius));
 
-        if (this.level >= 6) {
-            const auraAlpha = 0.34;
+        if (this.level >= 5) {
             const pulse = 0.5 + 0.5 * Math.sin(GameRuntime.frame * 0.08);
             ctx.save();
-            ctx.globalAlpha *= auraAlpha;
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = 'rgba(82, 238, 255, 0.72)';
-            ctx.shadowBlur = 22;
-            ctx.shadowColor = 'rgba(74, 224, 255, 0.85)';
-            for (const orbit of orbitConfigs) {
+            ctx.translate(player.x, player.y);
+            if (this.level === 5) {
+                const radius = maxOrbitRadius * (1.04 + pulse * 0.035);
+                const innerRadius = maxOrbitRadius * 0.78;
+                ctx.globalAlpha *= 0.82;
+                ctx.shadowBlur = 18;
+                ctx.shadowColor = 'rgba(62, 224, 255, 0.8)';
+                ctx.strokeStyle = 'rgba(82, 230, 255, 0.72)';
+                ctx.lineWidth = 4;
                 ctx.beginPath();
-                ctx.arc(player.x, player.y, orbit.radius * (0.98 + pulse * 0.04), 0, Math.PI * 2);
+                ctx.arc(0, 0, innerRadius, 0, Math.PI * 2);
                 ctx.stroke();
-            }
-            ctx.strokeStyle = 'rgba(255, 210, 88, 0.55)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(player.x, player.y, maxOrbitRadius * (0.78 + pulse * 0.05), 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.strokeStyle = 'rgba(78, 196, 255, 0.32)';
-            ctx.lineWidth = 1.5;
-            for (let i = 0; i < 8; i++) {
-                const a = this.baseAngle * 0.35 + i * Math.PI / 4;
-                const inner = maxOrbitRadius * 0.34;
-                const outer = maxOrbitRadius * (0.92 + pulse * 0.03);
+
+                ctx.shadowBlur = 22;
+                ctx.shadowColor = 'rgba(255, 25, 62, 0.85)';
+                ctx.strokeStyle = 'rgba(255, 28, 58, 0.58)';
+                ctx.lineWidth = 7;
                 ctx.beginPath();
-                ctx.moveTo(player.x + Math.cos(a) * inner, player.y + Math.sin(a) * inner);
-                ctx.lineTo(player.x + Math.cos(a) * outer, player.y + Math.sin(a) * outer);
+                ctx.arc(0, 0, radius, 0, Math.PI * 2);
                 ctx.stroke();
+
+                ctx.rotate(-this.baseAngle * 0.55);
+                ctx.lineCap = 'round';
+                for (let i = 0; i < 8; i++) {
+                    const start = i * Math.PI / 4 + 0.04;
+                    const end = start + Math.PI / 7;
+                    ctx.strokeStyle = i % 2 === 0 ? 'rgba(255, 54, 78, 0.72)' : 'rgba(53, 210, 255, 0.46)';
+                    ctx.lineWidth = i % 2 === 0 ? 5 : 3;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, radius * (0.98 + (i % 3) * 0.012), start, end);
+                    ctx.stroke();
+                    const dropAngle = start + (end - start) * 0.72;
+                    const dropRadius = radius * 1.06;
+                    ctx.fillStyle = 'rgba(255, 28, 58, 0.78)';
+                    ctx.beginPath();
+                    ctx.ellipse(
+                        Math.cos(dropAngle) * dropRadius,
+                        Math.sin(dropAngle) * dropRadius,
+                        3.5,
+                        7,
+                        dropAngle,
+                        0,
+                        Math.PI * 2
+                    );
+                    ctx.fill();
+                }
+            } else {
+                const innerRadius = maxOrbitRadius * (0.54 + pulse * 0.02);
+                const midRadius = maxOrbitRadius * (0.82 + pulse * 0.025);
+                const outerRadius = maxOrbitRadius * (1.08 + pulse * 0.018);
+                const imperialRadius = maxOrbitRadius * (1.22 + pulse * 0.012);
+                ctx.globalAlpha *= 0.86;
+
+                ctx.shadowBlur = 18;
+                ctx.shadowColor = 'rgba(72, 224, 255, 0.82)';
+                ctx.strokeStyle = 'rgba(68, 220, 255, 0.7)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(0, 0, innerRadius, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.strokeStyle = 'rgba(255, 210, 94, 0.56)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(0, 0, innerRadius * 0.86, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.save();
+                ctx.rotate(this.baseAngle * 0.42);
+                ctx.lineCap = 'round';
+                for (let i = 0; i < 12; i++) {
+                    const a = i * Math.PI / 6;
+                    ctx.strokeStyle = i % 2 === 0 ? 'rgba(75, 222, 255, 0.66)' : 'rgba(255, 206, 82, 0.54)';
+                    ctx.lineWidth = i % 2 === 0 ? 2.3 : 1.7;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, innerRadius * (1.02 + (i % 3) * 0.03), a, a + Math.PI / 14);
+                    ctx.stroke();
+                    const runeRadius = innerRadius * 1.05;
+                    ctx.save();
+                    ctx.translate(Math.cos(a) * runeRadius, Math.sin(a) * runeRadius);
+                    ctx.rotate(a + Math.PI / 4);
+                    ctx.fillStyle = 'rgba(255, 219, 105, 0.48)';
+                    ctx.fillRect(-2.5, -2.5, 5, 5);
+                    ctx.restore();
+                }
+                ctx.restore();
+
+                ctx.save();
+                ctx.rotate(-this.baseAngle * 0.34);
+                ctx.strokeStyle = 'rgba(70, 218, 255, 0.58)';
+                ctx.lineWidth = 3.5;
+                ctx.beginPath();
+                ctx.arc(0, 0, midRadius, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.strokeStyle = 'rgba(255, 206, 86, 0.48)';
+                ctx.lineWidth = 2.2;
+                ctx.beginPath();
+                ctx.arc(0, 0, outerRadius, 0, Math.PI * 2);
+                ctx.stroke();
+                for (let i = 0; i < 8; i++) {
+                    const a = i * Math.PI / 4;
+                    ctx.strokeStyle = 'rgba(84, 222, 255, 0.38)';
+                    ctx.lineWidth = 1.7;
+                    ctx.beginPath();
+                    ctx.moveTo(Math.cos(a) * innerRadius * 0.72, Math.sin(a) * innerRadius * 0.72);
+                    ctx.lineTo(Math.cos(a) * outerRadius * 0.96, Math.sin(a) * outerRadius * 0.96);
+                    ctx.stroke();
+                }
+                ctx.restore();
+
+                ctx.save();
+                ctx.rotate(this.baseAngle * 0.18);
+                ctx.shadowBlur = 26;
+                ctx.shadowColor = 'rgba(255, 210, 92, 0.92)';
+                ctx.strokeStyle = 'rgba(255, 217, 96, 0.72)';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(0, 0, imperialRadius, 0, Math.PI * 2);
+                ctx.stroke();
+                for (let i = 0; i < 8; i++) {
+                    const a = i * Math.PI / 4;
+                    const r = imperialRadius;
+                    ctx.save();
+                    ctx.translate(Math.cos(a) * r, Math.sin(a) * r);
+                    ctx.rotate(a);
+                    ctx.fillStyle = 'rgba(255, 222, 112, 0.74)';
+                    ctx.beginPath();
+                    ctx.moveTo(12, 0);
+                    ctx.lineTo(0, 5);
+                    ctx.lineTo(-8, 0);
+                    ctx.lineTo(0, -5);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                }
+                ctx.restore();
             }
             ctx.restore();
         }
