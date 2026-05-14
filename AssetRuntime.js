@@ -9,12 +9,13 @@
             this.errors = [];
             this.loaded = 0;
             this.requested = 0;
+            this.cacheBustToken = this.createCacheBustToken();
             window.__ASSET_STATUS__ = this.getStatus();
         }
 
         async initialize(manifestPath = 'assets/asset-manifest.json') {
             try {
-                const response = await fetch(manifestPath, { cache: 'no-store' });
+                const response = await fetch(this.getAssetRequestPath(manifestPath), { cache: 'no-store' });
                 if (!response.ok) throw new Error(`manifest fetch failed: ${response.status}`);
                 this.manifest = await response.json();
                 this.basePath = this.manifest.basePath || 'assets/';
@@ -105,9 +106,24 @@
             return Array.from(paths);
         }
 
+        createCacheBustToken() {
+            const params = new URLSearchParams(window.location.search);
+            const explicit = params.get('assetBust');
+            if (explicit) return explicit;
+            const isLocalDev = ['127.0.0.1', 'localhost', '::1'].includes(window.location.hostname);
+            return isLocalDev ? String(Date.now()) : '';
+        }
+
+        getAssetRequestPath(path) {
+            if (!this.cacheBustToken || !path) return path;
+            const joiner = path.includes('?') ? '&' : '?';
+            return `${path}${joiner}assetBust=${encodeURIComponent(this.cacheBustToken)}`;
+        }
+
         loadImage(path) {
-            if (this.cache.has(path)) {
-                const cached = this.cache.get(path);
+            const requestPath = this.getAssetRequestPath(path);
+            if (this.cache.has(requestPath)) {
+                const cached = this.cache.get(requestPath);
                 if (cached.complete) {
                     const ok = cached.naturalWidth > 0 && cached.naturalHeight > 0;
                     return Promise.resolve({ ok, path });
@@ -124,20 +140,20 @@
                     this.loaded++;
                 } else {
                     image.dataset.assetFailed = '1';
-                    this.errors.push(`image load failed: ${path}`);
+                    this.errors.push(`image load failed: ${requestPath}`);
                 }
                 this.publishStatus();
                 return { ok, path };
             };
 
             this.requested++;
-            this.cache.set(path, image);
+            this.cache.set(requestPath, image);
             this.publishStatus();
 
             return new Promise(resolve => {
                 image.onload = () => resolve(done(true));
                 image.onerror = () => resolve(done(false));
-                image.src = path;
+                image.src = requestPath;
             });
         }
 
@@ -242,9 +258,10 @@
         resolveImage(src) {
             if (!this.ready || !src) return null;
             const path = this.basePath + src;
-            if (this.cache.has(path)) return this.cache.get(path);
+            const requestPath = this.getAssetRequestPath(path);
+            if (this.cache.has(requestPath)) return this.cache.get(requestPath);
             this.loadImage(path);
-            return this.cache.get(path) || null;
+            return this.cache.get(requestPath) || null;
         }
 
         resolveImageWithFallback(src, fallbackSrc) {
@@ -270,6 +287,7 @@
                 requested: this.requested,
                 loaded: this.loaded,
                 cached: this.cache.size,
+                assetBust: this.cacheBustToken,
                 errors: this.errors.slice(-10),
             };
         }
