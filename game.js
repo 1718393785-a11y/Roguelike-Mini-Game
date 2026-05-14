@@ -2663,8 +2663,11 @@ class Spear extends Weapon {
             const spearAnchorX = this.level <= 4 ? 0.44 : 0.28;
             const spearAnchorY = this.level <= 4 ? 0.58 : 0.5;
             const spearLeadOffset = this.level <= 4 ? visualLength * 0.16 : 0;
-            const renderX = x + dirX * spearLeadOffset;
-            const renderY = y + dirY * spearLeadOffset;
+            const handedSide = dirX >= 0 ? 1 : -1;
+            const handOffsetX = this.level <= 4 ? player.size * 0.24 * handedSide : 0;
+            const handOffsetY = this.level <= 4 ? player.size * 0.14 : 0;
+            const renderX = x + dirX * spearLeadOffset + handOffsetX;
+            const renderY = y + dirY * spearLeadOffset + handOffsetY;
             if (drawArtWeaponAttackTexture(
                 ctx,
                 'spear',
