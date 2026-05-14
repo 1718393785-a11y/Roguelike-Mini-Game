@@ -2590,6 +2590,9 @@ class Spear extends Weapon {
 
     render(ctx, player) {
         if (this.activeStabs.length === 0) return;
+        const areaMul = 1 + (player.modifiers.areaMulti || 0);
+        const effectiveLength = this.length * areaMul;
+        const effectiveWidth = this.width * areaMul;
 
         // 遍历渲染每根枪影
         for (const stab of this.activeStabs) {
@@ -2600,16 +2603,18 @@ class Spear extends Weapon {
 
             // 透明度衰减
             const alpha = stab.lifeTimer / 0.25 * 0.9;
+            const visualLength = effectiveLength * 1.18;
+            const visualWidth = Math.max(86, effectiveWidth * 4.8);
             if (drawArtEffectTexture(
                 ctx,
                 'spear_stab',
                 x,
                 y,
-                this.length * 1.28,
-                Math.max(this.width * 5.8, 90),
+                visualLength,
+                visualWidth,
                 Math.atan2(dirY, dirX),
                 alpha,
-                0.12,
+                0.18,
                 0.5,
                 this.level
             )) {
@@ -2623,19 +2628,19 @@ class Spear extends Weapon {
             // 枪身：梯形 - 根部宽 → 尖部窄
             ctx.fillStyle = `rgba(184, 134, 11, ${alpha})`;
             ctx.beginPath();
-            ctx.moveTo(0, -this.width / 2);
-            ctx.lineTo(this.length - 25, -this.width / 5);
-            ctx.lineTo(this.length - 25, this.width / 5);
-            ctx.lineTo(0, this.width / 2);
+            ctx.moveTo(0, -effectiveWidth / 2);
+            ctx.lineTo(effectiveLength - 25, -effectiveWidth / 5);
+            ctx.lineTo(effectiveLength - 25, effectiveWidth / 5);
+            ctx.lineTo(0, effectiveWidth / 2);
             ctx.closePath();
             ctx.fill();
 
             // 枪尖：紫红色三角形箭头
             ctx.fillStyle = `rgba(255, 0, 255, ${alpha})`;
             ctx.beginPath();
-            ctx.moveTo(this.length - 25, -8);
-            ctx.lineTo(this.length, 0);
-            ctx.lineTo(this.length - 25, 8);
+            ctx.moveTo(effectiveLength - 25, -Math.max(8, effectiveWidth * 0.4));
+            ctx.lineTo(effectiveLength, 0);
+            ctx.lineTo(effectiveLength - 25, Math.max(8, effectiveWidth * 0.4));
             ctx.closePath();
             ctx.fill();
 

@@ -87,10 +87,10 @@
     },
     "spear": {
       "levels": {
-        "1": { "primary": { "src": "weapons/attacks/asset_weapon_attack_spear_lv1.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
-        "2": { "primary": { "src": "weapons/attacks/asset_weapon_attack_spear_lv2.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
-        "3": { "primary": { "src": "weapons/attacks/asset_weapon_attack_spear_lv3.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
-        "4": { "primary": { "src": "weapons/attacks/asset_weapon_attack_spear_lv4.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "1": { "primary": { "src": "weapons/asset_weapon_spear_lv1.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "2": { "primary": { "src": "weapons/asset_weapon_spear_lv1.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "3": { "primary": { "src": "weapons/asset_weapon_spear_lv1.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "4": { "primary": { "src": "weapons/asset_weapon_spear_lv1.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
         "5": { "primary": { "src": "weapons/attacks/asset_weapon_attack_spear_lv5.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
         "6": { "primary": { "src": "weapons/attacks/asset_weapon_attack_spear_lv6.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } }
       }
