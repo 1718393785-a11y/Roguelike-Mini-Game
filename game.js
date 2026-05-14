@@ -3097,17 +3097,19 @@ class LightningColumnEffect {
 
     render(ctx) {
         const alpha = this.lifetime / 0.15 * 0.8;
-        if (drawArtEffectTexture(ctx, 'lightning_column', this.x, ctx.canvas.height / 2, this.radius * 3.2, ctx.canvas.height * 1.18, 0, alpha, 0.5, 0.5)) {
+        const width = this.radius * 3.2;
+        const height = this.radius * 4.8;
+        if (drawArtEffectTexture(ctx, 'lightning_column', this.x, this.y, width, height, 0, alpha, 0.5, 0.76)) {
             return;
         }
         // 亮蓝色竖直矩形贯穿屏幕
         ctx.save();
         ctx.fillStyle = `rgba(135, 206, 250, ${alpha})`;
-        ctx.fillRect(this.x - this.radius/2, 0, this.radius, ctx.canvas.height);
+        ctx.fillRect(this.x - this.radius / 2, this.y - height * 0.76, this.radius, height);
         // 白色轮廓
         ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
         ctx.lineWidth = 2;
-        ctx.strokeRect(this.x - this.radius/2, 0, this.radius, ctx.canvas.height);
+        ctx.strokeRect(this.x - this.radius / 2, this.y - height * 0.76, this.radius, height);
         ctx.restore();
     }
 }
