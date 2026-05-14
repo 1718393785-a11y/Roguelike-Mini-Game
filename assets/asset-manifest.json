@@ -119,7 +119,11 @@
         "3": { "primary": { "src": "weapons/attacks/asset_weapon_attack_qinggang_lv3.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
         "4": { "primary": { "src": "weapons/attacks/asset_weapon_attack_qinggang_lv4.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
         "5": { "primary": { "src": "weapons/attacks/asset_weapon_attack_qinggang_lv5.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
-        "6": { "primary": { "src": "weapons/attacks/asset_weapon_attack_qinggang_lv6.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } }
+        "6": {
+          "primary": { "src": "weapons/attacks/asset_weapon_attack_qinggang_lv6.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] },
+          "inner": { "src": "weapons/attacks/asset_weapon_attack_qinggang_lv6_inner.png", "sourceSize": [1254, 1254], "usage": ["weapon_attack"] },
+          "outer": { "src": "weapons/attacks/asset_weapon_attack_qinggang_lv6_outer.png", "sourceSize": [1254, 1254], "usage": ["weapon_attack"] }
+        }
       }
     },
     "shield": {
