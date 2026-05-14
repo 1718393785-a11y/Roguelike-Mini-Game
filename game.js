@@ -2955,7 +2955,10 @@ class CrossbowArrow {
         if (this.hasLightningColumn) {
             // Lv6 终极：毁灭雷柱
             const effectiveRadius = resolvedLightningRadius || 120 * areaMul;
+            const chainTargets = gameManager.getLightningChainTargets(enemy.x, enemy.y, effectiveRadius, enemy, 6);
             gameManager.lightningEffects.push(new LightningColumnEffect(enemy.x, enemy.y, effectiveRadius, 3.0));
+            gameManager.lightningEffects.push(new LightningChainEffect(enemy.x, enemy.y, chainTargets, effectiveRadius, 'column'));
+            gameManager.lightningEffects.push(new RootCircleEffect(enemy.x, enemy.y, effectiveRadius));
             if (resolvedIsLastHit) {
                 // 全屏眩晕所有敌人在半径内
                 gameManager.stunEnemiesInRadius(enemy.x, enemy.y, effectiveRadius, 1.0, {
@@ -2967,7 +2970,9 @@ class CrossbowArrow {
         } else if (this.hasLightningAOE) {
             // Lv5 普通：小范围AOE 50%伤害
             const effectiveRadius = resolvedLightningRadius || 60 * areaMul;
+            const chainTargets = gameManager.getLightningChainTargets(enemy.x, enemy.y, effectiveRadius, enemy, 4);
             gameManager.lightningEffects.push(new LightningAOEEffect(enemy.x, enemy.y, effectiveRadius, 0.5));
+            gameManager.lightningEffects.push(new LightningChainEffect(enemy.x, enemy.y, chainTargets, effectiveRadius, 'aoe'));
             gameManager.damageEnemiesInRadius(enemy.x, enemy.y, effectiveRadius, this.damage * 0.5, this.hitRecords, {
                 type: 'crossbow',
                 effect: 'lightning_aoe_damage',
@@ -3113,6 +3118,143 @@ class LightningColumnEffect {
         ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
         ctx.lineWidth = 2;
         ctx.strokeRect(this.x - this.radius / 2, this.y - height * 0.76, this.radius, height);
+        ctx.restore();
+    }
+}
+
+class LightningChainEffect {
+    constructor(x, y, targets, radius, mode = 'aoe') {
+        this.x = x;
+        this.y = y;
+        this.targets = Array.isArray(targets) ? targets : [];
+        this.radius = radius;
+        this.mode = mode;
+        this.maxLifetime = mode === 'column' ? 0.24 : 0.2;
+        this.lifetime = this.maxLifetime;
+    }
+
+    update(deltaTime) {
+        this.lifetime -= deltaTime;
+        return this.lifetime > 0;
+    }
+
+    renderBolt(ctx, x1, y1, x2, y2, alpha, seed, widthScale = 1) {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const len = Math.hypot(dx, dy) || 1;
+        const nx = -dy / len;
+        const ny = dx / len;
+        const segments = Math.max(4, Math.min(9, Math.floor(len / 26)));
+        const points = [{ x: x1, y: y1 }];
+        for (let i = 1; i < segments; i++) {
+            const t = i / segments;
+            const wobble = Math.sin(seed * 12.9898 + i * 78.233) * Math.min(28, len * 0.16) * Math.sin(Math.PI * t);
+            points.push({
+                x: x1 + dx * t + nx * wobble,
+                y: y1 + dy * t + ny * wobble,
+            });
+        }
+        points.push({ x: x2, y: y2 });
+
+        ctx.save();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.shadowBlur = this.mode === 'column' ? 18 : 12;
+        ctx.shadowColor = 'rgba(210, 70, 255, 0.9)';
+        for (let pass = 0; pass < 3; pass++) {
+            ctx.beginPath();
+            for (let i = 0; i < points.length; i++) {
+                const p = points[i];
+                if (i === 0) ctx.moveTo(p.x, p.y);
+                else ctx.lineTo(p.x, p.y);
+            }
+            if (pass === 0) {
+                ctx.strokeStyle = `rgba(255, 185, 50, ${alpha * 0.52})`;
+                ctx.lineWidth = 6 * widthScale;
+            } else if (pass === 1) {
+                ctx.strokeStyle = `rgba(188, 58, 255, ${alpha * 0.82})`;
+                ctx.lineWidth = 3.2 * widthScale;
+            } else {
+                ctx.strokeStyle = `rgba(255, 245, 255, ${alpha})`;
+                ctx.lineWidth = 1.2 * widthScale;
+            }
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    render(ctx) {
+        const alpha = Math.max(0, this.lifetime / this.maxLifetime);
+        const pulse = 0.8 + 0.2 * Math.sin(GameRuntime.frame * 0.7);
+        if (this.targets.length > 0) {
+            let startX = this.x;
+            let startY = this.y;
+            for (let i = 0; i < this.targets.length; i++) {
+                const target = this.targets[i];
+                this.renderBolt(ctx, startX, startY, target.x, target.y, alpha * pulse, i + this.radius, this.mode === 'column' ? 1.18 : 1);
+                startX = target.x;
+                startY = target.y;
+            }
+            return;
+        }
+
+        const branchCount = this.mode === 'column' ? 8 : 5;
+        for (let i = 0; i < branchCount; i++) {
+            const angle = (Math.PI * 2 * i) / branchCount + Math.sin(i * 1.7) * 0.22;
+            const length = this.radius * (0.42 + (i % 3) * 0.12);
+            this.renderBolt(
+                ctx,
+                this.x,
+                this.y,
+                this.x + Math.cos(angle) * length,
+                this.y + Math.sin(angle) * length,
+                alpha * 0.78,
+                i + 17,
+                this.mode === 'column' ? 1.12 : 0.9
+            );
+        }
+    }
+}
+
+class RootCircleEffect {
+    constructor(x, y, radius) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.maxLifetime = 0.52;
+        this.lifetime = this.maxLifetime;
+    }
+
+    update(deltaTime) {
+        this.lifetime -= deltaTime;
+        return this.lifetime > 0;
+    }
+
+    render(ctx) {
+        const alpha = Math.max(0, this.lifetime / this.maxLifetime);
+        const progress = 1 - alpha;
+        const radius = this.radius * (0.92 + progress * 0.1);
+        ctx.save();
+        ctx.globalAlpha *= alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(140, 42, 210, 0.08)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(244, 193, 72, 0.28)';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, radius * 0.72, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(196, 72, 255, 0.2)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.font = `bold ${Math.max(18, Math.min(34, this.radius * 0.22))}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = 'rgba(245, 232, 255, 0.46)';
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = 'rgba(190, 70, 255, 0.55)';
+        ctx.fillText('Root!', this.x, this.y);
         ctx.restore();
     }
 }
@@ -7056,6 +7198,28 @@ class GameManager {
         const dy = cy - py;
         const distSq = dx * dx + dy * dy;
         return distSq <= (cr + ps / 2) * (cr + ps / 2);
+    }
+
+    getLightningChainTargets(cx, cy, radius, primaryEnemy = null, maxTargets = 4) {
+        const radiusSq = radius * radius;
+        return this.queryEnemiesInRange(cx, cy, radius)
+            .filter(enemy => {
+                if (!enemy || enemy === primaryEnemy || enemy.hp <= 0) return false;
+                const dx = enemy.x - cx;
+                const dy = enemy.y - cy;
+                return dx * dx + dy * dy <= radiusSq;
+            })
+            .sort((a, b) => {
+                const adx = a.x - cx;
+                const ady = a.y - cy;
+                const bdx = b.x - cx;
+                const bdy = b.y - cy;
+                const distanceDelta = (adx * adx + ady * ady) - (bdx * bdx + bdy * bdy);
+                if (distanceDelta !== 0) return distanceDelta;
+                return getDebugEntityId(a) - getDebugEntityId(b);
+            })
+            .slice(0, maxTargets)
+            .map(enemy => ({ x: enemy.x, y: enemy.y }));
     }
 
     // 范围伤害：对圆心半径内所有敌人造成伤害，跳过已经被当前箭矢命中的敌人
