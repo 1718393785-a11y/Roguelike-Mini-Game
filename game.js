@@ -4690,7 +4690,7 @@ class Player {
         // 血量初始化：满血量开局
         this.hp = this.maxHp;
 
-        // 测试默认初始武器：青釭游龙剑 Lv.1。URL 仍可用 debugInitialWeapon/debugInitialWeaponLevel 覆盖。
+        // 测试默认初始武器：透阵龙胆枪 Lv.1。URL 仍可用 debugInitialWeapon/debugInitialWeaponLevel 覆盖。
         const weaponChoices = [
             { type: 'saber', cls: Saber },
             { type: 'spear', cls: Spear },
@@ -4701,7 +4701,7 @@ class Player {
         ];
         const forcedWeaponType = new URLSearchParams(window.location.search).get('debugInitialWeapon');
         const forcedWeapon = weaponChoices.find(choice => choice.type === forcedWeaponType);
-        const picked = forcedWeapon || weaponChoices.find(choice => choice.type === 'qinggang') || weaponChoices[0];
+        const picked = forcedWeapon || weaponChoices.find(choice => choice.type === 'spear') || weaponChoices[0];
         const config = WEAPON_UPGRADES[picked.type];
 
         // 直接使用纯净的基础伤害，所有乘区计算交给攻击判定瞬间
