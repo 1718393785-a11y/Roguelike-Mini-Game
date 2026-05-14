@@ -77,6 +77,7 @@
             const sections = plan === 'critical'
                 ? [
                     ['weapons'],
+                    ['weaponAttacks'],
                     ['skills'],
                     ['pickups'],
                     ['player'],
@@ -87,6 +88,7 @@
                 ]
                 : [
                     ['weapons'],
+                    ['weaponAttacks'],
                     ['skills'],
                     ['pickups'],
                     ['player'],
@@ -150,6 +152,21 @@
             return this.resolveImage(entry?.src);
         }
 
+        getWeaponAttackTexture(weaponId, level = 1, slot = 'primary') {
+            const attacks = this.manifest?.weaponAttacks?.[weaponId];
+            const requestedLevel = Number(level);
+            const safeLevel = Number.isFinite(requestedLevel)
+                ? Math.max(1, Math.min(6, Math.round(requestedLevel)))
+                : 1;
+            const levels = attacks?.levels || {};
+            const entry =
+                levels[String(safeLevel)]?.[slot] ||
+                levels['1']?.[slot] ||
+                levels[String(safeLevel)]?.primary ||
+                levels['1']?.primary;
+            return this.resolveImage(entry?.src);
+        }
+
         getSkillIcon(skillId) {
             return this.resolveImage(this.manifest?.skills?.[skillId]?.src);
         }
@@ -193,7 +210,16 @@
             return this.resolveImage(this.manifest?.tiles?.[tileId]?.src);
         }
 
-        getEffectTexture(effectId) {
+        getEffectTexture(effectId, level = null) {
+            const binding = this.manifest?.weaponAttacks?.bindings?.[effectId];
+            if (binding) {
+                const requestedLevel = level == null ? NaN : Number(level);
+                const resolvedLevel = Number.isFinite(requestedLevel)
+                    ? requestedLevel
+                    : (binding.defaultLevel || 1);
+                const image = this.getWeaponAttackTexture(binding.weapon, resolvedLevel, binding.slot || 'primary');
+                if (image && image.dataset.assetFailed !== '1') return image;
+            }
             const src = this.manifest?.effects?.[effectId]?.src;
             if (window.FEATURE_FLAGS?.ENABLE_ART_WEAPON_V2) {
                 const v2Map = {

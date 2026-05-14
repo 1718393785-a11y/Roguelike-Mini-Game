@@ -222,10 +222,10 @@ function getDrawableImageSrc(image) {
     return image.currentSrc || image.src || '';
 }
 
-function drawArtEffectTexture(ctx, effectId, x, y, width, height, angle = 0, alpha = 1, anchorX = 0.5, anchorY = 0.5) {
+function drawArtEffectTexture(ctx, effectId, x, y, width, height, angle = 0, alpha = 1, anchorX = 0.5, anchorY = 0.5, weaponLevel = null) {
     const assets = window.assetRuntime;
     if (!FEATURE_FLAGS.ENABLE_ART_ASSETS || !FEATURE_FLAGS.ENABLE_ART_EFFECTS || !assets?.getEffectTexture) return false;
-    const image = assets.getEffectTexture(effectId);
+    const image = assets.getEffectTexture(effectId, weaponLevel);
     if (!assets.canDraw?.(image)) return false;
     ctx.save();
     ctx.translate(x, y);
@@ -1802,7 +1802,7 @@ class Saber extends Weapon {
             this.renderFireSlash(ctx, currentX, currentY, radius, alpha);
             return;
         }
-        const usedArtArc = drawArtEffectTexture(ctx, 'saber_arc', currentX, currentY, radius * 2.45, radius * 2.05, this.aimAngle, alpha, 0.28, 0.5);
+        const usedArtArc = drawArtEffectTexture(ctx, 'saber_arc', currentX, currentY, radius * 2.45, radius * 2.05, this.aimAngle, alpha, 0.28, 0.5, this.level);
         if (usedArtArc) {
             return;
         }
@@ -2595,7 +2595,8 @@ class Spear extends Weapon {
                 Math.atan2(dirY, dirX),
                 alpha,
                 0.12,
-                0.5
+                0.5,
+                this.level
             )) {
                 continue;
             }
@@ -2992,7 +2993,7 @@ class CrossbowArrow {
         const endY = this.y + Math.sin(angle) * this.length;
         const textureWidth = Math.max(this.length * 2.45, 68);
         const textureHeight = this.hasLightningColumn ? 40 : (this.hasLightningAOE ? 36 : 32);
-        if (drawArtEffectTexture(ctx, 'crossbow_arrow', this.x, this.y, textureWidth, textureHeight, angle, 0.95, 0.1, 0.5)) {
+        if (drawArtEffectTexture(ctx, 'crossbow_arrow', this.x, this.y, textureWidth, textureHeight, angle, 0.95, 0.1, 0.5, this.weaponLevel)) {
             return;
         }
 
@@ -3502,7 +3503,7 @@ class QinggangSword extends Weapon {
         const effectiveHalfWidth = this.swordHalfWidth * areaMul;
         const maxOrbitRadius = Math.max(...orbitConfigs.map(orbit => orbit.radius));
         const textureSize = (maxOrbitRadius + effectiveLength) * 2.35;
-        if (drawArtEffectTexture(ctx, 'qinggang_orbit', player.x, player.y, textureSize, textureSize, this.baseAngle, 0.86, 0.5, 0.5)) {
+        if (drawArtEffectTexture(ctx, 'qinggang_orbit', player.x, player.y, textureSize, textureSize, this.baseAngle, 0.86, 0.5, 0.5, this.level)) {
             return;
         }
 

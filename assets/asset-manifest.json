@@ -5,62 +5,141 @@
   "weapons": {
     "saber": {
       "levels": {
-        "1": { "src": "weapons/asset_weapon_saber_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "2": { "src": "weapons/asset_weapon_saber_lv2.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "3": { "src": "weapons/asset_weapon_saber_lv3.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "4": { "src": "weapons/asset_weapon_saber_lv4.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "5": { "src": "weapons/asset_weapon_saber_lv5.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "6": { "src": "weapons/asset_weapon_saber_lv6.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
+        "1": { "src": "weapons/icons/asset_weapon_saber_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "2": { "src": "weapons/icons/asset_weapon_saber_lv2.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "3": { "src": "weapons/icons/asset_weapon_saber_lv3.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "4": { "src": "weapons/icons/asset_weapon_saber_lv4.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "5": { "src": "weapons/icons/asset_weapon_saber_lv5.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "6": { "src": "weapons/icons/asset_weapon_saber_lv6.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
       }
     },
     "spear": {
       "levels": {
-        "1": { "src": "weapons/asset_weapon_spear_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "2": { "src": "weapons/asset_weapon_spear_lv2.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "3": { "src": "weapons/asset_weapon_spear_lv3.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "4": { "src": "weapons/asset_weapon_spear_lv4.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "5": { "src": "weapons/asset_weapon_spear_lv5.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "6": { "src": "weapons/asset_weapon_spear_lv6.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
+        "1": { "src": "weapons/icons/asset_weapon_spear_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "2": { "src": "weapons/icons/asset_weapon_spear_lv2.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "3": { "src": "weapons/icons/asset_weapon_spear_lv3.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "4": { "src": "weapons/icons/asset_weapon_spear_lv4.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "5": { "src": "weapons/icons/asset_weapon_spear_lv5.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "6": { "src": "weapons/icons/asset_weapon_spear_lv6.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
       }
     },
     "crossbow": {
       "levels": {
-        "1": { "src": "weapons/asset_weapon_crossbow_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "2": { "src": "weapons/asset_weapon_crossbow_lv2.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "3": { "src": "weapons/asset_weapon_crossbow_lv3.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "4": { "src": "weapons/asset_weapon_crossbow_lv4.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "5": { "src": "weapons/asset_weapon_crossbow_lv5.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "6": { "src": "weapons/asset_weapon_crossbow_lv6.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
+        "1": { "src": "weapons/icons/asset_weapon_crossbow_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "2": { "src": "weapons/icons/asset_weapon_crossbow_lv2.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "3": { "src": "weapons/icons/asset_weapon_crossbow_lv3.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "4": { "src": "weapons/icons/asset_weapon_crossbow_lv4.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "5": { "src": "weapons/icons/asset_weapon_crossbow_lv5.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "6": { "src": "weapons/icons/asset_weapon_crossbow_lv6.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
       }
     },
     "qinggang": {
       "levels": {
-        "1": { "src": "weapons/asset_weapon_qinggang_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "2": { "src": "weapons/asset_weapon_qinggang_lv2.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "3": { "src": "weapons/asset_weapon_qinggang_lv3.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "4": { "src": "weapons/asset_weapon_qinggang_lv4.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "5": { "src": "weapons/asset_weapon_qinggang_lv5.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "6": { "src": "weapons/asset_weapon_qinggang_lv6.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
+        "1": { "src": "weapons/icons/asset_weapon_qinggang_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "2": { "src": "weapons/icons/asset_weapon_qinggang_lv2.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "3": { "src": "weapons/icons/asset_weapon_qinggang_lv3.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "4": { "src": "weapons/icons/asset_weapon_qinggang_lv4.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "5": { "src": "weapons/icons/asset_weapon_qinggang_lv5.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "6": { "src": "weapons/icons/asset_weapon_qinggang_lv6.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
       }
     },
     "shield": {
       "levels": {
-        "1": { "src": "weapons/asset_weapon_shield_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "2": { "src": "weapons/asset_weapon_shield_lv2.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "3": { "src": "weapons/asset_weapon_shield_lv3.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "4": { "src": "weapons/asset_weapon_shield_lv4.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "5": { "src": "weapons/asset_weapon_shield_lv5.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "6": { "src": "weapons/asset_weapon_shield_lv6.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
+        "1": { "src": "weapons/icons/asset_weapon_shield_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "2": { "src": "weapons/icons/asset_weapon_shield_lv2.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "3": { "src": "weapons/icons/asset_weapon_shield_lv3.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "4": { "src": "weapons/icons/asset_weapon_shield_lv4.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "5": { "src": "weapons/icons/asset_weapon_shield_lv5.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "6": { "src": "weapons/icons/asset_weapon_shield_lv6.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
       }
     },
     "taiping": {
       "levels": {
-        "1": { "src": "weapons/asset_weapon_taiping_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "2": { "src": "weapons/asset_weapon_taiping_lv2.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "3": { "src": "weapons/asset_weapon_taiping_lv3.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "4": { "src": "weapons/asset_weapon_taiping_lv4.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "5": { "src": "weapons/asset_weapon_taiping_lv5.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
-        "6": { "src": "weapons/asset_weapon_taiping_lv6.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
+        "1": { "src": "weapons/icons/asset_weapon_taiping_lv1.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "2": { "src": "weapons/icons/asset_weapon_taiping_lv2.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "3": { "src": "weapons/icons/asset_weapon_taiping_lv3.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "4": { "src": "weapons/icons/asset_weapon_taiping_lv4.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "5": { "src": "weapons/icons/asset_weapon_taiping_lv5.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] },
+        "6": { "src": "weapons/icons/asset_weapon_taiping_lv6.png", "sourceSize": [512, 512], "usage": ["upgrade_panel", "cooldown_hud"] }
+      }
+    }
+  },
+  "weaponAttacks": {
+    "bindings": {
+      "saber_arc": { "weapon": "saber", "slot": "primary", "defaultLevel": 1 },
+      "spear_stab": { "weapon": "spear", "slot": "primary", "defaultLevel": 1 },
+      "crossbow_arrow": { "weapon": "crossbow", "slot": "projectile", "defaultLevel": 1 },
+      "lightning_aoe": { "weapon": "crossbow", "slot": "aoe", "defaultLevel": 5 },
+      "lightning_column": { "weapon": "crossbow", "slot": "column", "defaultLevel": 6 },
+      "qinggang_orbit": { "weapon": "qinggang", "slot": "primary", "defaultLevel": 1 },
+      "shield_pulse": { "weapon": "shield", "slot": "primary", "defaultLevel": 1 },
+      "taiping_tornado": { "weapon": "taiping", "slot": "primary", "defaultLevel": 1 }
+    },
+    "saber": {
+      "levels": {
+        "1": { "primary": { "src": "weapons/attacks/asset_weapon_attack_saber_lv1.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "2": { "primary": { "src": "weapons/attacks/asset_weapon_attack_saber_lv2.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "3": { "primary": { "src": "weapons/attacks/asset_weapon_attack_saber_lv3.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "4": { "primary": { "src": "weapons/attacks/asset_weapon_attack_saber_lv4.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "5": { "primary": { "src": "weapons/attacks/asset_weapon_attack_saber_lv5.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "6": { "primary": { "src": "weapons/attacks/asset_weapon_attack_saber_lv6.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } }
+      }
+    },
+    "spear": {
+      "levels": {
+        "1": { "primary": { "src": "weapons/attacks/asset_weapon_attack_spear_lv1.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "2": { "primary": { "src": "weapons/attacks/asset_weapon_attack_spear_lv2.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "3": { "primary": { "src": "weapons/attacks/asset_weapon_attack_spear_lv3.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "4": { "primary": { "src": "weapons/attacks/asset_weapon_attack_spear_lv4.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "5": { "primary": { "src": "weapons/attacks/asset_weapon_attack_spear_lv5.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "6": { "primary": { "src": "weapons/attacks/asset_weapon_attack_spear_lv6.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } }
+      }
+    },
+    "crossbow": {
+      "levels": {
+        "1": { "projectile": { "src": "weapons/attacks/asset_weapon_attack_crossbow_lv1.png", "sourceSize": [512, 512], "usage": ["weapon_projectile"] } },
+        "2": { "projectile": { "src": "weapons/attacks/asset_weapon_attack_crossbow_lv2.png", "sourceSize": [512, 512], "usage": ["weapon_projectile"] } },
+        "3": { "projectile": { "src": "weapons/attacks/asset_weapon_attack_crossbow_lv3.png", "sourceSize": [512, 512], "usage": ["weapon_projectile"] } },
+        "4": { "projectile": { "src": "weapons/attacks/asset_weapon_attack_crossbow_lv4.png", "sourceSize": [512, 512], "usage": ["weapon_projectile"] } },
+        "5": {
+          "projectile": { "src": "weapons/attacks/asset_weapon_attack_crossbow_lv4.png", "sourceSize": [512, 512], "usage": ["weapon_projectile"] },
+          "aoe": { "src": "weapons/attacks/asset_weapon_attack_crossbow_lv5.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] }
+        },
+        "6": {
+          "projectile": { "src": "weapons/attacks/asset_weapon_attack_crossbow_lv4.png", "sourceSize": [512, 512], "usage": ["weapon_projectile"] },
+          "aoe": { "src": "weapons/attacks/asset_weapon_attack_crossbow_lv5.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] },
+          "column": { "src": "weapons/attacks/asset_weapon_attack_crossbow_lv6.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] }
+        }
+      }
+    },
+    "qinggang": {
+      "levels": {
+        "1": { "primary": { "src": "weapons/attacks/asset_weapon_attack_qinggang_lv1.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "2": { "primary": { "src": "weapons/attacks/asset_weapon_attack_qinggang_lv2.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "3": { "primary": { "src": "weapons/attacks/asset_weapon_attack_qinggang_lv3.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "4": { "primary": { "src": "weapons/attacks/asset_weapon_attack_qinggang_lv4.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "5": { "primary": { "src": "weapons/attacks/asset_weapon_attack_qinggang_lv5.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "6": { "primary": { "src": "weapons/attacks/asset_weapon_attack_qinggang_lv6.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } }
+      }
+    },
+    "shield": {
+      "levels": {
+        "1": { "primary": { "src": "weapons/attacks/asset_weapon_attack_shield_lv1.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "2": { "primary": { "src": "weapons/attacks/asset_weapon_attack_shield_lv2.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "3": { "primary": { "src": "weapons/attacks/asset_weapon_attack_shield_lv3.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "4": { "primary": { "src": "weapons/attacks/asset_weapon_attack_shield_lv4.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "5": { "primary": { "src": "weapons/attacks/asset_weapon_attack_shield_lv5.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "6": { "primary": { "src": "weapons/attacks/asset_weapon_attack_shield_lv6.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } }
+      }
+    },
+    "taiping": {
+      "levels": {
+        "1": { "primary": { "src": "weapons/attacks/asset_weapon_attack_taiping_lv1.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "2": { "primary": { "src": "weapons/attacks/asset_weapon_attack_taiping_lv2.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "3": { "primary": { "src": "weapons/attacks/asset_weapon_attack_taiping_lv3.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "4": { "primary": { "src": "weapons/attacks/asset_weapon_attack_taiping_lv4.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "5": { "primary": { "src": "weapons/attacks/asset_weapon_attack_taiping_lv5.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "6": { "primary": { "src": "weapons/attacks/asset_weapon_attack_taiping_lv6.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } }
       }
     }
   },
@@ -267,42 +346,42 @@
       "src": "style-proofs/weapon-progression-atlas.png",
       "sourceSize": [1152, 1152],
       "derived": [
-        "weapons/asset_weapon_saber_lv1.png",
-        "weapons/asset_weapon_saber_lv2.png",
-        "weapons/asset_weapon_saber_lv3.png",
-        "weapons/asset_weapon_saber_lv4.png",
-        "weapons/asset_weapon_saber_lv5.png",
-        "weapons/asset_weapon_saber_lv6.png",
-        "weapons/asset_weapon_spear_lv1.png",
-        "weapons/asset_weapon_spear_lv2.png",
-        "weapons/asset_weapon_spear_lv3.png",
-        "weapons/asset_weapon_spear_lv4.png",
-        "weapons/asset_weapon_spear_lv5.png",
-        "weapons/asset_weapon_spear_lv6.png",
-        "weapons/asset_weapon_crossbow_lv1.png",
-        "weapons/asset_weapon_crossbow_lv2.png",
-        "weapons/asset_weapon_crossbow_lv3.png",
-        "weapons/asset_weapon_crossbow_lv4.png",
-        "weapons/asset_weapon_crossbow_lv5.png",
-        "weapons/asset_weapon_crossbow_lv6.png",
-        "weapons/asset_weapon_qinggang_lv1.png",
-        "weapons/asset_weapon_qinggang_lv2.png",
-        "weapons/asset_weapon_qinggang_lv3.png",
-        "weapons/asset_weapon_qinggang_lv4.png",
-        "weapons/asset_weapon_qinggang_lv5.png",
-        "weapons/asset_weapon_qinggang_lv6.png",
-        "weapons/asset_weapon_shield_lv1.png",
-        "weapons/asset_weapon_shield_lv2.png",
-        "weapons/asset_weapon_shield_lv3.png",
-        "weapons/asset_weapon_shield_lv4.png",
-        "weapons/asset_weapon_shield_lv5.png",
-        "weapons/asset_weapon_shield_lv6.png",
-        "weapons/asset_weapon_taiping_lv1.png",
-        "weapons/asset_weapon_taiping_lv2.png",
-        "weapons/asset_weapon_taiping_lv3.png",
-        "weapons/asset_weapon_taiping_lv4.png",
-        "weapons/asset_weapon_taiping_lv5.png",
-        "weapons/asset_weapon_taiping_lv6.png"
+        "weapons/icons/asset_weapon_saber_lv1.png",
+        "weapons/icons/asset_weapon_saber_lv2.png",
+        "weapons/icons/asset_weapon_saber_lv3.png",
+        "weapons/icons/asset_weapon_saber_lv4.png",
+        "weapons/icons/asset_weapon_saber_lv5.png",
+        "weapons/icons/asset_weapon_saber_lv6.png",
+        "weapons/icons/asset_weapon_spear_lv1.png",
+        "weapons/icons/asset_weapon_spear_lv2.png",
+        "weapons/icons/asset_weapon_spear_lv3.png",
+        "weapons/icons/asset_weapon_spear_lv4.png",
+        "weapons/icons/asset_weapon_spear_lv5.png",
+        "weapons/icons/asset_weapon_spear_lv6.png",
+        "weapons/icons/asset_weapon_crossbow_lv1.png",
+        "weapons/icons/asset_weapon_crossbow_lv2.png",
+        "weapons/icons/asset_weapon_crossbow_lv3.png",
+        "weapons/icons/asset_weapon_crossbow_lv4.png",
+        "weapons/icons/asset_weapon_crossbow_lv5.png",
+        "weapons/icons/asset_weapon_crossbow_lv6.png",
+        "weapons/icons/asset_weapon_qinggang_lv1.png",
+        "weapons/icons/asset_weapon_qinggang_lv2.png",
+        "weapons/icons/asset_weapon_qinggang_lv3.png",
+        "weapons/icons/asset_weapon_qinggang_lv4.png",
+        "weapons/icons/asset_weapon_qinggang_lv5.png",
+        "weapons/icons/asset_weapon_qinggang_lv6.png",
+        "weapons/icons/asset_weapon_shield_lv1.png",
+        "weapons/icons/asset_weapon_shield_lv2.png",
+        "weapons/icons/asset_weapon_shield_lv3.png",
+        "weapons/icons/asset_weapon_shield_lv4.png",
+        "weapons/icons/asset_weapon_shield_lv5.png",
+        "weapons/icons/asset_weapon_shield_lv6.png",
+        "weapons/icons/asset_weapon_taiping_lv1.png",
+        "weapons/icons/asset_weapon_taiping_lv2.png",
+        "weapons/icons/asset_weapon_taiping_lv3.png",
+        "weapons/icons/asset_weapon_taiping_lv4.png",
+        "weapons/icons/asset_weapon_taiping_lv5.png",
+        "weapons/icons/asset_weapon_taiping_lv6.png"
       ]
     },
     "weapon_effect_preview": {
@@ -335,12 +414,12 @@
       "src": "style-proofs/weapon-icon-atlas.png",
       "sourceSize": [1536, 1024],
       "derived": [
-        "weapons/asset_weapon_saber_lv1.png",
-        "weapons/asset_weapon_spear_lv1.png",
-        "weapons/asset_weapon_crossbow_lv1.png",
-        "weapons/asset_weapon_qinggang_lv1.png",
-        "weapons/asset_weapon_shield_lv1.png",
-        "weapons/asset_weapon_taiping_lv1.png"
+        "weapons/icons/asset_weapon_saber_lv1.png",
+        "weapons/icons/asset_weapon_spear_lv1.png",
+        "weapons/icons/asset_weapon_crossbow_lv1.png",
+        "weapons/icons/asset_weapon_qinggang_lv1.png",
+        "weapons/icons/asset_weapon_shield_lv1.png",
+        "weapons/icons/asset_weapon_taiping_lv1.png"
       ]
     },
     "skill_pickup_icon_atlas": {
