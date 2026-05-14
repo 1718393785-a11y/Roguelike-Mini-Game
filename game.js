@@ -3655,47 +3655,34 @@ class QinggangSword extends Weapon {
         const effectiveHalfWidth = this.swordHalfWidth * areaMul;
         const maxOrbitRadius = Math.max(...orbitConfigs.map(orbit => orbit.radius));
 
-        if (this.level >= 5) {
-            const textureSize = Math.max(
-                this.level >= 6 ? 360 : 280,
-                (maxOrbitRadius + effectiveLength * 1.3) * (this.level >= 6 ? 2.45 : 2.35)
-            );
-            if (drawArtEffectTexture(
-                ctx,
-                'qinggang_orbit',
-                player.x,
-                player.y,
-                textureSize,
-                textureSize,
-                this.baseAngle * (this.level >= 6 ? 0.65 : 1),
-                this.level >= 6 ? 0.9 : 0.88,
-                0.5,
-                0.5,
-                this.level
-            )) {
-                return;
-            }
-        }
-
-        if (this.level >= 5) {
-            const auraAlpha = this.level >= 6 ? 0.34 : 0.22;
+        if (this.level >= 6) {
+            const auraAlpha = 0.34;
             const pulse = 0.5 + 0.5 * Math.sin(GameRuntime.frame * 0.08);
             ctx.save();
             ctx.globalAlpha *= auraAlpha;
-            ctx.lineWidth = this.level >= 6 ? 3 : 2;
-            ctx.strokeStyle = this.level >= 6 ? 'rgba(82, 238, 255, 0.72)' : 'rgba(255, 48, 88, 0.62)';
-            ctx.shadowBlur = this.level >= 6 ? 22 : 16;
-            ctx.shadowColor = this.level >= 6 ? 'rgba(74, 224, 255, 0.85)' : 'rgba(255, 42, 88, 0.72)';
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(82, 238, 255, 0.72)';
+            ctx.shadowBlur = 22;
+            ctx.shadowColor = 'rgba(74, 224, 255, 0.85)';
             for (const orbit of orbitConfigs) {
                 ctx.beginPath();
                 ctx.arc(player.x, player.y, orbit.radius * (0.98 + pulse * 0.04), 0, Math.PI * 2);
                 ctx.stroke();
             }
-            if (this.level >= 6) {
-                ctx.strokeStyle = 'rgba(255, 210, 88, 0.55)';
-                ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255, 210, 88, 0.55)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, maxOrbitRadius * (0.78 + pulse * 0.05), 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.strokeStyle = 'rgba(78, 196, 255, 0.32)';
+            ctx.lineWidth = 1.5;
+            for (let i = 0; i < 8; i++) {
+                const a = this.baseAngle * 0.35 + i * Math.PI / 4;
+                const inner = maxOrbitRadius * 0.34;
+                const outer = maxOrbitRadius * (0.92 + pulse * 0.03);
                 ctx.beginPath();
-                ctx.arc(player.x, player.y, maxOrbitRadius * (0.78 + pulse * 0.05), 0, Math.PI * 2);
+                ctx.moveTo(player.x + Math.cos(a) * inner, player.y + Math.sin(a) * inner);
+                ctx.lineTo(player.x + Math.cos(a) * outer, player.y + Math.sin(a) * outer);
                 ctx.stroke();
             }
             ctx.restore();
@@ -3708,9 +3695,9 @@ class QinggangSword extends Weapon {
                 const actualAngle = currentAngle * orbit.direction;
                 const actualX = player.x + Math.cos(actualAngle) * orbit.radius;
                 const actualY = player.y + Math.sin(actualAngle) * orbit.radius;
-                const visualScale = [0, 0.92, 1.0, 1.08, 1.18, 1.28, 1.38][Math.max(1, Math.min(6, this.level))] || 1;
+                const visualScale = [0, 0.92, 1.0, 1.08, 1.18, 1.22, 1.24][Math.max(1, Math.min(6, this.level))] || 1;
                 const orbitVisualScale = this.level >= 6 && orbit.radius < maxOrbitRadius ? 0.72 : 1;
-                const swordHeight = effectiveLength * 2.25 * visualScale * orbitVisualScale;
+                const swordHeight = effectiveLength * 2.05 * visualScale * orbitVisualScale;
                 const swordWidth = Math.max(effectiveHalfWidth * 7.2, swordHeight * 0.44);
                 const usedArtSword = drawArtEffectTexture(
                     ctx,
