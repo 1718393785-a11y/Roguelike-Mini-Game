@@ -3671,9 +3671,11 @@ class QinggangSword extends Weapon {
         const maxOrbitRadius = Math.max(...orbitConfigs.map(orbit => orbit.radius));
 
         if (this.level >= 6) {
-            const formationSize = Math.max(340, (maxOrbitRadius + effectiveLength * 0.78) * 2.05);
-            const outerAngle = -this.baseAngle * 0.72;
-            const innerAngle = this.baseAngle * 0.92;
+            const collisionRadius = 20 * areaMul;
+            const outerDamageRadius = maxOrbitRadius + collisionRadius;
+            const formationSize = Math.max(280, outerDamageRadius * 1.98);
+            const innerAngle = -this.baseAngle;
+            const outerAngle = this.baseAngle + Math.PI / this.count - Math.PI / 4;
             const drewOuter = drawArtWeaponAttackTexture(
                 ctx,
                 'qinggang',
