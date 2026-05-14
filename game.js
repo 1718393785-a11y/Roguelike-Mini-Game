@@ -2660,6 +2660,8 @@ class Spear extends Weapon {
             const visualWidth = Math.max(86, effectiveWidth * 4.8);
             const spearAngle = Math.atan2(dirY, dirX);
             const spearTextureAngleOffset = Math.PI / 4;
+            const spearAnchorX = this.level <= 4 ? 0.44 : 0.28;
+            const spearAnchorY = this.level <= 4 ? 0.58 : 0.5;
             if (this.level === 1) {
                 this.renderLv1Trail(ctx, x, y, spearAngle, visualLength, visualWidth, alpha * 0.95);
             }
@@ -2674,8 +2676,8 @@ class Spear extends Weapon {
                 visualWidth,
                 spearAngle + spearTextureAngleOffset,
                 alpha,
-                0.28,
-                0.5
+                spearAnchorX,
+                spearAnchorY
             )) {
                 continue;
             }
@@ -2688,8 +2690,8 @@ class Spear extends Weapon {
                 visualWidth,
                 spearAngle + spearTextureAngleOffset,
                 alpha,
-                0.28,
-                0.5,
+                spearAnchorX,
+                spearAnchorY,
                 this.level
             )) {
                 continue;
