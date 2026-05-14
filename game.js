@@ -3656,6 +3656,28 @@ class QinggangSword extends Weapon {
         const maxOrbitRadius = Math.max(...orbitConfigs.map(orbit => orbit.radius));
 
         if (this.level >= 5) {
+            const textureSize = Math.max(
+                this.level >= 6 ? 360 : 280,
+                (maxOrbitRadius + effectiveLength * 1.3) * (this.level >= 6 ? 2.45 : 2.35)
+            );
+            if (drawArtEffectTexture(
+                ctx,
+                'qinggang_orbit',
+                player.x,
+                player.y,
+                textureSize,
+                textureSize,
+                this.baseAngle * (this.level >= 6 ? 0.65 : 1),
+                this.level >= 6 ? 0.9 : 0.88,
+                0.5,
+                0.5,
+                this.level
+            )) {
+                return;
+            }
+        }
+
+        if (this.level >= 5) {
             const auraAlpha = this.level >= 6 ? 0.34 : 0.22;
             const pulse = 0.5 + 0.5 * Math.sin(GameRuntime.frame * 0.08);
             ctx.save();
