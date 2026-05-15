@@ -2694,6 +2694,55 @@ class Spear extends Weapon {
         ctx.restore();
     }
 
+    drawHighTierSpearBody(ctx, x, y, visualLength, visualWidth, angle, alpha, isUltimate, isMain, anchorX, anchorY) {
+        const assets = window.assetRuntime;
+        if (!FEATURE_FLAGS.ENABLE_ART_ASSETS || !FEATURE_FLAGS.ENABLE_ART_EFFECTS || !assets?.getWeaponAttackTexture) return false;
+        const image = assets.getWeaponAttackTexture('spear', 1, 'primary');
+        if (!assets.canDraw?.(image)) return false;
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        ctx.globalAlpha *= Math.max(0, Math.min(1, alpha));
+        ctx.imageSmoothingEnabled = true;
+
+        const drawX = -visualLength * anchorX;
+        const drawY = -visualWidth * anchorY;
+
+        ctx.shadowBlur = isUltimate ? (isMain ? 24 : 16) : 14;
+        ctx.shadowColor = isUltimate
+            ? (isMain ? 'rgba(167, 92, 255, 0.78)' : 'rgba(145, 86, 255, 0.54)')
+            : 'rgba(128, 86, 255, 0.48)';
+        ctx.drawImage(image, drawX, drawY, visualLength, visualWidth);
+
+        ctx.globalCompositeOperation = 'source-atop';
+        const tint = ctx.createLinearGradient(drawX, drawY, drawX + visualLength, drawY + visualWidth);
+        if (isUltimate) {
+            tint.addColorStop(0, 'rgba(82, 32, 168, 0.72)');
+            tint.addColorStop(0.35, 'rgba(130, 48, 220, 0.68)');
+            tint.addColorStop(0.72, 'rgba(186, 112, 255, 0.52)');
+            tint.addColorStop(1, 'rgba(236, 232, 255, 0.14)');
+        } else {
+            tint.addColorStop(0, 'rgba(72, 38, 168, 0.44)');
+            tint.addColorStop(0.5, 'rgba(122, 86, 232, 0.4)');
+            tint.addColorStop(1, 'rgba(214, 224, 255, 0.12)');
+        }
+        ctx.fillStyle = tint;
+        ctx.fillRect(drawX, drawY, visualLength, visualWidth);
+
+        ctx.globalCompositeOperation = 'screen';
+        const edgeGlow = ctx.createLinearGradient(drawX, 0, drawX + visualLength, 0);
+        edgeGlow.addColorStop(0, 'rgba(96, 40, 255, 0)');
+        edgeGlow.addColorStop(0.22, isUltimate ? 'rgba(130, 72, 255, 0.24)' : 'rgba(112, 92, 255, 0.16)');
+        edgeGlow.addColorStop(0.8, isUltimate ? 'rgba(212, 168, 255, 0.32)' : 'rgba(182, 210, 255, 0.18)');
+        edgeGlow.addColorStop(1, 'rgba(255, 255, 255, 0.1)');
+        ctx.fillStyle = edgeGlow;
+        ctx.fillRect(drawX, drawY, visualLength, visualWidth);
+
+        ctx.restore();
+        return true;
+    }
+
     render(ctx, player) {
         if (this.activeStabs.length === 0) return;
         const areaMul = 1 + (player.modifiers.areaMulti || 0);
@@ -2711,14 +2760,15 @@ class Spear extends Weapon {
             const alpha = stab.lifeTimer / 0.25 * 0.9;
             const isHighTierArt = this.level >= 5;
             const isUltimate = this.level >= 6;
-            const levelVisualScale = isUltimate ? (stab.isMain ? 1.12 : 0.94) : (this.level >= 5 ? 1.06 : 1);
-            const visualLength = effectiveLength * 1.18 * levelVisualScale;
-            const visualWidth = Math.max(86, effectiveWidth * 4.8) * (isUltimate ? (stab.isMain ? 1.02 : 0.9) : (this.level >= 5 ? 0.96 : 1));
+            const lengthBase = effectiveLength + Math.max(22, effectiveWidth * 1.65);
+            const levelVisualScale = isUltimate ? (stab.isMain ? 1.0 : 0.84) : (this.level >= 5 ? 0.98 : 1);
+            const visualLength = (isHighTierArt ? lengthBase : effectiveLength * 1.18) * levelVisualScale;
+            const visualWidth = Math.max(86, effectiveWidth * 4.8) * (isUltimate ? (stab.isMain ? 0.96 : 0.82) : (this.level >= 5 ? 0.9 : 1));
             const spearAngle = Math.atan2(dirY, dirX);
             const spearTextureAngleOffset = Math.PI / 4;
             const spearAnchorX = isHighTierArt ? 0.44 : 0.44;
             const spearAnchorY = isHighTierArt ? 0.58 : 0.58;
-            const spearLeadOffset = isHighTierArt ? visualLength * 0.24 : visualLength * 0.16;
+            const spearLeadOffset = isHighTierArt ? visualLength * 0.18 : visualLength * 0.16;
             const handedSide = dirX >= 0 ? 1 : -1;
             const handOffsetX = isHighTierArt ? player.size * 0.18 * handedSide : player.size * 0.24 * handedSide;
             const handOffsetY = isHighTierArt ? player.size * 0.08 : player.size * 0.14;
@@ -2736,6 +2786,21 @@ class Spear extends Weapon {
                     isUltimate,
                     !!stab.isMain
                 );
+            }
+            if (isHighTierArt && this.drawHighTierSpearBody(
+                ctx,
+                renderX,
+                renderY,
+                visualLength,
+                visualWidth,
+                spearAngle + spearTextureAngleOffset,
+                alpha,
+                isUltimate,
+                !!stab.isMain,
+                spearAnchorX,
+                spearAnchorY
+            )) {
+                continue;
             }
             if (drawArtWeaponAttackTexture(
                 ctx,
