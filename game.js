@@ -2641,6 +2641,37 @@ class Spear extends Weapon {
         ctx.restore();
     }
 
+    drawFocusedHighTierArt(ctx, x, y, visualLength, visualWidth, angle, alpha) {
+        const assets = window.assetRuntime;
+        if (!FEATURE_FLAGS.ENABLE_ART_ASSETS || !FEATURE_FLAGS.ENABLE_ART_EFFECTS || !assets?.getWeaponAttackTexture) return false;
+        const image = assets.getWeaponAttackTexture('spear', this.level, 'primary');
+        if (!assets.canDraw?.(image)) return false;
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        ctx.globalAlpha *= Math.max(0, Math.min(1, alpha));
+        ctx.imageSmoothingEnabled = true;
+
+        const clipStart = -visualLength * 0.18;
+        const clipEnd = visualLength * 0.98;
+        const clipHalfWidth = visualWidth * 0.28;
+        ctx.beginPath();
+        ctx.moveTo(clipStart, -clipHalfWidth * 0.82);
+        ctx.quadraticCurveTo(visualLength * 0.18, -clipHalfWidth * 1.34, visualLength * 0.72, -clipHalfWidth * 0.44);
+        ctx.lineTo(clipEnd, 0);
+        ctx.lineTo(visualLength * 0.72, clipHalfWidth * 0.44);
+        ctx.quadraticCurveTo(visualLength * 0.16, clipHalfWidth * 1.28, clipStart, clipHalfWidth * 0.82);
+        ctx.closePath();
+        ctx.clip();
+
+        const artLength = visualLength * 1.08;
+        const artHeight = visualWidth * 1.08;
+        ctx.drawImage(image, -artLength * 0.5, -artHeight * 0.5, artLength, artHeight);
+        ctx.restore();
+        return true;
+    }
+
     render(ctx, player) {
         if (this.activeStabs.length === 0) return;
         const areaMul = 1 + (player.modifiers.areaMulti || 0);
@@ -2659,7 +2690,8 @@ class Spear extends Weapon {
             const visualLength = effectiveLength * 1.18;
             const visualWidth = Math.max(86, effectiveWidth * 4.8);
             const spearAngle = Math.atan2(dirY, dirX);
-            const spearTextureAngleOffset = Math.PI / 4;
+            const isHighTierArt = this.level >= 5;
+            const spearTextureAngleOffset = isHighTierArt ? (-Math.PI * 3 / 4) : (Math.PI / 4);
             const spearAnchorX = this.level <= 4 ? 0.44 : 0.28;
             const spearAnchorY = this.level <= 4 ? 0.58 : 0.5;
             const spearLeadOffset = this.level <= 4 ? visualLength * 0.16 : 0;
@@ -2668,6 +2700,17 @@ class Spear extends Weapon {
             const handOffsetY = this.level <= 4 ? player.size * 0.14 : 0;
             const renderX = x + dirX * spearLeadOffset + handOffsetX;
             const renderY = y + dirY * spearLeadOffset + handOffsetY;
+            if (isHighTierArt && this.drawFocusedHighTierArt(
+                ctx,
+                renderX,
+                renderY,
+                visualLength,
+                visualWidth,
+                spearAngle + spearTextureAngleOffset,
+                alpha
+            )) {
+                continue;
+            }
             if (drawArtWeaponAttackTexture(
                 ctx,
                 'spear',
