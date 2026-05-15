@@ -2641,59 +2641,6 @@ class Spear extends Weapon {
         ctx.restore();
     }
 
-    renderHighTierSpearTrail(ctx, x, y, angle, visualLength, visualWidth, alpha, isUltimate, isMain) {
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(angle);
-        ctx.globalAlpha *= Math.max(0, Math.min(1, alpha));
-
-        const trailLength = visualLength * (isUltimate ? 0.88 : 0.82);
-        const trailWidth = visualWidth * (isUltimate ? 0.22 : 0.18);
-        const startX = -visualLength * 0.18;
-        const endX = trailLength;
-
-        const energy = ctx.createLinearGradient(startX, 0, endX, 0);
-        energy.addColorStop(0, 'rgba(120, 205, 255, 0)');
-        energy.addColorStop(0.18, isUltimate ? 'rgba(110, 170, 255, 0.18)' : 'rgba(122, 216, 255, 0.16)');
-        energy.addColorStop(0.72, isUltimate ? 'rgba(96, 115, 255, 0.36)' : 'rgba(112, 228, 255, 0.34)');
-        energy.addColorStop(1, isUltimate ? 'rgba(236, 247, 255, 0.76)' : 'rgba(244, 250, 255, 0.72)');
-        ctx.fillStyle = energy;
-        ctx.beginPath();
-        ctx.moveTo(startX, -trailWidth * 0.52);
-        ctx.quadraticCurveTo(visualLength * 0.22, -trailWidth * 0.94, endX, -trailWidth * 0.12);
-        ctx.lineTo(endX, trailWidth * 0.12);
-        ctx.quadraticCurveTo(visualLength * 0.22, trailWidth * 0.94, startX, trailWidth * 0.52);
-        ctx.closePath();
-        ctx.fill();
-
-        if (isUltimate) {
-            ctx.shadowBlur = isMain ? 16 : 10;
-            ctx.shadowColor = isMain ? 'rgba(140, 170, 255, 0.72)' : 'rgba(126, 160, 255, 0.48)';
-            ctx.strokeStyle = isMain ? 'rgba(180, 196, 255, 0.44)' : 'rgba(168, 188, 255, 0.24)';
-            ctx.lineWidth = isMain ? Math.max(1.6, visualWidth * 0.028) : Math.max(1.1, visualWidth * 0.02);
-            for (let i = 0; i < 2; i++) {
-                const offset = (i === 0 ? -1 : 1) * trailWidth * 0.34;
-                ctx.beginPath();
-                ctx.moveTo(startX + visualLength * 0.06, offset);
-                ctx.quadraticCurveTo(visualLength * 0.34, offset * 0.26, endX - visualLength * 0.08, offset * 0.1);
-                ctx.stroke();
-            }
-            ctx.shadowBlur = 0;
-        } else {
-            ctx.shadowBlur = 14;
-            ctx.shadowColor = 'rgba(130, 220, 255, 0.66)';
-            ctx.strokeStyle = 'rgba(204, 236, 255, 0.56)';
-            ctx.lineWidth = Math.max(1.8, visualWidth * 0.032);
-            ctx.beginPath();
-            ctx.moveTo(startX + visualLength * 0.05, 0);
-            ctx.quadraticCurveTo(visualLength * 0.32, 0, endX - visualLength * 0.06, 0);
-            ctx.stroke();
-            ctx.shadowBlur = 0;
-        }
-
-        ctx.restore();
-    }
-
     drawHighTierSpearBody(ctx, x, y, visualLength, visualWidth, angle, alpha, isUltimate, isMain, anchorX, anchorY) {
         const assets = window.assetRuntime;
         if (!FEATURE_FLAGS.ENABLE_ART_ASSETS || !FEATURE_FLAGS.ENABLE_ART_EFFECTS || !assets?.getWeaponAttackTexture) return false;
@@ -2718,24 +2665,24 @@ class Spear extends Weapon {
         ctx.globalCompositeOperation = 'source-atop';
         const tint = ctx.createLinearGradient(drawX, drawY, drawX + visualLength, drawY + visualWidth);
         if (isUltimate) {
-            tint.addColorStop(0, 'rgba(82, 32, 168, 0.72)');
-            tint.addColorStop(0.35, 'rgba(130, 48, 220, 0.68)');
-            tint.addColorStop(0.72, 'rgba(186, 112, 255, 0.52)');
-            tint.addColorStop(1, 'rgba(236, 232, 255, 0.14)');
+            tint.addColorStop(0, 'rgba(82, 32, 168, 0.46)');
+            tint.addColorStop(0.35, 'rgba(130, 48, 220, 0.42)');
+            tint.addColorStop(0.72, 'rgba(186, 112, 255, 0.28)');
+            tint.addColorStop(1, 'rgba(236, 232, 255, 0.06)');
         } else {
-            tint.addColorStop(0, 'rgba(72, 38, 168, 0.44)');
-            tint.addColorStop(0.5, 'rgba(122, 86, 232, 0.4)');
-            tint.addColorStop(1, 'rgba(214, 224, 255, 0.12)');
+            tint.addColorStop(0, 'rgba(72, 38, 168, 0.3)');
+            tint.addColorStop(0.5, 'rgba(122, 86, 232, 0.28)');
+            tint.addColorStop(1, 'rgba(214, 224, 255, 0.05)');
         }
         ctx.fillStyle = tint;
         ctx.fillRect(drawX, drawY, visualLength, visualWidth);
 
-        ctx.globalCompositeOperation = 'screen';
+        ctx.globalCompositeOperation = 'source-atop';
         const edgeGlow = ctx.createLinearGradient(drawX, 0, drawX + visualLength, 0);
         edgeGlow.addColorStop(0, 'rgba(96, 40, 255, 0)');
-        edgeGlow.addColorStop(0.22, isUltimate ? 'rgba(130, 72, 255, 0.24)' : 'rgba(112, 92, 255, 0.16)');
-        edgeGlow.addColorStop(0.8, isUltimate ? 'rgba(212, 168, 255, 0.32)' : 'rgba(182, 210, 255, 0.18)');
-        edgeGlow.addColorStop(1, 'rgba(255, 255, 255, 0.1)');
+        edgeGlow.addColorStop(0.22, isUltimate ? 'rgba(130, 72, 255, 0.12)' : 'rgba(112, 92, 255, 0.08)');
+        edgeGlow.addColorStop(0.8, isUltimate ? 'rgba(212, 168, 255, 0.14)' : 'rgba(182, 210, 255, 0.1)');
+        edgeGlow.addColorStop(1, 'rgba(255, 255, 255, 0.04)');
         ctx.fillStyle = edgeGlow;
         ctx.fillRect(drawX, drawY, visualLength, visualWidth);
 
@@ -2774,19 +2721,6 @@ class Spear extends Weapon {
             const handOffsetY = isHighTierArt ? player.size * 0.08 : player.size * 0.14;
             const renderX = x + dirX * spearLeadOffset + handOffsetX;
             const renderY = y + dirY * spearLeadOffset + handOffsetY;
-            if (isHighTierArt) {
-                this.renderHighTierSpearTrail(
-                    ctx,
-                    renderX,
-                    renderY,
-                    spearAngle,
-                    visualLength,
-                    visualWidth,
-                    alpha * (isUltimate ? 0.92 : 0.88),
-                    isUltimate,
-                    !!stab.isMain
-                );
-            }
             if (isHighTierArt && this.drawHighTierSpearBody(
                 ctx,
                 renderX,
