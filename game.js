@@ -2655,6 +2655,27 @@ class Spear extends Weapon {
 
         const drawX = -visualLength * anchorX;
         const drawY = -visualWidth * anchorY;
+        const centerY = drawY + visualWidth * 0.5;
+        const tailX = drawX + visualLength * 0.03;
+        const shaftStartX = drawX + visualLength * 0.12;
+        const bladeStartX = drawX + visualLength * 0.58;
+        const tipX = drawX + visualLength * 0.98;
+        const tailHalf = visualWidth * 0.085;
+        const shaftHalf = visualWidth * 0.11;
+        const bladeHalf = visualWidth * 0.23;
+        const tipHalf = visualWidth * 0.02;
+
+        ctx.beginPath();
+        ctx.moveTo(tailX, centerY - tailHalf);
+        ctx.lineTo(shaftStartX, centerY - shaftHalf);
+        ctx.lineTo(bladeStartX, centerY - bladeHalf);
+        ctx.lineTo(tipX, centerY - tipHalf);
+        ctx.lineTo(tipX, centerY + tipHalf);
+        ctx.lineTo(bladeStartX, centerY + bladeHalf);
+        ctx.lineTo(shaftStartX, centerY + shaftHalf);
+        ctx.lineTo(tailX, centerY + tailHalf);
+        ctx.closePath();
+        ctx.clip();
 
         ctx.shadowBlur = isUltimate ? (isMain ? 24 : 16) : 14;
         ctx.shadowColor = isUltimate
@@ -2685,6 +2706,35 @@ class Spear extends Weapon {
         edgeGlow.addColorStop(1, 'rgba(255, 255, 255, 0.04)');
         ctx.fillStyle = edgeGlow;
         ctx.fillRect(drawX, drawY, visualLength, visualWidth);
+
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.shadowBlur = isUltimate ? (isMain ? 18 : 12) : 10;
+        ctx.shadowColor = isUltimate ? 'rgba(138, 92, 255, 0.72)' : 'rgba(110, 128, 255, 0.46)';
+        const lineConfigs = isUltimate
+            ? [
+                { color: 'rgba(162, 92, 255, 0.34)', width: visualWidth * 0.042, offset: -visualWidth * 0.035, bend: -visualWidth * 0.09 },
+                { color: 'rgba(118, 166, 255, 0.32)', width: visualWidth * 0.032, offset: 0, bend: visualWidth * 0.07 },
+                { color: 'rgba(208, 146, 255, 0.24)', width: visualWidth * 0.022, offset: visualWidth * 0.042, bend: -visualWidth * 0.05 }
+            ]
+            : [
+                { color: 'rgba(146, 104, 255, 0.26)', width: visualWidth * 0.03, offset: -visualWidth * 0.028, bend: -visualWidth * 0.06 },
+                { color: 'rgba(120, 178, 255, 0.24)', width: visualWidth * 0.022, offset: visualWidth * 0.02, bend: visualWidth * 0.05 }
+            ];
+        for (const line of lineConfigs) {
+            ctx.strokeStyle = line.color;
+            ctx.lineWidth = Math.max(1, line.width);
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(tailX + visualLength * 0.08, centerY + line.offset);
+            ctx.quadraticCurveTo(
+                drawX + visualLength * 0.42,
+                centerY + line.bend,
+                tipX - visualLength * 0.05,
+                centerY + line.offset * 0.28
+            );
+            ctx.stroke();
+        }
+        ctx.shadowBlur = 0;
 
         ctx.restore();
         return true;
