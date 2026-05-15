@@ -2740,6 +2740,70 @@ class Spear extends Weapon {
         return true;
     }
 
+    renderUltimateSpearAura(ctx, x, y, angle, visualLength, visualWidth, alpha, isMain) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        ctx.globalAlpha *= Math.max(0, Math.min(1, alpha));
+
+        const flareLength = visualLength * (isMain ? 1.08 : 0.94);
+        const flareWidth = visualWidth * (isMain ? 0.92 : 0.78);
+        const centerX = visualLength * 0.18;
+
+        const glow = ctx.createRadialGradient(
+            centerX,
+            0,
+            flareWidth * 0.04,
+            centerX,
+            0,
+            flareWidth * 0.72
+        );
+        glow.addColorStop(0, 'rgba(255, 244, 186, 0.42)');
+        glow.addColorStop(0.32, 'rgba(184, 116, 255, 0.28)');
+        glow.addColorStop(1, 'rgba(112, 56, 255, 0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.ellipse(centerX, 0, flareLength * 0.3, flareWidth * 0.42, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = isMain ? 'rgba(255, 214, 122, 0.44)' : 'rgba(224, 176, 255, 0.22)';
+        ctx.lineWidth = Math.max(1.2, visualWidth * (isMain ? 0.028 : 0.018));
+        ctx.shadowBlur = isMain ? 14 : 8;
+        ctx.shadowColor = isMain ? 'rgba(255, 196, 92, 0.56)' : 'rgba(160, 92, 255, 0.3)';
+
+        const arcRadiusX = flareLength * (isMain ? 0.28 : 0.22);
+        const arcRadiusY = flareWidth * (isMain ? 0.62 : 0.5);
+        ctx.beginPath();
+        ctx.ellipse(centerX - flareLength * 0.05, 0, arcRadiusX, arcRadiusY, 0, -1.02, 1.02);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(centerX + flareLength * 0.08, 0, arcRadiusX * 0.82, arcRadiusY * 0.82, 0, 2.16, 4.12);
+        ctx.stroke();
+
+        ctx.shadowBlur = isMain ? 18 : 10;
+        ctx.shadowColor = 'rgba(176, 108, 255, 0.72)';
+        ctx.strokeStyle = isMain ? 'rgba(186, 120, 255, 0.42)' : 'rgba(156, 118, 255, 0.22)';
+        ctx.lineWidth = Math.max(1, visualWidth * (isMain ? 0.022 : 0.014));
+        const lightningOffsets = isMain ? [-0.26, -0.06, 0.18] : [-0.16, 0.12];
+        for (const offset of lightningOffsets) {
+            ctx.beginPath();
+            ctx.moveTo(-visualLength * 0.04, flareWidth * offset);
+            ctx.lineTo(visualLength * 0.12, flareWidth * (offset * 0.46));
+            ctx.lineTo(visualLength * 0.26, flareWidth * (offset * -0.2));
+            ctx.lineTo(visualLength * 0.44, flareWidth * (offset * 0.22));
+            ctx.lineTo(visualLength * 0.66, flareWidth * (offset * -0.08));
+            ctx.stroke();
+        }
+
+        ctx.shadowBlur = 20;
+        ctx.fillStyle = isMain ? 'rgba(255, 228, 138, 0.56)' : 'rgba(210, 172, 255, 0.34)';
+        ctx.beginPath();
+        ctx.ellipse(visualLength * 0.5, 0, flareWidth * 0.12, flareWidth * 0.12, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+    }
+
     render(ctx, player) {
         if (this.activeStabs.length === 0) return;
         const areaMul = 1 + (player.modifiers.areaMulti || 0);
@@ -2771,6 +2835,18 @@ class Spear extends Weapon {
             const handOffsetY = isHighTierArt ? player.size * 0.08 : player.size * 0.14;
             const renderX = x + dirX * spearLeadOffset + handOffsetX;
             const renderY = y + dirY * spearLeadOffset + handOffsetY;
+            if (isUltimate) {
+                this.renderUltimateSpearAura(
+                    ctx,
+                    renderX,
+                    renderY,
+                    spearAngle,
+                    visualLength,
+                    visualWidth,
+                    alpha * (stab.isMain ? 0.82 : 0.54),
+                    !!stab.isMain
+                );
+            }
             if (isHighTierArt && this.drawHighTierSpearBody(
                 ctx,
                 renderX,
