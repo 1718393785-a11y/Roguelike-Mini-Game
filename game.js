@@ -4763,9 +4763,9 @@ class Shield extends Weapon {
         } else {
             colorHex = '#00FFFF'; // 爆发亮青色
         }
-        const shieldArtSlot = this.phase === 'charge' ? 'charge' : 'explode';
+        const shieldArtSlot = this.phase === 'charge' ? 'charge' : 'release';
         const shieldArtRotation = this.phase === 'charge' ? -GameRuntime.frame * 0.01 : GameRuntime.frame * 0.02;
-        const shieldArtSize = this.currentRadius * (this.phase === 'charge' ? 2.05 : 2.35);
+        const shieldArtSize = this.currentRadius * 2;
         if (drawArtWeaponAttackTexture(ctx, 'shield', this.level, shieldArtSlot, this.x, this.y, shieldArtSize, shieldArtSize, shieldArtRotation, alpha, 0.5, 0.5)) {
             return;
         }

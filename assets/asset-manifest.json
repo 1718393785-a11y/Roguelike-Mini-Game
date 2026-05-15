@@ -128,7 +128,11 @@
     },
     "shield": {
       "levels": {
-        "1": { "primary": { "src": "weapons/attacks/asset_weapon_attack_shield_lv1.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
+        "1": {
+          "primary": { "src": "weapons/attacks/asset_weapon_attack_shield_lv1_release.png", "sourceSize": [1254, 1254], "usage": ["weapon_attack"] },
+          "charge": { "src": "weapons/attacks/asset_weapon_attack_shield_lv1_charge.png", "sourceSize": [1254, 1254], "usage": ["weapon_attack"] },
+          "release": { "src": "weapons/attacks/asset_weapon_attack_shield_lv1_release.png", "sourceSize": [1254, 1254], "usage": ["weapon_attack"] }
+        },
         "2": { "primary": { "src": "weapons/attacks/asset_weapon_attack_shield_lv2.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
         "3": { "primary": { "src": "weapons/attacks/asset_weapon_attack_shield_lv3.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
         "4": { "primary": { "src": "weapons/attacks/asset_weapon_attack_shield_lv4.png", "sourceSize": [512, 512], "usage": ["weapon_attack"] } },
