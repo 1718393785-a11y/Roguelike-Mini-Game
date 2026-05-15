@@ -2641,35 +2641,57 @@ class Spear extends Weapon {
         ctx.restore();
     }
 
-    drawFocusedHighTierArt(ctx, x, y, visualLength, visualWidth, angle, alpha) {
-        const assets = window.assetRuntime;
-        if (!FEATURE_FLAGS.ENABLE_ART_ASSETS || !FEATURE_FLAGS.ENABLE_ART_EFFECTS || !assets?.getWeaponAttackTexture) return false;
-        const image = assets.getWeaponAttackTexture('spear', this.level, 'primary');
-        if (!assets.canDraw?.(image)) return false;
-
+    renderHighTierSpearTrail(ctx, x, y, angle, visualLength, visualWidth, alpha, isUltimate, isMain) {
         ctx.save();
         ctx.translate(x, y);
         ctx.rotate(angle);
         ctx.globalAlpha *= Math.max(0, Math.min(1, alpha));
-        ctx.imageSmoothingEnabled = true;
 
-        const clipStart = -visualLength * 0.18;
-        const clipEnd = visualLength * 0.98;
-        const clipHalfWidth = visualWidth * 0.28;
+        const trailLength = visualLength * (isUltimate ? 0.88 : 0.82);
+        const trailWidth = visualWidth * (isUltimate ? 0.22 : 0.18);
+        const startX = -visualLength * 0.18;
+        const endX = trailLength;
+
+        const energy = ctx.createLinearGradient(startX, 0, endX, 0);
+        energy.addColorStop(0, 'rgba(120, 205, 255, 0)');
+        energy.addColorStop(0.18, isUltimate ? 'rgba(110, 170, 255, 0.18)' : 'rgba(122, 216, 255, 0.16)');
+        energy.addColorStop(0.72, isUltimate ? 'rgba(96, 115, 255, 0.36)' : 'rgba(112, 228, 255, 0.34)');
+        energy.addColorStop(1, isUltimate ? 'rgba(236, 247, 255, 0.76)' : 'rgba(244, 250, 255, 0.72)');
+        ctx.fillStyle = energy;
         ctx.beginPath();
-        ctx.moveTo(clipStart, -clipHalfWidth * 0.82);
-        ctx.quadraticCurveTo(visualLength * 0.18, -clipHalfWidth * 1.34, visualLength * 0.72, -clipHalfWidth * 0.44);
-        ctx.lineTo(clipEnd, 0);
-        ctx.lineTo(visualLength * 0.72, clipHalfWidth * 0.44);
-        ctx.quadraticCurveTo(visualLength * 0.16, clipHalfWidth * 1.28, clipStart, clipHalfWidth * 0.82);
+        ctx.moveTo(startX, -trailWidth * 0.52);
+        ctx.quadraticCurveTo(visualLength * 0.22, -trailWidth * 0.94, endX, -trailWidth * 0.12);
+        ctx.lineTo(endX, trailWidth * 0.12);
+        ctx.quadraticCurveTo(visualLength * 0.22, trailWidth * 0.94, startX, trailWidth * 0.52);
         ctx.closePath();
-        ctx.clip();
+        ctx.fill();
 
-        const artLength = visualLength * 1.08;
-        const artHeight = visualWidth * 1.08;
-        ctx.drawImage(image, -artLength * 0.5, -artHeight * 0.5, artLength, artHeight);
+        if (isUltimate) {
+            ctx.shadowBlur = isMain ? 16 : 10;
+            ctx.shadowColor = isMain ? 'rgba(140, 170, 255, 0.72)' : 'rgba(126, 160, 255, 0.48)';
+            ctx.strokeStyle = isMain ? 'rgba(180, 196, 255, 0.44)' : 'rgba(168, 188, 255, 0.24)';
+            ctx.lineWidth = isMain ? Math.max(1.6, visualWidth * 0.028) : Math.max(1.1, visualWidth * 0.02);
+            for (let i = 0; i < 2; i++) {
+                const offset = (i === 0 ? -1 : 1) * trailWidth * 0.34;
+                ctx.beginPath();
+                ctx.moveTo(startX + visualLength * 0.06, offset);
+                ctx.quadraticCurveTo(visualLength * 0.34, offset * 0.26, endX - visualLength * 0.08, offset * 0.1);
+                ctx.stroke();
+            }
+            ctx.shadowBlur = 0;
+        } else {
+            ctx.shadowBlur = 14;
+            ctx.shadowColor = 'rgba(130, 220, 255, 0.66)';
+            ctx.strokeStyle = 'rgba(204, 236, 255, 0.56)';
+            ctx.lineWidth = Math.max(1.8, visualWidth * 0.032);
+            ctx.beginPath();
+            ctx.moveTo(startX + visualLength * 0.05, 0);
+            ctx.quadraticCurveTo(visualLength * 0.32, 0, endX - visualLength * 0.06, 0);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
         ctx.restore();
-        return true;
     }
 
     render(ctx, player) {
@@ -2687,29 +2709,33 @@ class Spear extends Weapon {
 
             // 透明度衰减
             const alpha = stab.lifeTimer / 0.25 * 0.9;
-            const visualLength = effectiveLength * 1.18;
-            const visualWidth = Math.max(86, effectiveWidth * 4.8);
-            const spearAngle = Math.atan2(dirY, dirX);
             const isHighTierArt = this.level >= 5;
-            const spearTextureAngleOffset = isHighTierArt ? (-Math.PI * 3 / 4) : (Math.PI / 4);
-            const spearAnchorX = this.level <= 4 ? 0.44 : 0.28;
-            const spearAnchorY = this.level <= 4 ? 0.58 : 0.5;
-            const spearLeadOffset = this.level <= 4 ? visualLength * 0.16 : 0;
+            const isUltimate = this.level >= 6;
+            const levelVisualScale = isUltimate ? (stab.isMain ? 1.12 : 0.94) : (this.level >= 5 ? 1.06 : 1);
+            const visualLength = effectiveLength * 1.18 * levelVisualScale;
+            const visualWidth = Math.max(86, effectiveWidth * 4.8) * (isUltimate ? (stab.isMain ? 1.02 : 0.9) : (this.level >= 5 ? 0.96 : 1));
+            const spearAngle = Math.atan2(dirY, dirX);
+            const spearTextureAngleOffset = Math.PI / 4;
+            const spearAnchorX = isHighTierArt ? 0.44 : 0.44;
+            const spearAnchorY = isHighTierArt ? 0.58 : 0.58;
+            const spearLeadOffset = isHighTierArt ? visualLength * 0.24 : visualLength * 0.16;
             const handedSide = dirX >= 0 ? 1 : -1;
-            const handOffsetX = this.level <= 4 ? player.size * 0.24 * handedSide : 0;
-            const handOffsetY = this.level <= 4 ? player.size * 0.14 : 0;
+            const handOffsetX = isHighTierArt ? player.size * 0.18 * handedSide : player.size * 0.24 * handedSide;
+            const handOffsetY = isHighTierArt ? player.size * 0.08 : player.size * 0.14;
             const renderX = x + dirX * spearLeadOffset + handOffsetX;
             const renderY = y + dirY * spearLeadOffset + handOffsetY;
-            if (isHighTierArt && this.drawFocusedHighTierArt(
-                ctx,
-                renderX,
-                renderY,
-                visualLength,
-                visualWidth,
-                spearAngle + spearTextureAngleOffset,
-                alpha
-            )) {
-                continue;
+            if (isHighTierArt) {
+                this.renderHighTierSpearTrail(
+                    ctx,
+                    renderX,
+                    renderY,
+                    spearAngle,
+                    visualLength,
+                    visualWidth,
+                    alpha * (isUltimate ? 0.92 : 0.88),
+                    isUltimate,
+                    !!stab.isMain
+                );
             }
             if (drawArtWeaponAttackTexture(
                 ctx,
