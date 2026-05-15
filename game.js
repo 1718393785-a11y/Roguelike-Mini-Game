@@ -2712,7 +2712,7 @@ class Spear extends Weapon {
             const visualLength = (isHighTierArt ? lengthBase : effectiveLength * 1.18) * levelVisualScale;
             const visualWidth = Math.max(86, effectiveWidth * 4.8) * (isUltimate ? (stab.isMain ? 0.96 : 0.82) : (this.level >= 5 ? 0.9 : 1));
             const spearAngle = Math.atan2(dirY, dirX);
-            const spearTextureAngleOffset = Math.PI / 4;
+            const spearTextureAngleOffset = 0;
             const spearAnchorX = isHighTierArt ? 0.44 : 0.44;
             const spearAnchorY = isHighTierArt ? 0.58 : 0.58;
             const spearLeadOffset = isHighTierArt ? visualLength * 0.18 : visualLength * 0.16;
