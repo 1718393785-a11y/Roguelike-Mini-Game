@@ -4763,6 +4763,15 @@ class Shield extends Weapon {
         } else {
             colorHex = '#00FFFF'; // 爆发亮青色
         }
+        const shieldArtSlot = this.phase === 'charge' ? 'charge' : 'explode';
+        const shieldArtRotation = this.phase === 'charge' ? -GameRuntime.frame * 0.01 : GameRuntime.frame * 0.02;
+        const shieldArtSize = this.currentRadius * (this.phase === 'charge' ? 2.05 : 2.35);
+        if (drawArtWeaponAttackTexture(ctx, 'shield', this.level, shieldArtSlot, this.x, this.y, shieldArtSize, shieldArtSize, shieldArtRotation, alpha, 0.5, 0.5)) {
+            return;
+        }
+        if (drawArtWeaponAttackTexture(ctx, 'shield', this.level, 'primary', this.x, this.y, shieldArtSize, shieldArtSize, shieldArtRotation, alpha, 0.5, 0.5)) {
+            return;
+        }
         if (drawArtEffectTexture(ctx, 'shield_pulse', this.x, this.y, this.currentRadius * 2.25, this.currentRadius * 2.25, GameRuntime.frame * 0.02, alpha, 0.5, 0.5)) {
             return;
         }
@@ -4887,7 +4896,7 @@ class Player {
         // 血量初始化：满血量开局
         this.hp = this.maxHp;
 
-        // 测试默认初始武器：透阵龙胆枪 Lv.5。URL 仍可用 debugInitialWeapon/debugInitialWeaponLevel 覆盖。
+        // 测试默认初始武器：八门金锁盾 Lv.1。URL 仍可用 debugInitialWeapon/debugInitialWeaponLevel 覆盖。
         const weaponChoices = [
             { type: 'saber', cls: Saber },
             { type: 'spear', cls: Spear },
@@ -4898,7 +4907,7 @@ class Player {
         ];
         const forcedWeaponType = new URLSearchParams(window.location.search).get('debugInitialWeapon');
         const forcedWeapon = weaponChoices.find(choice => choice.type === forcedWeaponType);
-        const picked = forcedWeapon || weaponChoices.find(choice => choice.type === 'spear') || weaponChoices[0];
+        const picked = forcedWeapon || weaponChoices.find(choice => choice.type === 'shield') || weaponChoices[0];
         const config = WEAPON_UPGRADES[picked.type];
 
         // 直接使用纯净的基础伤害，所有乘区计算交给攻击判定瞬间
@@ -4910,7 +4919,7 @@ class Player {
             }
         }
         weapon.level = 1;
-        const initialWeaponLevelParam = Number(new URLSearchParams(window.location.search).get('debugInitialWeaponLevel') || 5);
+        const initialWeaponLevelParam = Number(new URLSearchParams(window.location.search).get('debugInitialWeaponLevel') || 1);
         if (Number.isInteger(initialWeaponLevelParam) && initialWeaponLevelParam > 1) {
             const targetLevel = Math.min(initialWeaponLevelParam, 6);
             for (let lvl = 2; lvl <= targetLevel; lvl++) {
